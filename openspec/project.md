@@ -494,11 +494,11 @@ The MVP is successful when:
 - [x] build customer assignments UI for internal contacts
 
 ### Phase 4 - Customer User Access
-- [ ] model customer portal access
-- [ ] build invite customer user flow
-- [ ] build enable/disable portal access controls
-- [ ] validate customer scoping in UI and database
-- [ ] test customer role permissions
+- [x] model customer portal access
+- [x] build invite customer user flow
+- [x] build enable/disable portal access controls
+- [x] validate customer scoping in UI and database
+- [x] test customer role permissions
 
 ### Phase 5 - Contract Management
 - [ ] create contracts schema
@@ -571,6 +571,7 @@ The MVP is successful when:
 - [ ] consolidate all database migrations before go-live (after feature complete, before customer data)
 - [ ] prepare staging deployment
 - [ ] prepare production deployment checklist
+- [ ] validate all past changes are 100% complete including any deferred items. 
 
 ## 15. Open Questions / Future Enhancements
 - support multiple customer organizations per user

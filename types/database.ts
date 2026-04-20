@@ -36,6 +36,7 @@ export interface CustomerContact {
   portal_access_enabled: boolean;
   notes: string | null;
   is_demo: boolean;
+  user_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -65,4 +66,23 @@ export interface SystemSetting {
   key: string;
   value: unknown;
   updated_at: string;
+}
+
+export interface CustomerInvitation {
+  id: string;
+  contact_id: string;
+  email: string;
+  invited_by: string;
+  invited_at: string;
+  accepted_at: string | null;
+  expires_at: string;
+  created_at: string;
+}
+
+export type InvitationStatus = "not_invited" | "pending" | "expired" | "active";
+
+export interface CustomerContactWithInvitation extends CustomerContact {
+  user_id: string | null;
+  invitation?: CustomerInvitation | null;
+  invitation_status: InvitationStatus;
 }

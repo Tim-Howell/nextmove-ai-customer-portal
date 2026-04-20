@@ -15,7 +15,9 @@ import {
 import { Edit, Plus, User, Check, X } from "lucide-react";
 import { DeleteCustomerButton } from "@/components/customers/delete-customer-button";
 import { DeleteContactButton } from "@/components/customers/delete-contact-button";
-import type { CustomerWithContacts, CustomerContact } from "@/types/database";
+import { ContactInvitationStatus } from "@/components/customers/contact-invitation-status";
+import { getInvitationStatus } from "@/app/actions/invitations";
+import type { CustomerWithContacts, CustomerContact, InvitationStatus, CustomerInvitation } from "@/types/database";
 
 interface CustomerDetailPageProps {
   params: Promise<{ id: string }>;
@@ -44,7 +46,12 @@ async function getCustomer(id: string): Promise<CustomerWithContacts | null> {
   return data as CustomerWithContacts;
 }
 
-async function getCustomerContacts(customerId: string): Promise<CustomerContact[]> {
+interface ContactWithStatus extends CustomerContact {
+  invitation_status: InvitationStatus;
+  invitation: CustomerInvitation | null;
+}
+
+async function getCustomerContacts(customerId: string): Promise<ContactWithStatus[]> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -58,7 +65,21 @@ async function getCustomerContacts(customerId: string): Promise<CustomerContact[
     return [];
   }
 
-  return data;
+  const contactsWithStatus = await Promise.all(
+    (data as CustomerContact[]).map(async (contact) => {
+      const { status, invitation } = await getInvitationStatus(
+        contact.id,
+        contact.user_id
+      );
+      return {
+        ...contact,
+        invitation_status: status,
+        invitation,
+      };
+    })
+  );
+
+  return contactsWithStatus;
 }
 
 export default async function CustomerDetailPage({
@@ -192,11 +213,13 @@ export default async function CustomerDetailPage({
                       )}
                     </TableCell>
                     <TableCell>
-                      {contact.portal_access_enabled ? (
-                        <Check className="h-4 w-4 text-green-600" />
-                      ) : (
-                        <X className="h-4 w-4 text-gray-400" />
-                      )}
+                      <ContactInvitationStatus
+                        contactId={contact.id}
+                        email={contact.email}
+                        portalAccessEnabled={contact.portal_access_enabled}
+                        status={contact.invitation_status}
+                        invitation={contact.invitation}
+                      />
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">

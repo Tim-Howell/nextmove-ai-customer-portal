@@ -14,9 +14,10 @@ interface AppShellProps {
     full_name: string | null;
   };
   role: "admin" | "staff" | "customer_user";
+  customerName?: string | null;
 }
 
-export function AppShell({ children, user, role }: AppShellProps) {
+export function AppShell({ children, user, role, customerName }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -54,7 +55,7 @@ export function AppShell({ children, user, role }: AppShellProps) {
 
       {/* Main content */}
       <div className="flex flex-1 flex-col">
-        <Header user={user} onMenuClick={() => setSidebarOpen(true)} />
+        <Header user={user} customerName={customerName} onMenuClick={() => setSidebarOpen(true)} />
         <main className="flex-1 p-4 lg:p-6">{children}</main>
       </div>
     </div>

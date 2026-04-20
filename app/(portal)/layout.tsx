@@ -1,6 +1,17 @@
 import { redirect } from "next/navigation";
 import { getProfile, getCurrentUser } from "@/lib/supabase/profile";
+import { createClient } from "@/lib/supabase/server";
 import { AppShell } from "@/components/layouts/app-shell";
+
+async function getCustomerName(customerId: string): Promise<string | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("customers")
+    .select("name")
+    .eq("id", customerId)
+    .single();
+  return data?.name || null;
+}
 
 export default async function PortalLayout({
   children,
@@ -23,8 +34,13 @@ export default async function PortalLayout({
 
   const role = profile?.role || "staff";
 
+  let customerName: string | null = null;
+  if (role === "customer_user" && profile?.customer_id) {
+    customerName = await getCustomerName(profile.customer_id);
+  }
+
   return (
-    <AppShell user={userInfo} role={role}>
+    <AppShell user={userInfo} role={role} customerName={customerName}>
       {children}
     </AppShell>
   );

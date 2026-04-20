@@ -18,10 +18,11 @@ interface HeaderProps {
     email: string;
     full_name: string | null;
   };
+  customerName?: string | null;
   onMenuClick?: () => void;
 }
 
-export function Header({ user, onMenuClick }: HeaderProps) {
+export function Header({ user, customerName, onMenuClick }: HeaderProps) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   async function handleLogout() {
@@ -43,6 +44,12 @@ export function Header({ user, onMenuClick }: HeaderProps) {
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle menu</span>
         </Button>
+
+        {customerName && (
+          <span className="text-sm font-medium text-muted-foreground">
+            {customerName}
+          </span>
+        )}
 
         <div className="flex-1" />
 

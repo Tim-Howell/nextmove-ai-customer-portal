@@ -1,5 +1,17 @@
 import { getProfile, getCurrentUser } from "@/lib/supabase/profile";
+import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CustomerDashboard } from "@/components/dashboard/customer-dashboard";
+
+async function getCustomerName(customerId: string): Promise<string> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("customers")
+    .select("name")
+    .eq("id", customerId)
+    .single();
+  return data?.name || "Your Company";
+}
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -8,7 +20,17 @@ export default async function DashboardPage() {
   const displayName = profile?.full_name || user?.email || "User";
   const role = profile?.role || "staff";
 
-  const roleLabels = {
+  if (role === "customer_user" && profile?.customer_id) {
+    const customerName = await getCustomerName(profile.customer_id);
+    return (
+      <CustomerDashboard
+        customerName={customerName}
+        customerId={profile.customer_id}
+      />
+    );
+  }
+
+  const roleLabels: Record<string, string> = {
     admin: "Administrator",
     staff: "Staff Member",
     customer_user: "Customer User",
