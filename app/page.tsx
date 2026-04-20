@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+
 export default function Home() {
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-background">
@@ -10,12 +12,8 @@ export default function Home() {
           development.
         </p>
         <div className="flex gap-4">
-          <button className="px-6 py-3 bg-accent text-primary font-semibold rounded-lg hover:opacity-90 transition-opacity">
-            Get Started
-          </button>
-          <button className="px-6 py-3 border border-primary text-primary font-semibold rounded-lg hover:bg-muted transition-colors">
-            Learn More
-          </button>
+          <Button>Get Started</Button>
+          <Button variant="outline">Learn More</Button>
         </div>
       </main>
     </div>
