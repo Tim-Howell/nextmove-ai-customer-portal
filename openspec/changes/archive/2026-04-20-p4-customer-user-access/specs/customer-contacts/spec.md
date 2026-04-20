@@ -1,4 +1,4 @@
-## MODIFIED Requirements
+## ADDED Requirements
 
 ### Requirement: Contact portal access management
 The system SHALL display portal access status and invitation controls on contact detail.
