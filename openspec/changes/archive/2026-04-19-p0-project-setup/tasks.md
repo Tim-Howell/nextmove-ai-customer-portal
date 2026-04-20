@@ -50,4 +50,4 @@
 - [x] 8.1 Run `pnpm dev` and confirm app loads at localhost:3000
 - [x] 8.2 Run `pnpm build` and confirm no TypeScript errors
 - [x] 8.3 Run `pnpm lint` and confirm no linting errors
-- [ ] 8.4 Commit all changes with message "feat: complete Phase 0 project setup"
+- [x] 8.4 Commit all changes with message "feat: complete Phase 0 project setup"
