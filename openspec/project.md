@@ -458,9 +458,9 @@ The MVP is successful when:
 - [x] configure component library
 - [x] configure ESLint, Prettier, and TypeScript settings
 - [x] create environment variable strategy
-- [ ] connect Supabase project
-- [ ] configure Vercel project
-- [ ] define deployment environments
+- [x] connect Supabase project
+- [x] configure Vercel project
+- [x] define deployment environments
 - [x] load brand tokens from branding kit
 
 ### Phase 1 - Auth and App Foundations
