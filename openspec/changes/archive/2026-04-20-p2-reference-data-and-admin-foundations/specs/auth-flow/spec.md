@@ -1,4 +1,4 @@
-## MODIFIED Requirements
+## ADDED Requirements
 
 ### Requirement: Login page default view
 The system SHALL display Magic Link input as the default login view, with password login as secondary option.
