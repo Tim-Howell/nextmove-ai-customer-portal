@@ -482,13 +482,13 @@ The MVP is successful when:
 - [ ] implement role assignment flows
 
 ### Phase 3 - Customer and Contact Management
-- [ ] create customers table and migrations
-- [ ] create customer contacts table and migrations
-- [ ] build customer list screen
-- [ ] build customer detail screen
-- [ ] build create/edit customer forms
-- [ ] build create/edit customer contact forms
-- [ ] build customer assignments UI for internal contacts
+- [x] create customers table and migrations
+- [x] create customer contacts table and migrations
+- [x] build customer list screen
+- [x] build customer detail screen
+- [x] build create/edit customer forms
+- [x] build create/edit customer contact forms
+- [x] build customer assignments UI for internal contacts
 
 ### Phase 4 - Customer User Access
 - [ ] model customer portal access
@@ -562,6 +562,8 @@ The MVP is successful when:
 - [ ] review accessibility basics
 - [ ] review responsive layouts
 - [ ] seed demo data
+- [ ] test customer search and filtering with demo data
+- [ ] test customer pagination with demo data
 - [ ] prepare staging deployment
 - [ ] prepare production deployment checklist
 
