@@ -58,3 +58,21 @@ export async function resetPassword(data: ResetPasswordFormData) {
 
   return { success: true };
 }
+
+export async function sendMagicLink(email: string) {
+  const supabase = await createClient();
+
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/auth/callback`,
+    },
+  });
+
+  if (error) {
+    console.error("Magic link error:", error.message);
+    return { error: "Failed to send magic link. Please try again." };
+  }
+
+  return { success: true };
+}

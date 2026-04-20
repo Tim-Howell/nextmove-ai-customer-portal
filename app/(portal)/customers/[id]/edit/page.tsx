@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CustomerForm } from "@/components/customers/customer-form";
+import { getProfile } from "@/lib/supabase/profile";
 import type { Customer } from "@/types/database";
 
 interface EditCustomerPageProps {
@@ -43,9 +44,10 @@ async function getStaffMembers() {
 
 export default async function EditCustomerPage({ params }: EditCustomerPageProps) {
   const { id } = await params;
-  const [customer, staffMembers] = await Promise.all([
+  const [customer, staffMembers, profile] = await Promise.all([
     getCustomer(id),
     getStaffMembers(),
+    getProfile(),
   ]);
 
   if (!customer) {
@@ -54,7 +56,7 @@ export default async function EditCustomerPage({ params }: EditCustomerPageProps
 
   return (
     <div className="max-w-2xl mx-auto">
-      <CustomerForm customer={customer} staffMembers={staffMembers} />
+      <CustomerForm customer={customer} staffMembers={staffMembers} isAdmin={profile?.role === "admin"} />
     </div>
   );
 }

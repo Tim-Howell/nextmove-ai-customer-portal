@@ -6,6 +6,7 @@ export const customerSchema = z.object({
   primary_contact_id: z.string().uuid().nullable().optional(),
   secondary_contact_id: z.string().uuid().nullable().optional(),
   notes: z.string().nullable().optional(),
+  is_demo: z.boolean().optional(),
 });
 
 export const customerContactSchema = z.object({

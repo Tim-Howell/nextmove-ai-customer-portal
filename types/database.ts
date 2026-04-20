@@ -7,6 +7,7 @@ export interface Customer {
   primary_contact_id: string | null;
   secondary_contact_id: string | null;
   notes: string | null;
+  is_demo: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -34,6 +35,34 @@ export interface CustomerContact {
   is_active: boolean;
   portal_access_enabled: boolean;
   notes: string | null;
+  is_demo: boolean;
   created_at: string;
+  updated_at: string;
+}
+
+export type ReferenceValueType =
+  | "contract_type"
+  | "contract_status"
+  | "time_category"
+  | "priority_status"
+  | "priority_level"
+  | "request_status";
+
+export interface ReferenceValue {
+  id: string;
+  type: ReferenceValueType;
+  value: string;
+  label: string;
+  sort_order: number;
+  is_active: boolean;
+  is_default: boolean;
+  is_demo: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SystemSetting {
+  key: string;
+  value: unknown;
   updated_at: string;
 }

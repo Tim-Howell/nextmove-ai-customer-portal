@@ -32,7 +32,7 @@ const internalNavItems: NavItem[] = [
 ];
 
 const adminNavItems: NavItem[] = [
-  { title: "Admin", href: "/admin", icon: Settings },
+  { title: "Settings", href: "/settings", icon: Settings },
 ];
 
 const customerNavItems: NavItem[] = [

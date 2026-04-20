@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { customerSchema, type CustomerFormData } from "@/lib/validations/customer";
 import { createCustomer, updateCustomer } from "@/app/actions/customers";
 import type { Customer } from "@/types/database";
@@ -29,9 +30,10 @@ interface StaffMember {
 interface CustomerFormProps {
   customer?: Customer;
   staffMembers: StaffMember[];
+  isAdmin?: boolean;
 }
 
-export function CustomerForm({ customer, staffMembers }: CustomerFormProps) {
+export function CustomerForm({ customer, staffMembers, isAdmin = false }: CustomerFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -49,12 +51,14 @@ export function CustomerForm({ customer, staffMembers }: CustomerFormProps) {
       primary_contact_id: customer?.primary_contact_id || null,
       secondary_contact_id: customer?.secondary_contact_id || null,
       notes: customer?.notes || "",
+      is_demo: customer?.is_demo || false,
     },
   });
 
   const status = watch("status");
   const primaryContactId = watch("primary_contact_id");
   const secondaryContactId = watch("secondary_contact_id");
+  const isDemo = watch("is_demo");
 
   async function onSubmit(data: CustomerFormData) {
     setIsLoading(true);
@@ -169,6 +173,22 @@ export function CustomerForm({ customer, staffMembers }: CustomerFormProps) {
               rows={4}
             />
           </div>
+
+          {isAdmin && (
+            <div className="flex items-center space-x-2 pt-2 border-t">
+              <Checkbox
+                id="is_demo"
+                checked={isDemo}
+                onCheckedChange={(checked: boolean | "indeterminate") =>
+                  setValue("is_demo", checked === true)
+                }
+                disabled={isLoading}
+              />
+              <Label htmlFor="is_demo" className="font-normal text-muted-foreground">
+                Demo data (only visible when demo mode is enabled)
+              </Label>
+            </div>
+          )}
         </CardContent>
         <CardFooter className="flex justify-between">
           <Link href={customer ? `/customers/${customer.id}` : "/customers"}>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -20,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, Search } from "lucide-react";
 import type { CustomerWithContacts } from "@/types/database";
+import { getShowDemoData } from "@/app/actions/settings";
 
 interface CustomersPageProps {
   searchParams: Promise<{
@@ -34,7 +36,8 @@ const ITEMS_PER_PAGE = 10;
 async function getCustomers(
   search?: string,
   status?: string,
-  page: number = 1
+  page: number = 1,
+  showDemoData: boolean = false
 ): Promise<{ customers: CustomerWithContacts[]; total: number }> {
   const supabase = await createClient();
 
@@ -49,6 +52,10 @@ async function getCustomers(
 
   if (status && status !== "all") {
     query = query.eq("status", status);
+  }
+
+  if (!showDemoData) {
+    query = query.eq("is_demo", false);
   }
 
   const from = (page - 1) * ITEMS_PER_PAGE;
@@ -108,6 +115,11 @@ function CustomerListContent({
                   >
                     {customer.name}
                   </Link>
+                  {customer.is_demo && (
+                    <Badge variant="outline" className="ml-2 text-xs">
+                      Demo
+                    </Badge>
+                  )}
                 </TableCell>
                 <TableCell>
                   <span
@@ -171,8 +183,9 @@ export default async function CustomersPage({ searchParams }: CustomersPageProps
   const search = params.search;
   const status = params.status;
   const page = parseInt(params.page || "1", 10);
+  const showDemoData = await getShowDemoData();
 
-  const { customers, total } = await getCustomers(search, status, page);
+  const { customers, total } = await getCustomers(search, status, page, showDemoData);
 
   return (
     <div className="space-y-6">

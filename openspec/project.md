@@ -473,15 +473,16 @@ The MVP is successful when:
 - [x] implement row-level security policies
 - [x] seed initial admin user
 - [x] create app shell and navigation
-- [ ] implement Magic Links as default login method with email/password fallback option
+
 
 ### Phase 2 - Reference Data and Admin Foundations
-- [ ] create reference tables
-- [ ] seed default dropdown values
-- [ ] build admin screens for managing reference data
-- [ ] build internal user management screens
-- [ ] implement role assignment flows
-- [ ] add demo data flag to records and admin toggle for demo data visibility
+- [x] create reference tables
+- [x] seed default dropdown values
+- [x] build admin screens for managing reference data
+- [x] build internal user management screens
+- [x] implement role assignment flows
+- [x] add demo data flag to records and admin toggle for demo data visibility
+- [x] implement Magic Links as default login method with email/password fallback option
 
 ### Phase 3 - Customer and Contact Management
 - [x] create customers table and migrations

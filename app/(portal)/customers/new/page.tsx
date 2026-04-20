@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { CustomerForm } from "@/components/customers/customer-form";
+import { getProfile } from "@/lib/supabase/profile";
 
 async function getStaffMembers() {
   const supabase = await createClient();
@@ -19,11 +20,14 @@ async function getStaffMembers() {
 }
 
 export default async function NewCustomerPage() {
-  const staffMembers = await getStaffMembers();
+  const [staffMembers, profile] = await Promise.all([
+    getStaffMembers(),
+    getProfile(),
+  ]);
 
   return (
     <div className="max-w-2xl mx-auto">
-      <CustomerForm staffMembers={staffMembers} />
+      <CustomerForm staffMembers={staffMembers} isAdmin={profile?.role === "admin"} />
     </div>
   );
 }
