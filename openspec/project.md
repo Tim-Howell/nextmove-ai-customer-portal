@@ -473,6 +473,7 @@ The MVP is successful when:
 - [x] implement row-level security policies
 - [x] seed initial admin user
 - [x] create app shell and navigation
+- [ ] implement Magic Links as default login method with email/password fallback option
 
 ### Phase 2 - Reference Data and Admin Foundations
 - [ ] create reference tables
@@ -480,6 +481,7 @@ The MVP is successful when:
 - [ ] build admin screens for managing reference data
 - [ ] build internal user management screens
 - [ ] implement role assignment flows
+- [ ] add demo data flag to records and admin toggle for demo data visibility
 
 ### Phase 3 - Customer and Contact Management
 - [x] create customers table and migrations
@@ -504,6 +506,7 @@ The MVP is successful when:
 - [ ] implement contract status logic
 - [ ] implement hour-based contract calculations
 - [ ] expose contracts on customer dashboard
+- [ ] integrate Supabase storage bucket "portal-documents" for contract documents
 
 ### Phase 6 - Time Logging
 - [ ] create time entries schema
@@ -554,7 +557,7 @@ The MVP is successful when:
 - [ ] optionally notify customers of request status changes
 
 ### Phase 13 - Quality, Security, and Launch Prep
-- [ ] validate RLS policies
+- [ ] validate RLS policies (customers cannot delete/modify contacts, profiles, contracts, hours - only submit requests and view data)
 - [ ] test role boundaries
 - [ ] add loading and error states
 - [ ] add empty states
@@ -564,6 +567,7 @@ The MVP is successful when:
 - [ ] seed demo data
 - [ ] test customer search and filtering with demo data
 - [ ] test customer pagination with demo data
+- [ ] consolidate all database migrations before go-live (after feature complete, before customer data)
 - [ ] prepare staging deployment
 - [ ] prepare production deployment checklist
 
