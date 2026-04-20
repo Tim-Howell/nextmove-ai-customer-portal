@@ -571,7 +571,25 @@ The MVP is successful when:
 - [ ] consolidate all database migrations before go-live (after feature complete, before customer data)
 - [ ] prepare staging deployment
 - [ ] prepare production deployment checklist
-- [ ] validate all past changes are 100% complete including any deferred items. 
+- [ ] validate all past changes are 100% complete including any deferred items
+- [ ] configure custom SMTP in Supabase for production email (Magic Link invitations)
+
+### Deferred Items (to address in relevant phases or Phase 13)
+**From Phase 2:**
+- [ ] Role filter dropdown on user management page (minor enhancement)
+- [ ] Demo data filtering for customer_contacts (contacts inherit from parent customer)
+
+**From Phase 3:**
+- [ ] Customer search and filtering (Phase 13 with demo data)
+- [ ] Customer pagination (Phase 13 with demo data)
+- [ ] Industry, website, renewal date fields on customers (nice-to-have)
+
+**From Phase 4:**
+- [ ] Portal access disable → user deactivation (Phase 13 validation)
+- [ ] RLS for contracts scoped by customer_id (Phase 5)
+- [ ] RLS for time_entries scoped by customer_id (Phase 6)
+- [ ] RLS for priorities scoped by customer_id (Phase 7)
+- [ ] RLS for requests scoped by customer_id (Phase 8) 
 
 ## 15. Open Questions / Future Enhancements
 - support multiple customer organizations per user
