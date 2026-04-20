@@ -451,28 +451,28 @@ The MVP is successful when:
 ## 14. MVP Task List
 
 ### Phase 0 - Project Setup
-- [ ] initialize repository
-- [ ] configure OpenSpec structure
-- [ ] create project scaffolding with Next.js and TypeScript
-- [ ] configure Tailwind CSS
-- [ ] configure component library
-- [ ] configure ESLint, Prettier, and TypeScript settings
-- [ ] create environment variable strategy
+- [x] initialize repository
+- [x] configure OpenSpec structure
+- [x] create project scaffolding with Next.js and TypeScript
+- [x] configure Tailwind CSS
+- [x] configure component library
+- [x] configure ESLint, Prettier, and TypeScript settings
+- [x] create environment variable strategy
 - [ ] connect Supabase project
 - [ ] configure Vercel project
 - [ ] define deployment environments
-- [ ] load brand tokens from branding kit
+- [x] load brand tokens from branding kit
 
 ### Phase 1 - Auth and App Foundations
-- [ ] implement Supabase Auth
-- [ ] create login page
-- [ ] create forgot password / reset password flow
-- [ ] build profile and role model
-- [ ] implement route protection
-- [ ] implement role-based layouts
-- [ ] implement row-level security policies
-- [ ] seed initial admin user
-- [ ] create app shell and navigation
+- [x] implement Supabase Auth
+- [x] create login page
+- [x] create forgot password / reset password flow
+- [x] build profile and role model
+- [x] implement route protection
+- [x] implement role-based layouts
+- [x] implement row-level security policies
+- [x] seed initial admin user
+- [x] create app shell and navigation
 
 ### Phase 2 - Reference Data and Admin Foundations
 - [ ] create reference tables
