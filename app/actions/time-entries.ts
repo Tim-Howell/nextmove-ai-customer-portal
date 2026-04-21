@@ -113,8 +113,8 @@ export async function createTimeEntry(data: TimeEntryFormData) {
 
   const { error } = await supabase.from("time_entries").insert({
     customer_id: validated.data.customer_id,
-    contract_id: validated.data.contract_id || null,
-    staff_id: user.id,
+    contract_id: validated.data.contract_id,
+    staff_id: validated.data.staff_id || user.id,
     entry_date: validated.data.entry_date,
     hours: validated.data.hours,
     category_id: validated.data.category_id,

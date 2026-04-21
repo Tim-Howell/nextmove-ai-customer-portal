@@ -24,10 +24,12 @@ import type { TimeEntry, Customer, ReferenceValue } from "@/types/database";
 interface TimeEntryFormProps {
   timeEntry?: TimeEntry;
   customers: Customer[];
-  contracts: { id: string; name: string; customer_id: string }[];
+  contracts: { id: string; name: string; customer_id: string; is_default?: boolean }[];
   categories: ReferenceValue[];
+  staff?: { id: string; full_name: string }[];
   defaultCustomerId?: string;
   defaultContractId?: string;
+  isInternal?: boolean;
 }
 
 export function TimeEntryForm({
@@ -35,8 +37,10 @@ export function TimeEntryForm({
   customers,
   contracts,
   categories,
+  staff = [],
   defaultCustomerId,
   defaultContractId,
+  isInternal = false,
 }: TimeEntryFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -53,12 +57,13 @@ export function TimeEntryForm({
     resolver: zodResolver(timeEntrySchema),
     defaultValues: {
       customer_id: timeEntry?.customer_id || defaultCustomerId || "",
-      contract_id: timeEntry?.contract_id || defaultContractId || null,
+      contract_id: timeEntry?.contract_id || defaultContractId || "",
       entry_date: timeEntry?.entry_date || today,
       hours: timeEntry?.hours || undefined,
       category_id: timeEntry?.category_id || "",
       description: timeEntry?.description || "",
       is_billable: timeEntry?.is_billable ?? true,
+      staff_id: undefined,
     },
   });
 
@@ -66,10 +71,21 @@ export function TimeEntryForm({
   const contractId = watch("contract_id");
   const categoryId = watch("category_id");
   const isBillable = watch("is_billable");
+  const staffId = watch("staff_id");
 
   const filteredContracts = customerId
     ? contracts.filter((c) => c.customer_id === customerId)
     : [];
+
+  // Auto-select default contract when customer changes
+  useEffect(() => {
+    if (customerId && !contractId) {
+      const defaultContract = filteredContracts.find((c) => c.is_default);
+      if (defaultContract) {
+        setValue("contract_id", defaultContract.id);
+      }
+    }
+  }, [customerId, contractId, filteredContracts, setValue]);
 
   useEffect(() => {
     if (customerId && contractId) {
@@ -77,7 +93,7 @@ export function TimeEntryForm({
         (c) => c.id === contractId && c.customer_id === customerId
       );
       if (!contractBelongsToCustomer) {
-        setValue("contract_id", null);
+        setValue("contract_id", "");
       }
     }
   }, [customerId, contractId, contracts, setValue]);
@@ -133,17 +149,16 @@ export function TimeEntryForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="contract_id">Contract (Optional)</Label>
+            <Label htmlFor="contract_id">Contract *</Label>
             <Select
-              value={contractId || "none"}
-              onValueChange={(value) => setValue("contract_id", value === "none" ? null : value)}
+              value={contractId || ""}
+              onValueChange={(value) => setValue("contract_id", value)}
               disabled={isLoading || !customerId}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select contract" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">No Contract</SelectItem>
                 {filteredContracts.map((contract) => (
                   <SelectItem key={contract.id} value={contract.id}>
                     {contract.name}
@@ -154,7 +169,36 @@ export function TimeEntryForm({
             {!customerId && (
               <p className="text-xs text-muted-foreground">Select a customer first</p>
             )}
+            {errors.contract_id && (
+              <p className="text-sm text-destructive">{errors.contract_id.message}</p>
+            )}
           </div>
+
+          {isInternal && staff.length > 0 && (
+            <div className="space-y-2">
+              <Label htmlFor="staff_id">Log Time For</Label>
+              <Select
+                value={staffId || "self"}
+                onValueChange={(value) => setValue("staff_id", value === "self" ? undefined : value)}
+                disabled={isLoading}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Myself" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="self">Myself</SelectItem>
+                  {staff.map((member) => (
+                    <SelectItem key={member.id} value={member.id}>
+                      {member.full_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Select a staff member to log time on their behalf
+              </p>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">

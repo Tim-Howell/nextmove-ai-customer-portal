@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const timeEntrySchema = z.object({
   customer_id: z.string().uuid({ message: "Customer is required" }),
-  contract_id: z.string().uuid().nullable().optional(),
+  contract_id: z.string().uuid({ message: "Contract is required" }),
   entry_date: z.string().min(1, { message: "Date is required" }),
   hours: z.coerce
     .number()
@@ -11,6 +11,7 @@ export const timeEntrySchema = z.object({
   category_id: z.string().uuid({ message: "Category is required" }),
   description: z.string().nullable().optional(),
   is_billable: z.boolean(),
+  staff_id: z.string().uuid().optional(),
 });
 
 export type TimeEntryFormData = z.infer<typeof timeEntrySchema>;
