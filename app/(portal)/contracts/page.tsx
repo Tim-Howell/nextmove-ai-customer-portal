@@ -113,7 +113,7 @@ function ContractListContent({
                   {isHourBased && contract.total_hours ? (
                     <span>
                       {contract.hours_used?.toFixed(1) || 0} / {contract.total_hours}
-                      {contract.hours_remaining !== null && contract.hours_remaining < 0 && (
+                      {contract.hours_remaining != null && contract.hours_remaining < 0 && (
                         <span className="text-destructive ml-1">(over)</span>
                       )}
                     </span>
