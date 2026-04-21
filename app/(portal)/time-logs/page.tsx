@@ -77,9 +77,9 @@ function TimeEntryListContent({
         <TableHeader>
           <TableRow>
             <TableHead>Date</TableHead>
-            <TableHead>Customer</TableHead>
+            {isInternal && <TableHead>Customer</TableHead>}
             <TableHead>Contract</TableHead>
-            <TableHead>Staff</TableHead>
+            {isInternal && <TableHead>Staff</TableHead>}
             <TableHead>Category</TableHead>
             <TableHead>Description</TableHead>
             <TableHead className="text-right">Hours</TableHead>
@@ -89,7 +89,7 @@ function TimeEntryListContent({
         <TableBody>
           {timeEntries.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={isInternal ? 8 : 7} className="text-center text-muted-foreground">
+              <TableCell colSpan={isInternal ? 8 : 5} className="text-center text-muted-foreground">
                 No time entries found
               </TableCell>
             </TableRow>
@@ -100,14 +100,16 @@ function TimeEntryListContent({
                   <TableCell>
                     {new Date(entry.entry_date).toLocaleDateString()}
                   </TableCell>
-                  <TableCell>
-                    <Link
-                      href={`/customers/${entry.customer?.id}`}
-                      className="hover:underline text-muted-foreground"
-                    >
-                      {entry.customer?.name || "—"}
-                    </Link>
-                  </TableCell>
+                  {isInternal && (
+                    <TableCell>
+                      <Link
+                        href={`/customers/${entry.customer?.id}`}
+                        className="hover:underline text-muted-foreground"
+                      >
+                        {entry.customer?.name || "—"}
+                      </Link>
+                    </TableCell>
+                  )}
                   <TableCell>
                     {entry.contract ? (
                       <Link
@@ -120,7 +122,7 @@ function TimeEntryListContent({
                       "—"
                     )}
                   </TableCell>
-                  <TableCell>{entry.staff?.full_name || "—"}</TableCell>
+                  {isInternal && <TableCell>{entry.staff?.full_name || "—"}</TableCell>}
                   <TableCell>
                     <Badge variant="outline">{entry.category?.label || "—"}</Badge>
                   </TableCell>
@@ -148,7 +150,7 @@ function TimeEntryListContent({
                 </TableRow>
               ))}
               <TableRow className="bg-muted/50 font-medium">
-                <TableCell colSpan={isInternal ? 6 : 5} className="text-right">
+                <TableCell colSpan={isInternal ? 6 : 4} className="text-right">
                   Total Hours:
                 </TableCell>
                 <TableCell className="text-right">{totalHours.toFixed(1)}</TableCell>
@@ -190,7 +192,9 @@ export default async function TimeLogsPage({ searchParams }: TimeLogsPageProps) 
         <div>
           <h1 className="text-3xl font-bold text-primary">Time Logs</h1>
           <p className="text-muted-foreground">
-            Track time spent on customer work
+            {isInternal
+              ? "Track time spent on customer work"
+              : "View time logged for your account"}
           </p>
         </div>
         {isInternal && (

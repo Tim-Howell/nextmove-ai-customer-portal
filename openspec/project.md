@@ -574,12 +574,12 @@ The MVP is successful when:
 - [ ] configure custom SMTP in Supabase for production email (Magic Link invitations)
 
 ### Phase 14 - Customer UX Refinement
-- [ ] hide customer dropdown filters from customer_user views (time logs, reports)
-- [ ] simplify time logs view for customers (remove Staff column, auto-filter to their customer)
-- [ ] simplify reports view for customers (remove customer filter, cleaner layout)
-- [ ] review all pages for customer-appropriate content
-- [ ] ensure customers cannot see internal-only data
-- [ ] add customer-friendly empty states and messaging
+- [x] hide customer dropdown filters from customer_user views (time logs, reports)
+- [x] simplify time logs view for customers (remove Staff column, auto-filter to their customer)
+- [x] simplify reports view for customers (remove customer filter, cleaner layout)
+- [x] review all pages for customer-appropriate content
+- [x] ensure customers cannot see internal-only data
+- [x] add customer-friendly empty states and messaging
 
 ### Deferred Items (to address in relevant phases or Phase 13)
 **From Phase 2:**

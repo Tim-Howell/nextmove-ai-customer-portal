@@ -61,25 +61,27 @@ export function TimeLogsFilter({
 
   return (
     <div className="flex flex-wrap gap-4">
-      <div className="space-y-1">
-        <Label className="text-xs text-muted-foreground">Customer</Label>
-        <Select
-          value={currentCustomerId || "all"}
-          onValueChange={(value) => updateFilter("customerId", value === "all" ? null : value)}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="All Customers" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Customers</SelectItem>
-            {customers.map((customer) => (
-              <SelectItem key={customer.id} value={customer.id}>
-                {customer.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      {isInternal && (
+        <div className="space-y-1">
+          <Label className="text-xs text-muted-foreground">Customer</Label>
+          <Select
+            value={currentCustomerId || "all"}
+            onValueChange={(value) => updateFilter("customerId", value === "all" ? null : value)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="All Customers" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Customers</SelectItem>
+              {customers.map((customer) => (
+                <SelectItem key={customer.id} value={customer.id}>
+                  {customer.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       <div className="space-y-1">
         <Label className="text-xs text-muted-foreground">Contract</Label>

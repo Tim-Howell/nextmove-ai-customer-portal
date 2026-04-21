@@ -21,6 +21,7 @@ import {
 import { Plus } from "lucide-react";
 import { getContracts } from "@/app/actions/contracts";
 import { getReferenceValues } from "@/app/actions/reference";
+import { getProfile } from "@/lib/supabase/profile";
 import type { ContractWithRelations, ReferenceValue, Customer } from "@/types/database";
 import { isHourBasedContract } from "@/lib/validations/contract";
 import { ContractsFilter } from "@/components/contracts/contracts-filter";
@@ -58,25 +59,27 @@ function getStatusBadgeVariant(statusValue: string): "default" | "secondary" | "
 
 function ContractListContent({
   contracts,
+  isInternal,
 }: {
   contracts: ContractWithRelations[];
+  isInternal: boolean;
 }) {
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead>Contract Name</TableHead>
-          <TableHead>Customer</TableHead>
+          {isInternal && <TableHead>Customer</TableHead>}
           <TableHead>Type</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Hours</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
+          {isInternal && <TableHead className="text-right">Actions</TableHead>}
         </TableRow>
       </TableHeader>
       <TableBody>
         {contracts.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={6} className="text-center text-muted-foreground">
+            <TableCell colSpan={isInternal ? 6 : 4} className="text-center text-muted-foreground">
               No contracts found
             </TableCell>
           </TableRow>
@@ -95,14 +98,16 @@ function ContractListContent({
                     {contract.name}
                   </Link>
                 </TableCell>
-                <TableCell>
-                  <Link
-                    href={`/customers/${contract.customer?.id}`}
-                    className="hover:underline text-muted-foreground"
-                  >
-                    {contract.customer?.name || "—"}
-                  </Link>
-                </TableCell>
+                {isInternal && (
+                  <TableCell>
+                    <Link
+                      href={`/customers/${contract.customer?.id}`}
+                      className="hover:underline text-muted-foreground"
+                    >
+                      {contract.customer?.name || "—"}
+                    </Link>
+                  </TableCell>
+                )}
                 <TableCell>{contract.contract_type?.label || "—"}</TableCell>
                 <TableCell>
                   <Badge variant={getStatusBadgeVariant(contract.status?.value || "")}>
@@ -121,13 +126,15 @@ function ContractListContent({
                     "—"
                   )}
                 </TableCell>
-                <TableCell className="text-right">
-                  <Link href={`/contracts/${contract.id}/edit`}>
-                    <Button variant="ghost" size="sm">
-                      Edit
-                    </Button>
-                  </Link>
-                </TableCell>
+                {isInternal && (
+                  <TableCell className="text-right">
+                    <Link href={`/contracts/${contract.id}/edit`}>
+                      <Button variant="ghost" size="sm">
+                        Edit
+                      </Button>
+                    </Link>
+                  </TableCell>
+                )}
               </TableRow>
             );
           })
@@ -142,11 +149,14 @@ export default async function ContractsPage({ searchParams }: ContractsPageProps
   const customerId = params.customerId;
   const statusId = params.statusId;
 
-  const [{ data: contracts }, statuses, customers] = await Promise.all([
+  const [{ data: contracts }, statuses, customers, profile] = await Promise.all([
     getContracts({ customerId, statusId }),
     getReferenceValues("contract_status"),
     getCustomers(),
+    getProfile(),
   ]);
+
+  const isInternal = profile?.role === "admin" || profile?.role === "staff";
 
   return (
     <div className="space-y-6">
@@ -154,15 +164,19 @@ export default async function ContractsPage({ searchParams }: ContractsPageProps
         <div>
           <h1 className="text-3xl font-bold text-primary">Contracts</h1>
           <p className="text-muted-foreground">
-            Manage customer contracts and agreements
+            {isInternal
+              ? "Manage customer contracts and agreements"
+              : "View your contracts and agreements"}
           </p>
         </div>
-        <Link href="/contracts/new">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            New Contract
-          </Button>
-        </Link>
+        {isInternal && (
+          <Link href="/contracts/new">
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              New Contract
+            </Button>
+          </Link>
+        )}
       </div>
 
       <ContractsFilter
@@ -170,10 +184,11 @@ export default async function ContractsPage({ searchParams }: ContractsPageProps
         statuses={statuses}
         currentCustomerId={customerId}
         currentStatusId={statusId}
+        isInternal={isInternal}
       />
 
       <Suspense fallback={<div>Loading...</div>}>
-        <ContractListContent contracts={contracts} />
+        <ContractListContent contracts={contracts} isInternal={isInternal} />
       </Suspense>
     </div>
   );

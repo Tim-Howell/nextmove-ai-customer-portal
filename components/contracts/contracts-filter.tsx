@@ -15,6 +15,7 @@ interface ContractsFilterProps {
   statuses: ReferenceValue[];
   currentCustomerId?: string;
   currentStatusId?: string;
+  isInternal?: boolean;
 }
 
 export function ContractsFilter({
@@ -22,6 +23,7 @@ export function ContractsFilter({
   statuses,
   currentCustomerId,
   currentStatusId,
+  isInternal = true,
 }: ContractsFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -38,22 +40,24 @@ export function ContractsFilter({
 
   return (
     <div className="flex gap-4">
-      <Select
-        value={currentCustomerId || "all"}
-        onValueChange={(value) => updateFilter("customerId", value === "all" ? null : value)}
-      >
-        <SelectTrigger className="w-[200px]">
-          <SelectValue placeholder="All Customers" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Customers</SelectItem>
-          {customers.map((customer) => (
-            <SelectItem key={customer.id} value={customer.id}>
-              {customer.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      {isInternal && (
+        <Select
+          value={currentCustomerId || "all"}
+          onValueChange={(value) => updateFilter("customerId", value === "all" ? null : value)}
+        >
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="All Customers" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Customers</SelectItem>
+            {customers.map((customer) => (
+              <SelectItem key={customer.id} value={customer.id}>
+                {customer.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
 
       <Select
         value={currentStatusId || "all"}
