@@ -1,16 +1,16 @@
 ## 1. Navigation & UI Cleanup
 
-- [ ] 1.1 Remove Time Logs from customer sidebar navigation
-- [ ] 1.2 Rename "Reports" to "Time Reports" in sidebar
-- [ ] 1.3 Update any breadcrumbs/links referencing "Reports"
+- [x] 1.1 Remove Time Logs from customer sidebar navigation
+- [x] 1.2 Rename "Reports" to "Time Reports" in sidebar
+- [x] 1.3 Update any breadcrumbs/links referencing "Reports"
 
 ## 2. Enhanced Reporting
 
-- [ ] 2.1 Convert category filter to multi-select
-- [ ] 2.2 Add contract filter (multi-select)
-- [ ] 2.3 Add billable filter (Yes/No dropdown)
-- [ ] 2.4 Add staff representative filter (multi-select)
-- [ ] 2.5 Update report query to handle new filters
+- [x] 2.1 Convert category filter to multi-select
+- [x] 2.2 Add contract filter (multi-select)
+- [x] 2.3 Add billable filter (Yes/No dropdown)
+- [x] 2.4 Add staff representative filter (multi-select)
+- [x] 2.5 Update report query to handle new filters
 
 ## 3. Time Entry Improvements
 

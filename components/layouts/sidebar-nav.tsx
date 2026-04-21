@@ -28,7 +28,7 @@ const internalNavItems: NavItem[] = [
   { title: "Time Logs", href: "/time-logs", icon: Clock },
   { title: "Priorities", href: "/priorities", icon: Flag },
   { title: "Requests", href: "/requests", icon: MessageSquare },
-  { title: "Reports", href: "/reports", icon: BarChart3 },
+  { title: "Time Reports", href: "/reports", icon: BarChart3 },
 ];
 
 const adminNavItems: NavItem[] = [
@@ -39,10 +39,9 @@ const customerNavItems: NavItem[] = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { title: "Profile", href: "/profile", icon: User },
   { title: "Contracts", href: "/contracts", icon: FileText },
-  { title: "Time Logs", href: "/time-logs", icon: Clock },
   { title: "Priorities", href: "/priorities", icon: Flag },
   { title: "Requests", href: "/requests", icon: MessageSquare },
-  { title: "Reports", href: "/reports", icon: BarChart3 },
+  { title: "Time Reports", href: "/reports", icon: BarChart3 },
 ];
 
 interface SidebarNavProps {

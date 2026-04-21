@@ -14,7 +14,10 @@ export interface ReportFilters {
   customerId?: string;
   dateFrom?: string;
   dateTo?: string;
-  categoryId?: string;
+  categoryIds?: string[];
+  contractIds?: string[];
+  billable?: "yes" | "no";
+  staffIds?: string[];
 }
 
 export interface ReportSummary {
@@ -27,6 +30,7 @@ export interface TimeEntryReportRow extends TimeEntry {
   customer?: { id: string; name: string };
   contract?: { id: string; name: string } | null;
   category?: ReferenceValue;
+  staff?: { id: string; full_name: string } | null;
 }
 
 export async function getTimeEntriesReport(
@@ -43,6 +47,7 @@ export async function getTimeEntriesReport(
       id,
       customer_id,
       contract_id,
+      staff_id,
       entry_date,
       hours,
       category_id,
@@ -52,7 +57,8 @@ export async function getTimeEntriesReport(
       updated_at,
       customer:customers(id, name),
       contract:contracts(id, name),
-      category:reference_values!time_entries_category_id_fkey(id, value, label)
+      category:reference_values!time_entries_category_id_fkey(id, value, label),
+      staff:profiles!time_entries_staff_id_fkey(id, full_name)
     `)
     .order("entry_date", { ascending: false });
 
@@ -71,9 +77,26 @@ export async function getTimeEntriesReport(
     query = query.lte("entry_date", filters.dateTo);
   }
 
-  // Apply category filter
-  if (filters.categoryId) {
-    query = query.eq("category_id", filters.categoryId);
+  // Apply category filter (multi-select)
+  if (filters.categoryIds && filters.categoryIds.length > 0) {
+    query = query.in("category_id", filters.categoryIds);
+  }
+
+  // Apply contract filter (multi-select)
+  if (filters.contractIds && filters.contractIds.length > 0) {
+    query = query.in("contract_id", filters.contractIds);
+  }
+
+  // Apply billable filter
+  if (filters.billable === "yes") {
+    query = query.eq("is_billable", true);
+  } else if (filters.billable === "no") {
+    query = query.eq("is_billable", false);
+  }
+
+  // Apply staff filter (multi-select)
+  if (filters.staffIds && filters.staffIds.length > 0) {
+    query = query.in("staff_id", filters.staffIds);
   }
 
   const { data, error } = await query;
@@ -220,4 +243,55 @@ export async function getCustomersForReport(): Promise<Customer[]> {
   }
 
   return (data || []) as Customer[];
+}
+
+export async function getContractsForReport(customerId?: string): Promise<{ id: string; name: string }[]> {
+  const supabase = await createClient();
+  const profile = await getProfile();
+
+  const isInternal = profile?.role === "admin" || profile?.role === "staff";
+
+  let query = supabase
+    .from("contracts")
+    .select("id, name")
+    .order("name");
+
+  // For customers, filter to their contracts
+  if (!isInternal && profile?.customer_id) {
+    query = query.eq("customer_id", profile.customer_id);
+  } else if (customerId) {
+    query = query.eq("customer_id", customerId);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("Error fetching contracts for report:", error);
+    return [];
+  }
+
+  return (data || []) as { id: string; name: string }[];
+}
+
+export async function getStaffForReport(): Promise<{ id: string; full_name: string }[]> {
+  const supabase = await createClient();
+  const profile = await getProfile();
+
+  if (profile?.role !== "admin" && profile?.role !== "staff") {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, full_name")
+    .in("role", ["admin", "staff"])
+    .eq("is_active", true)
+    .order("full_name");
+
+  if (error) {
+    console.error("Error fetching staff for report:", error);
+    return [];
+  }
+
+  return (data || []) as { id: string; full_name: string }[];
 }
