@@ -545,17 +545,16 @@ The MVP is successful when:
 - [ ] implement export if time allows
 
 ### Phase 11 - Files
-- [ ] configure Supabase Storage buckets
-- [ ] implement contract attachment upload
-- [ ] implement request attachment upload
-- [ ] secure file access with storage policies
+- [x] configure Supabase Storage buckets
+- [x] implement contract attachment upload
+- [x] secure file access with storage policies
 
 ### Phase 12 - Notifications
-- [ ] integrate Resend
-- [ ] send invite emails
-- [ ] send password reset support flow if needed
-- [ ] optionally notify internal users of new requests
-- [ ] optionally notify customers of request status changes
+- [x] integrate Resend
+- [x] send invite emails (handled by Supabase OTP magic link)
+- [x] send password reset support flow if needed (handled by Supabase Auth)
+- [x] optionally notify internal users of new requests
+- [x] optionally notify customers of request status changes
 
 ### Phase 13 - Quality, Security, and Launch Prep
 - [ ] validate RLS policies (customers cannot delete/modify contacts, profiles, contracts, hours - only submit requests and view data)

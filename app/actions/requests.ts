@@ -10,6 +10,7 @@ import {
   type CustomerRequestFormData,
   REQUEST_STATUS_VALUES,
 } from "@/lib/validations/request";
+import { sendRequestNotification, sendRequestStatusUpdate } from "@/lib/email/send";
 import type { RequestWithRelations } from "@/types/database";
 
 interface GetRequestsOptions {
@@ -40,6 +41,30 @@ async function getCurrentUserRole(): Promise<{
     customerId: profile?.customer_id || null,
     userId: user.id,
   };
+}
+
+async function getInternalStaffEmails(): Promise<string[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("profiles")
+    .select("email")
+    .in("role", ["admin", "staff"])
+    .not("email", "is", null);
+
+  return (data || []).map((p) => p.email).filter(Boolean) as string[];
+}
+
+async function getCustomerContactEmails(customerId: string): Promise<string[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("customer_contacts")
+    .select("email")
+    .eq("customer_id", customerId)
+    .eq("portal_access_enabled", true)
+    .eq("is_active", true)
+    .not("email", "is", null);
+
+  return (data || []).map((c) => c.email).filter(Boolean) as string[];
 }
 
 export async function getRequests(
@@ -154,6 +179,10 @@ export async function createRequest(
     .eq("value", REQUEST_STATUS_VALUES.NEW)
     .single();
 
+  const effectiveCustomerId = isInternal
+    ? (formData as RequestFormData).customer_id
+    : customerId;
+
   const insertData: Record<string, unknown> = {
     ...parsed.data,
     submitted_by: userId,
@@ -173,6 +202,38 @@ export async function createRequest(
   if (error) {
     console.error("Error creating request:", error);
     return { error: "Failed to create request" };
+  }
+
+  // Send notification to internal staff (fire-and-forget for customer submissions)
+  if (!isInternal && effectiveCustomerId) {
+    const staffEmails = await getInternalStaffEmails();
+    if (staffEmails.length > 0) {
+      // Get customer name and submitter name
+      const { data: customer } = await supabase
+        .from("customers")
+        .select("name")
+        .eq("id", effectiveCustomerId)
+        .single();
+
+      const { data: submitter } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", userId)
+        .single();
+
+      sendRequestNotification({
+        to: staffEmails,
+        customerName: customer?.name || "Unknown Customer",
+        requestTitle: parsed.data.title,
+        requestDescription: parsed.data.description?.substring(0, 200) || "",
+        submittedBy: submitter?.full_name || "Customer",
+        portalLink: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/requests`,
+      }).catch((err) => {
+        console.error("Failed to send request notification email:", err);
+      });
+    } else {
+      console.warn("No internal staff emails found for request notification");
+    }
   }
 
   revalidatePath("/requests");
@@ -196,6 +257,20 @@ export async function updateRequest(
     return { error: parsed.error.errors[0].message };
   }
 
+  // Get current request to check for status change
+  const { data: currentRequest } = await supabase
+    .from("requests")
+    .select(`
+      status_id,
+      customer_id,
+      title,
+      status:reference_values!requests_status_id_fkey(label)
+    `)
+    .eq("id", id)
+    .single();
+
+  const statusChanged = currentRequest && currentRequest.status_id !== parsed.data.status_id;
+
   const { error } = await supabase
     .from("requests")
     .update(parsed.data)
@@ -204,6 +279,39 @@ export async function updateRequest(
   if (error) {
     console.error("Error updating request:", error);
     return { error: "Failed to update request" };
+  }
+
+  // Send status update notification to customer contacts if status changed
+  if (statusChanged && currentRequest.customer_id) {
+    const contactEmails = await getCustomerContactEmails(currentRequest.customer_id);
+    if (contactEmails.length > 0) {
+      // Get new status label
+      const { data: newStatus } = await supabase
+        .from("reference_values")
+        .select("label")
+        .eq("id", parsed.data.status_id)
+        .single();
+
+      // Get customer name
+      const { data: customer } = await supabase
+        .from("customers")
+        .select("name")
+        .eq("id", currentRequest.customer_id)
+        .single();
+
+      const oldStatusLabel = (currentRequest.status as unknown as { label: string } | null)?.label || "Unknown";
+
+      sendRequestStatusUpdate({
+        to: contactEmails,
+        customerName: customer?.name || "Your Company",
+        requestTitle: currentRequest.title,
+        oldStatus: oldStatusLabel,
+        newStatus: newStatus?.label || "Updated",
+        portalLink: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/requests/${id}`,
+      }).catch((err) => {
+        console.error("Failed to send request status update email:", err);
+      });
+    }
   }
 
   revalidatePath("/requests");
