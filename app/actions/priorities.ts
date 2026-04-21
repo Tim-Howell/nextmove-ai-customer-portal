@@ -81,7 +81,7 @@ export async function createPriority(
 
   const parsed = prioritySchema.safeParse(formData);
   if (!parsed.success) {
-    return { error: parsed.error.errors[0].message };
+    return { error: parsed.error.errors[0]?.message || "Validation failed" };
   }
 
   const {
@@ -111,7 +111,7 @@ export async function updatePriority(
 
   const parsed = prioritySchema.safeParse(formData);
   if (!parsed.success) {
-    return { error: parsed.error.errors[0].message };
+    return { error: parsed.error.errors[0]?.message || "Validation failed" };
   }
 
   const {

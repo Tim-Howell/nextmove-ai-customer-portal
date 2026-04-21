@@ -168,7 +168,7 @@ export async function createRequest(
   const parsed = schema.safeParse(formData);
 
   if (!parsed.success) {
-    return { error: parsed.error.errors[0].message };
+    return { error: parsed.error.errors[0]?.message || "Validation failed" };
   }
 
   // Get the "new" status ID for default
@@ -254,7 +254,7 @@ export async function updateRequest(
 
   const parsed = requestSchema.safeParse(formData);
   if (!parsed.success) {
-    return { error: parsed.error.errors[0].message };
+    return { error: parsed.error.errors[0]?.message || "Validation failed" };
   }
 
   // Get current request to check for status change
