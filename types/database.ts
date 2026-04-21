@@ -86,3 +86,80 @@ export interface CustomerContactWithInvitation extends CustomerContact {
   invitation?: CustomerInvitation | null;
   invitation_status: InvitationStatus;
 }
+
+// Contract types
+export interface Contract {
+  id: string;
+  customer_id: string;
+  name: string;
+  contract_type_id: string;
+  status_id: string;
+  start_date: string | null;
+  end_date: string | null;
+  total_hours: number | null;
+  description: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ContractWithRelations extends Contract {
+  customer?: {
+    id: string;
+    name: string;
+  };
+  contract_type?: ReferenceValue;
+  status?: ReferenceValue;
+  hours_used?: number;
+  hours_remaining?: number | null;
+}
+
+export interface ContractDocument {
+  id: string;
+  contract_id: string;
+  file_name: string;
+  file_path: string;
+  file_size: number | null;
+  content_type: string | null;
+  uploaded_by: string | null;
+  uploaded_at: string;
+}
+
+export interface ContractDocumentWithUploader extends ContractDocument {
+  uploader?: {
+    id: string;
+    full_name: string | null;
+  };
+}
+
+// Time entry types
+export interface TimeEntry {
+  id: string;
+  customer_id: string;
+  contract_id: string | null;
+  staff_id: string;
+  entry_date: string;
+  hours: number;
+  category_id: string;
+  description: string | null;
+  is_billable: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TimeEntryWithRelations extends TimeEntry {
+  customer?: {
+    id: string;
+    name: string;
+  };
+  contract?: {
+    id: string;
+    name: string;
+  } | null;
+  staff?: {
+    id: string;
+    full_name: string | null;
+  };
+  category?: ReferenceValue;
+}
+

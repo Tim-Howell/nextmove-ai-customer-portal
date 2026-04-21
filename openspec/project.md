@@ -501,21 +501,21 @@ The MVP is successful when:
 - [x] test customer role permissions
 
 ### Phase 5 - Contract Management
-- [ ] create contracts schema
-- [ ] build contract list and detail screens
-- [ ] build create/edit contract forms
-- [ ] implement contract status logic
-- [ ] implement hour-based contract calculations
-- [ ] expose contracts on customer dashboard
-- [ ] integrate Supabase storage bucket "portal-documents" for contract documents
+- [x] create contracts schema
+- [x] build contract list and detail screens
+- [x] build create/edit contract forms
+- [x] implement contract status logic
+- [x] implement hour-based contract calculations
+- [x] expose contracts on customer dashboard
+- [x] integrate Supabase storage bucket "portal-documents" for contract documents
 
 ### Phase 6 - Time Logging
-- [ ] create time entries schema
-- [ ] build internal time entry list and form
-- [ ] support filtering by customer, contract, date range, category, and staff
-- [ ] calculate hours used per contract
-- [ ] calculate hours remaining per contract
-- [ ] build customer-facing time log view
+- [x] create time entries schema
+- [x] build internal time entry list and form
+- [x] support filtering by customer, contract, date range, category, and staff
+- [x] calculate hours used per contract
+- [x] calculate hours remaining per contract
+- [x] build customer-facing time log view
 
 ### Phase 7 - Priorities
 - [ ] create priorities schema
@@ -586,8 +586,8 @@ The MVP is successful when:
 
 **From Phase 4:**
 - [ ] Portal access disable → user deactivation (Phase 13 validation)
-- [ ] RLS for contracts scoped by customer_id (Phase 5)
-- [ ] RLS for time_entries scoped by customer_id (Phase 6)
+- [x] RLS for contracts scoped by customer_id (Phase 5) ✓ Completed
+- [x] RLS for time_entries scoped by customer_id (Phase 6) ✓ Completed
 - [ ] RLS for priorities scoped by customer_id (Phase 7)
 - [ ] RLS for requests scoped by customer_id (Phase 8) 
 
