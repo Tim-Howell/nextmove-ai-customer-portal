@@ -38,6 +38,6 @@
 - [x] 7.2 Test customer dashboard with recent activity
 - [x] 7.3 Test reports page filters and export
 - [x] 7.4 Mark Phase 9 and 10 tasks as complete in project.md
-- [ ] 7.5 Commit all changes
+- [x] 7.5 Commit all changes
 
 **Note:** Customer UI needs refinement - customer users see internal-focused views (customer dropdowns, etc.). Created follow-up phase for customer UX improvements.
