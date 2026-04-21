@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SidebarNav } from "./sidebar-nav";
 import { Header } from "./header";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getPortalSettings } from "@/app/actions/portal-settings";
+import type { PortalSettings } from "@/app/actions/portal-settings";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -19,6 +21,18 @@ interface AppShellProps {
 
 export function AppShell({ children, user, role, customerName }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [portalSettings, setPortalSettings] = useState<PortalSettings | null>(null);
+
+  useEffect(() => {
+    async function fetchSettings() {
+      const settings = await getPortalSettings();
+      setPortalSettings(settings);
+    }
+    fetchSettings();
+  }, []);
+
+  const organizationName = portalSettings?.organization_name || "NextMove AI";
+  const logoUrl = portalSettings?.logo_url;
 
   return (
     <div className="flex min-h-screen">
@@ -38,7 +52,16 @@ export function AppShell({ children, user, role, customerName }: AppShellProps) 
         )}
       >
         <div className="flex h-14 items-center justify-between border-b px-4">
-          <span className="text-lg font-bold text-primary">NextMove AI</span>
+          <div className="flex items-center space-x-2">
+            {logoUrl && (
+              <img
+                src={logoUrl}
+                alt="Organization logo"
+                className="h-8 w-8 object-contain"
+              />
+            )}
+            <span className="text-lg font-bold text-primary">{organizationName}</span>
+          </div>
           <Button
             variant="ghost"
             size="icon"

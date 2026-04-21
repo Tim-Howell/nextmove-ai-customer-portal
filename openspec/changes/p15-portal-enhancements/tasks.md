@@ -34,12 +34,12 @@
 
 ## 5. User & Profile Management
 
-- [ ] 5.1 Add first_name, last_name, title columns to profiles
-- [ ] 5.2 Update profile form to include new fields
-- [ ] 5.3 Create user management page in settings (admin/staff)
-- [ ] 5.4 List all users with edit capability
-- [ ] 5.5 Allow editing customer user profiles
-- [ ] 5.6 Update full_name to derive from first_name + last_name
+- [x] 5.1 Add first_name, last_name, title columns to profiles
+- [x] 5.2 Update profile form to include new fields
+- [x] 5.3 Create user management page in settings (admin/staff)
+- [x] 5.4 List all users with edit capability
+- [x] 5.5 Allow editing customer user profiles
+- [x] 5.6 Update full_name to derive from first_name + last_name
 
 ## 6. Portal Branding
 

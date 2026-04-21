@@ -7,6 +7,7 @@ const settingsNav = [
   { href: "/settings", label: "General" },
   { href: "/settings/reference-data", label: "Reference Data" },
   { href: "/settings/users", label: "Users" },
+  { href: "/settings/portal-branding", label: "Portal Branding" },
 ];
 
 export default async function SettingsLayout({
