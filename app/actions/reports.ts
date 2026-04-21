@@ -160,6 +160,10 @@ export async function getRecentPriorities(
 
   const isInternal = profile?.role === "admin" || profile?.role === "staff";
 
+  // For customer users, use their customer_id from profile
+  // For internal users, use the passed customerId or fetch all
+  const effectiveCustomerId = isInternal ? customerId : profile?.customer_id;
+
   let query = supabase
     .from("priorities")
     .select(`
@@ -181,11 +185,9 @@ export async function getRecentPriorities(
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  // Apply customer filter
-  if (!isInternal && profile?.customer_id) {
-    query = query.eq("customer_id", profile.customer_id);
-  } else if (customerId) {
-    query = query.eq("customer_id", customerId);
+  // Apply customer filter if we have one
+  if (effectiveCustomerId) {
+    query = query.eq("customer_id", effectiveCustomerId);
   }
 
   const { data, error } = await query;
