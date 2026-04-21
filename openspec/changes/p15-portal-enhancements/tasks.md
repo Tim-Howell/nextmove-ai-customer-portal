@@ -24,13 +24,13 @@
 
 ## 4. Internal Notes
 
-- [ ] 4.1 Add internal_notes column to customers table
-- [ ] 4.2 Add internal_notes column to priorities table
-- [ ] 4.3 Add internal_notes column to time_entries table
-- [ ] 4.4 Update customer form with internal notes field
-- [ ] 4.5 Update priority form with internal notes field
-- [ ] 4.6 Update time entry form with internal notes field
-- [ ] 4.7 Hide internal notes from customer users (RLS/UI)
+- [x] 4.1 Add internal_notes column to customers table
+- [x] 4.2 Add internal_notes column to priorities table
+- [x] 4.3 Add internal_notes column to time_entries table
+- [x] 4.4 Update customer form with internal notes field
+- [x] 4.5 Update priority form with internal notes field
+- [x] 4.6 Update time entry form with internal notes field
+- [x] 4.7 Hide internal notes from customer users (RLS/UI)
 
 ## 5. User & Profile Management
 

@@ -62,6 +62,7 @@ export function TimeEntryForm({
       hours: timeEntry?.hours || undefined,
       category_id: timeEntry?.category_id || "",
       description: timeEntry?.description || "",
+      internal_notes: timeEntry?.internal_notes || "",
       is_billable: timeEntry?.is_billable ?? true,
       staff_id: undefined,
     },
@@ -265,6 +266,22 @@ export function TimeEntryForm({
               rows={3}
             />
           </div>
+
+          {isInternal && (
+            <div className="space-y-2">
+              <Label htmlFor="internal_notes">Internal Notes</Label>
+              <Textarea
+                id="internal_notes"
+                {...register("internal_notes")}
+                disabled={isLoading}
+                placeholder="Internal notes (visible to NextMove AI staff only)"
+                rows={3}
+              />
+              <p className="text-xs text-muted-foreground">
+                These notes are only visible to NextMove AI staff members
+              </p>
+            </div>
+          )}
 
           <div className="flex items-center space-x-2">
             <Checkbox

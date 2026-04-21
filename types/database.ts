@@ -7,6 +7,7 @@ export interface Customer {
   primary_contact_id: string | null;
   secondary_contact_id: string | null;
   notes: string | null;
+  internal_notes: string | null;
   is_demo: boolean;
   created_at: string;
   updated_at: string;
@@ -143,6 +144,7 @@ export interface TimeEntry {
   category_id: string;
   description: string | null;
   is_billable: boolean;
+  internal_notes: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -169,6 +171,7 @@ export interface Priority {
   customer_id: string;
   title: string;
   description: string | null;
+  internal_notes: string | null;
   status_id: string;
   priority_level_id: string;
   due_date: string | null;

@@ -48,6 +48,7 @@ export function PriorityForm({
       customer_id: priority?.customer_id || "",
       title: priority?.title || "",
       description: priority?.description || "",
+      internal_notes: priority?.internal_notes || "",
       status_id: priority?.status_id || "",
       priority_level_id: priority?.priority_level_id || "",
       due_date: priority?.due_date || "",
@@ -188,6 +189,20 @@ export function PriorityForm({
               placeholder="Priority description or notes"
               rows={4}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="internal_notes">Internal Notes</Label>
+            <Textarea
+              id="internal_notes"
+              {...register("internal_notes")}
+              disabled={isLoading}
+              placeholder="Internal notes (visible to NextMove AI staff only)"
+              rows={3}
+            />
+            <p className="text-xs text-muted-foreground">
+              These notes are only visible to NextMove AI staff members
+            </p>
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">

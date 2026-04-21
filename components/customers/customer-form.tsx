@@ -51,6 +51,7 @@ export function CustomerForm({ customer, staffMembers, isAdmin = false }: Custom
       primary_contact_id: customer?.primary_contact_id || null,
       secondary_contact_id: customer?.secondary_contact_id || null,
       notes: customer?.notes || "",
+      internal_notes: customer?.internal_notes || "",
       is_demo: customer?.is_demo || false,
     },
   });
@@ -173,6 +174,22 @@ export function CustomerForm({ customer, staffMembers, isAdmin = false }: Custom
               rows={4}
             />
           </div>
+
+          {isAdmin && (
+            <div className="space-y-2">
+              <Label htmlFor="internal_notes">Internal Notes</Label>
+              <Textarea
+                id="internal_notes"
+                {...register("internal_notes")}
+                disabled={isLoading}
+                placeholder="Internal notes (visible to NextMove AI staff only)"
+                rows={3}
+              />
+              <p className="text-xs text-muted-foreground">
+                These notes are only visible to NextMove AI staff members
+              </p>
+            </div>
+          )}
 
           {isAdmin && (
             <div className="flex items-center space-x-2 pt-2 border-t">
