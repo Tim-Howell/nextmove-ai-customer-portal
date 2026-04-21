@@ -32,7 +32,7 @@
 
 ## 6. Final Verification
 
-- [ ] 6.1 Test all pages as customer_user
-- [ ] 6.2 Verify no internal-only data is visible
+- [x] 6.1 Test all pages as customer_user
+- [x] 6.2 Verify no internal-only data is visible
 - [x] 6.3 Mark Phase 14 tasks as complete in project.md
-- [ ] 6.4 Commit all changes
+- [x] 6.4 Commit all changes
