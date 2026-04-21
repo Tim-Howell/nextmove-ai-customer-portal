@@ -10,7 +10,7 @@ export const timeEntrySchema = z.object({
     .max(24, { message: "Hours cannot exceed 24" }),
   category_id: z.string().uuid({ message: "Category is required" }),
   description: z.string().nullable().optional(),
-  is_billable: z.boolean().default(true),
+  is_billable: z.boolean(),
 });
 
 export type TimeEntryFormData = z.infer<typeof timeEntrySchema>;

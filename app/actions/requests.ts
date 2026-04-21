@@ -113,7 +113,7 @@ export async function getRequests(
     internal_notes: isInternal ? request.internal_notes : null,
   }));
 
-  return { data: sanitizedData as RequestWithRelations[] };
+  return { data: sanitizedData as unknown as RequestWithRelations[] };
 }
 
 export async function getRequest(
@@ -153,7 +153,7 @@ export async function getRequest(
     internal_notes: isInternal ? data.internal_notes : null,
   };
 
-  return { data: sanitizedData as RequestWithRelations };
+  return { data: sanitizedData as unknown as RequestWithRelations };
 }
 
 export async function createRequest(
