@@ -205,12 +205,12 @@ export async function getCustomerHoursThisMonth(
 }
 
 export async function getRecentTimeEntries(
-  customerId: string,
+  customerId?: string,
   limit: number = 5
 ): Promise<TimeEntryWithRelations[]> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("time_entries")
     .select(
       `
@@ -221,9 +221,14 @@ export async function getRecentTimeEntries(
       category:reference_values!time_entries_category_id_fkey(id, type, value, label)
     `
     )
-    .eq("customer_id", customerId)
     .order("entry_date", { ascending: false })
     .limit(limit);
+
+  if (customerId) {
+    query = query.eq("customer_id", customerId);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("Error fetching recent time entries:", error);

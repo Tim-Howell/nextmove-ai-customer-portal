@@ -532,17 +532,17 @@ The MVP is successful when:
 - [x] add internal notes field with visibility restrictions
 
 ### Phase 9 - Dashboards
-- [ ] build internal dashboard summary queries
-- [ ] build customer dashboard summary queries
-- [ ] create summary cards and recent activity views
-- [ ] link dashboard widgets to detail pages
+- [x] build internal dashboard summary queries
+- [x] build customer dashboard summary queries
+- [x] create summary cards and recent activity views
+- [x] link dashboard widgets to detail pages
 
 ### Phase 10 - Reporting
-- [ ] build internal reporting screen
-- [ ] build customer reporting screen
-- [ ] implement table filtering
-- [ ] implement date range filters
-- [ ] implement export if time allows
+- [x] build internal reporting screen
+- [x] build customer reporting screen
+- [x] implement table filtering
+- [x] implement date range filters
+- [x] implement export if time allows
 
 ### Phase 11 - Files
 - [x] configure Supabase Storage buckets
@@ -572,6 +572,14 @@ The MVP is successful when:
 - [ ] prepare production deployment checklist
 - [ ] validate all past changes are 100% complete including any deferred items
 - [ ] configure custom SMTP in Supabase for production email (Magic Link invitations)
+
+### Phase 14 - Customer UX Refinement
+- [ ] hide customer dropdown filters from customer_user views (time logs, reports)
+- [ ] simplify time logs view for customers (remove Staff column, auto-filter to their customer)
+- [ ] simplify reports view for customers (remove customer filter, cleaner layout)
+- [ ] review all pages for customer-appropriate content
+- [ ] ensure customers cannot see internal-only data
+- [ ] add customer-friendly empty states and messaging
 
 ### Deferred Items (to address in relevant phases or Phase 13)
 **From Phase 2:**

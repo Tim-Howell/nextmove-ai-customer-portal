@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -17,6 +18,7 @@ import {
 } from "@/app/actions/time-entries";
 import { getOpenPrioritiesCount } from "@/app/actions/priorities";
 import { getOpenRequestsCount } from "@/app/actions/requests";
+import { getRecentRequests, getRecentPriorities } from "@/app/actions/reports";
 import { CONTRACT_STATUS_VALUES } from "@/lib/validations/contract";
 
 interface CustomerDashboardProps {
@@ -25,12 +27,14 @@ interface CustomerDashboardProps {
 }
 
 export async function CustomerDashboard({ customerName, customerId }: CustomerDashboardProps) {
-  const [{ data: contracts }, hoursThisMonth, recentTimeEntries, openPriorities, openRequests] = await Promise.all([
+  const [{ data: contracts }, hoursThisMonth, recentTimeEntries, openPriorities, openRequests, recentRequests, recentPriorities] = await Promise.all([
     getContracts({ customerId }),
     getCustomerHoursThisMonth(customerId),
     getRecentTimeEntries(customerId, 5),
     getOpenPrioritiesCount(customerId),
     getOpenRequestsCount(customerId),
+    getRecentRequests(customerId, 5),
+    getRecentPriorities(customerId, 5),
   ]);
 
   const activeContracts = contracts.filter(
@@ -161,6 +165,94 @@ export async function CustomerDashboard({ customerName, customerId }: CustomerDa
                       <TableCell>{entry.category?.label || "—"}</TableCell>
                       <TableCell className="text-right">
                         {Number(entry.hours).toFixed(1)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Recent Requests</CardTitle>
+            <Link href="/requests">
+              <Button variant="ghost" size="sm">
+                View All
+              </Button>
+            </Link>
+          </CardHeader>
+          <CardContent>
+            {recentRequests.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                No recent requests
+              </p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recentRequests.map((request) => (
+                    <TableRow key={request.id}>
+                      <TableCell className="font-medium truncate max-w-[200px]">
+                        <Link href={`/requests/${request.id}`} className="hover:underline">
+                          {request.title}
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{request.status?.label || "—"}</Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Recent Priorities</CardTitle>
+            <Link href="/priorities">
+              <Button variant="ghost" size="sm">
+                View All
+              </Button>
+            </Link>
+          </CardHeader>
+          <CardContent>
+            {recentPriorities.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                No recent priorities
+              </p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Level</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recentPriorities.map((priority) => (
+                    <TableRow key={priority.id}>
+                      <TableCell className="font-medium truncate max-w-[150px]">
+                        <Link href={`/priorities/${priority.id}`} className="hover:underline">
+                          {priority.title}
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{priority.priority_level?.label || "—"}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{priority.status?.label || "—"}</Badge>
                       </TableCell>
                     </TableRow>
                   ))}
