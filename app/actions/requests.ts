@@ -84,7 +84,7 @@ export async function getRequests(
       title,
       description,
       status_id,
-      ${isInternal ? "internal_notes," : ""}
+      internal_notes,
       created_at,
       updated_at,
       customer:customers(id, name),
@@ -132,7 +132,7 @@ export async function getRequest(
       title,
       description,
       status_id,
-      ${isInternal ? "internal_notes," : ""}
+      internal_notes,
       created_at,
       updated_at,
       customer:customers(id, name),
