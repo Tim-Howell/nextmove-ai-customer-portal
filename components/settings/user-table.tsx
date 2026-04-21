@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -20,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { updateUserRole, toggleUserActive, type InternalUser } from "@/app/actions/users";
+import { Edit } from "lucide-react";
 
 interface UserTableProps {
   users: InternalUser[];
@@ -59,17 +61,30 @@ export function UserTable({ users }: UserTableProps) {
       <TableHeader>
         <TableRow>
           <TableHead>Name</TableHead>
+          <TableHead>Title</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Role</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Active</TableHead>
+          <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {users.map((user) => (
           <TableRow key={user.id}>
             <TableCell className="font-medium">
-              {user.full_name || "—"}
+              <div>
+                <div className="font-medium">
+                  {user.first_name && user.last_name 
+                    ? `${user.first_name} ${user.last_name}`
+                    : user.full_name || "â"}
+                </div>
+              </div>
+            </TableCell>
+            <TableCell>
+              <div className="text-sm text-muted-foreground">
+                {user.title || "â"}
+              </div>
             </TableCell>
             <TableCell>{user.email}</TableCell>
             <TableCell>
@@ -104,6 +119,13 @@ export function UserTable({ users }: UserTableProps) {
                 }
                 disabled={loadingId === user.id}
               />
+            </TableCell>
+            <TableCell>
+              <Link href={`/settings/users/${user.id}/edit`}>
+                <Button variant="ghost" size="sm">
+                  <Edit className="h-4 w-4" />
+                </Button>
+              </Link>
             </TableCell>
           </TableRow>
         ))}

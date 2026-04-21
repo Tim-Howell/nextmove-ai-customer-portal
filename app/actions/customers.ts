@@ -155,3 +155,19 @@ export async function deleteCustomerContact(customerId: string, contactId: strin
   revalidatePath(`/customers/${customerId}`);
   return { success: true };
 }
+
+export async function getCustomers() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("customers")
+    .select("id, name, status")
+    .order("name");
+
+  if (error) {
+    console.error("Error fetching customers:", error);
+    return [];
+  }
+
+  return (data || []) as { id: string; name: string; status: string }[];
+}

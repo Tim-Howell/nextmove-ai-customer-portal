@@ -8,6 +8,9 @@ export interface InternalUser {
   id: string;
   email: string;
   full_name: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  title: string | null;
   role: "admin" | "staff";
   is_active: boolean;
   created_at: string;
@@ -20,9 +23,9 @@ export async function getInternalUsers(
 
   let query = supabase
     .from("profiles")
-    .select("id, email, full_name, role, is_active, created_at")
+    .select("id, email, full_name, first_name, last_name, title, role, is_active, created_at")
     .in("role", ["admin", "staff"])
-    .order("full_name");
+    .order("first_name, last_name");
 
   if (roleFilter) {
     query = query.eq("role", roleFilter);
@@ -102,6 +105,64 @@ export async function toggleUserActive(userId: string, isActive: boolean) {
   if (error) {
     console.error("Error toggling user active:", error);
     return { error: "Failed to update user status" };
+  }
+
+  revalidatePath("/settings/users");
+  return { success: true };
+}
+
+export async function getUserById(id: string) {
+  const supabase = await createClient();
+  
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, email, full_name, first_name, last_name, title, role, customer_id, is_active, created_at")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error("Error fetching user:", error);
+    return null;
+  }
+
+  return data;
+}
+
+export async function updateUser(id: string, data: {
+  first_name?: string;
+  last_name?: string;
+  title?: string;
+  role?: "admin" | "staff" | "customer_user";
+  customer_id?: string | null;
+  is_active?: boolean;
+}) {
+  const supabase = await createClient();
+  const currentUser = await getProfile();
+
+  // Don't allow deactivating own account
+  if (data.is_active === false && currentUser?.id === id) {
+    return { error: "Cannot deactivate your own account" };
+  }
+
+  // Update full_name if first/last name changed
+  const updateData: any = { ...data };
+  if (data.first_name !== undefined || data.last_name !== undefined) {
+    const user = await getUserById(id);
+    if (user) {
+      const firstName = data.first_name ?? user.first_name;
+      const lastName = data.last_name ?? user.last_name;
+      updateData.full_name = firstName && lastName ? `${firstName} ${lastName}` : firstName || lastName || null;
+    }
+  }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update(updateData)
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error updating user:", error);
+    return { error: "Failed to update user" };
   }
 
   revalidatePath("/settings/users");
