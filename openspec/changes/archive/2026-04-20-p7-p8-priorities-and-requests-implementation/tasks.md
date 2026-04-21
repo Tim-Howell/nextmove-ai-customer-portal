@@ -102,4 +102,4 @@
 - [x] 13.6 Test filters on list pages
 - [x] 13.7 Test dashboard widgets
 - [x] 13.8 Update project.md Phase 7 and 8 tasks as complete
-- [ ] 13.9 Commit all changes
+- [x] 13.9 Commit all changes

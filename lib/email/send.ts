@@ -6,7 +6,7 @@ import { RequestNotificationEmail } from './templates/request-notification';
 import { RequestStatusUpdateEmail } from './templates/request-status-update';
 import { render } from '@react-email/render';
 
-const FROM_EMAIL = 'NextMove AI Portal <noreply@yourdomain.com>';
+const FROM_EMAIL = 'NextMove AI Portal <noreply@portal.nextmoveaiservices.com>';
 
 interface SendCustomerInviteParams {
   to: string;
