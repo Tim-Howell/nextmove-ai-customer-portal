@@ -518,18 +518,18 @@ The MVP is successful when:
 - [x] build customer-facing time log view
 
 ### Phase 7 - Priorities
-- [ ] create priorities schema
-- [ ] build internal priorities list and form
-- [ ] build customer-facing priorities view
-- [ ] optionally allow customer submission of new priorities
-- [ ] implement status and priority level filtering
+- [x] create priorities schema
+- [x] build internal priorities list and form
+- [x] build customer-facing priorities view
+- [x] optionally allow customer submission of new priorities
+- [x] implement status and priority level filtering
 
 ### Phase 8 - Requests
-- [ ] create requests schema
-- [ ] build customer request submission form
-- [ ] build internal request management view
-- [ ] build customer request status view
-- [ ] add internal notes field with visibility restrictions
+- [x] create requests schema
+- [x] build customer request submission form
+- [x] build internal request management view
+- [x] build customer request status view
+- [x] add internal notes field with visibility restrictions
 
 ### Phase 9 - Dashboards
 - [ ] build internal dashboard summary queries

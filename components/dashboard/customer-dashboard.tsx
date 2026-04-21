@@ -15,6 +15,8 @@ import {
   getCustomerHoursThisMonth,
   getRecentTimeEntries,
 } from "@/app/actions/time-entries";
+import { getOpenPrioritiesCount } from "@/app/actions/priorities";
+import { getOpenRequestsCount } from "@/app/actions/requests";
 import { CONTRACT_STATUS_VALUES } from "@/lib/validations/contract";
 
 interface CustomerDashboardProps {
@@ -23,10 +25,12 @@ interface CustomerDashboardProps {
 }
 
 export async function CustomerDashboard({ customerName, customerId }: CustomerDashboardProps) {
-  const [{ data: contracts }, hoursThisMonth, recentTimeEntries] = await Promise.all([
+  const [{ data: contracts }, hoursThisMonth, recentTimeEntries, openPriorities, openRequests] = await Promise.all([
     getContracts({ customerId }),
     getCustomerHoursThisMonth(customerId),
     getRecentTimeEntries(customerId, 5),
+    getOpenPrioritiesCount(customerId),
+    getOpenRequestsCount(customerId),
   ]);
 
   const activeContracts = contracts.filter(
@@ -65,27 +69,31 @@ export async function CustomerDashboard({ customerName, customerId }: CustomerDa
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Open Priorities</CardTitle>
-            <Flag className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">—</div>
-            <p className="text-xs text-muted-foreground">Coming in Phase 7</p>
-          </CardContent>
-        </Card>
+        <Link href="/priorities">
+          <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Open Priorities</CardTitle>
+              <Flag className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{openPriorities}</div>
+              <p className="text-xs text-muted-foreground">Active work items</p>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Open Requests</CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">—</div>
-            <p className="text-xs text-muted-foreground">Coming in Phase 8</p>
-          </CardContent>
-        </Card>
+        <Link href="/requests">
+          <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Open Requests</CardTitle>
+              <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{openRequests}</div>
+              <p className="text-xs text-muted-foreground">Pending requests</p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">

@@ -163,3 +163,56 @@ export interface TimeEntryWithRelations extends TimeEntry {
   category?: ReferenceValue;
 }
 
+// Priority types
+export interface Priority {
+  id: string;
+  customer_id: string;
+  title: string;
+  description: string | null;
+  status_id: string;
+  priority_level_id: string;
+  due_date: string | null;
+  created_by: string | null;
+  updated_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PriorityWithRelations extends Priority {
+  customer?: {
+    id: string;
+    name: string;
+  };
+  status?: ReferenceValue;
+  priority_level?: ReferenceValue;
+  creator?: {
+    id: string;
+    full_name: string | null;
+  };
+}
+
+// Request types
+export interface Request {
+  id: string;
+  customer_id: string;
+  submitted_by: string | null;
+  title: string;
+  description: string | null;
+  status_id: string;
+  internal_notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RequestWithRelations extends Request {
+  customer?: {
+    id: string;
+    name: string;
+  };
+  status?: ReferenceValue;
+  submitter?: {
+    id: string;
+    full_name: string | null;
+  };
+}
+
