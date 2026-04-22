@@ -2,13 +2,29 @@
 
 A secure web application for NextMove AI staff and customer staff to manage customer information, contracts, time logs, priorities, requests, and reporting.
 
+## Project Status
+
+**MVP Progress: Phases 1-18 Complete** (excluding Phase 13 QA/Seed Data)
+
+| Phase | Status | Description |
+|-------|--------|-------------|
+| 0-12 | ✅ Complete | Core functionality (auth, customers, contracts, time, priorities, requests, dashboards, reports, files, notifications) |
+| 13 | 🔲 Pending | Quality, Security, and Seed Data |
+| 14-15 | ✅ Complete | Customer UX Refinement, Portal Enhancements |
+| 16 | ✅ Complete | Archive Capabilities (cascade archive, user access control) |
+| 17 | ✅ Complete | Contract Types Enhancement (billing models, hours buckets, rollover) |
+| 18 | ✅ Complete | Audit Logging & Error Handling |
+| 20 | 🔲 Pending | Validation, Cleanup, Test, and Go-Live Prep |
+
 ## Tech Stack
 
-- **Framework**: Next.js 14+ (App Router)
+- **Framework**: Next.js 15 (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS + shadcn/ui
 - **Database**: Supabase (PostgreSQL)
-- **Auth**: Supabase Auth
+- **Auth**: Supabase Auth (Magic Link + Email/Password)
+- **Storage**: Supabase Storage (portal-assets, portal-documents)
+- **Email**: Resend (transactional)
 - **Hosting**: Vercel
 
 ## Getting Started
@@ -120,3 +136,52 @@ Used for secure documents with access control:
 1. Create bucket named `portal-documents` in Supabase Storage
 2. Keep bucket **Private**
 3. RLS policies control access based on user role and customer association
+
+## Key Features
+
+### User Roles
+- **Admin**: Full system access, user management, settings
+- **Staff**: Manage customers, contracts, time entries, priorities, requests
+- **Customer User**: View own customer data, submit requests/priorities
+
+### Contract Types
+- **Hours Subscription**: Recurring monthly hours with rollover support
+- **Hours Bucket**: Fixed pool of hours
+- **Fixed Cost**: No hour tracking
+- **Service Subscription**: Recurring service without hours
+
+### Archive System
+- Cascade archive: archiving a customer archives all related contracts, contacts, priorities, requests
+- Archived customers' users cannot log in
+- Archived items excluded from dropdowns but preserved in reports
+- "Show Archived" toggle on list views
+
+### Audit Logging
+- All CRUD operations logged with before/after values
+- User context captured (who, when, what changed)
+- Admin-only audit log viewer at `/settings/audit-log`
+- Record history on detail pages
+
+## Database Migrations
+
+Migrations are in `supabase/migrations/`. Key migrations:
+- `20240422000001_archive_capabilities.sql` - Archive fields and triggers
+- `20240422000002_audit_logging.sql` - Audit log table and triggers
+
+Run migrations:
+```bash
+npx supabase db push
+```
+
+## Development Workflow
+
+This project uses **OpenSpec** for structured development:
+- `openspec/project.md` - Master project specification
+- `openspec/changes/` - Active change proposals
+- `openspec/changes/archive/` - Completed changes
+
+## Documentation
+
+- `openspec/project.md` - Full project specification with all phases
+- `AGENTS.md` - AI assistant context and guidelines
+- `README.md` - This file
