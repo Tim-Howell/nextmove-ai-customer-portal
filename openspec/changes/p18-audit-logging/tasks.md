@@ -2,55 +2,55 @@
 
 ## 1. Audit Log Database Schema
 
-- [ ] 1.1 Create `audit_logs` table with all required columns
-- [ ] 1.2 Add indexes for common query patterns
-- [ ] 1.3 Create RLS policy: admin read-only access
-- [ ] 1.4 Create migration file
+- [x] 1.1 Create `audit_logs` table with all required columns
+- [x] 1.2 Add indexes for common query patterns
+- [x] 1.3 Create RLS policy: admin read-only access
+- [x] 1.4 Create migration file
 
 ## 2. Database Triggers
 
-- [ ] 2.1 Create audit trigger function for INSERT operations
-- [ ] 2.2 Create audit trigger function for UPDATE operations
-- [ ] 2.3 Create audit trigger function for DELETE operations
-- [ ] 2.4 Add trigger to `customers` table
-- [ ] 2.5 Add trigger to `customer_contacts` table
-- [ ] 2.6 Add trigger to `contracts` table
-- [ ] 2.7 Add trigger to `time_entries` table
-- [ ] 2.8 Add trigger to `priorities` table
-- [ ] 2.9 Add trigger to `requests` table
-- [ ] 2.10 Add trigger to `profiles` table (role/status changes only)
-- [ ] 2.11 Add trigger to `portal_settings` table
-- [ ] 2.12 Add trigger to `reference_values` table
+- [x] 2.1 Create audit trigger function for INSERT operations
+- [x] 2.2 Create audit trigger function for UPDATE operations
+- [x] 2.3 Create audit trigger function for DELETE operations
+- [x] 2.4 Add trigger to `customers` table
+- [x] 2.5 Add trigger to `customer_contacts` table
+- [x] 2.6 Add trigger to `contracts` table
+- [x] 2.7 Add trigger to `time_entries` table
+- [x] 2.8 Add trigger to `priorities` table
+- [x] 2.9 Add trigger to `requests` table
+- [x] 2.10 Add trigger to `profiles` table (role/status changes only)
+- [x] 2.11 Add trigger to `portal_settings` table
+- [x] 2.12 Add trigger to `reference_values` table
 
 ## 3. User Context Capture
 
-- [ ] 3.1 Create mechanism to pass user context to database session
-- [ ] 3.2 Set `app.current_user_id` session variable in Supabase client
-- [ ] 3.3 Update triggers to read user context from session
-- [ ] 3.4 Capture user email and role in audit record
+- [x] 3.1 Create mechanism to pass user context to database session
+- [x] 3.2 Set `app.current_user_id` session variable in Supabase client
+- [x] 3.3 Update triggers to read user context from session
+- [x] 3.4 Capture user email and role in audit record
 
 ## 4. Audit Log Actions
 
-- [ ] 4.1 Create `getAuditLogs` action with filtering
-- [ ] 4.2 Support filter by table_name
-- [ ] 4.3 Support filter by action type
-- [ ] 4.4 Support filter by user_id
-- [ ] 4.5 Support filter by date range
-- [ ] 4.6 Support filter by record_id
-- [ ] 4.7 Implement pagination
-- [ ] 4.8 Create `getAuditLogForRecord` action (single record history)
+- [x] 4.1 Create `getAuditLogs` action with filtering
+- [x] 4.2 Support filter by table_name
+- [x] 4.3 Support filter by action type
+- [x] 4.4 Support filter by user_id
+- [x] 4.5 Support filter by date range
+- [x] 4.6 Support filter by record_id
+- [x] 4.7 Implement pagination
+- [x] 4.8 Create `getAuditLogForRecord` action (single record history)
 
 ## 5. Audit Log Viewer Page
 
-- [ ] 5.1 Create `/settings/audit-log` page (admin only)
-- [ ] 5.2 Add "Audit Log" to settings navigation
-- [ ] 5.3 Create filter controls (table, action, user, date range)
-- [ ] 5.4 Create audit log table with columns
-- [ ] 5.5 Implement expandable rows for change details
-- [ ] 5.6 Show before/after values in diff format
-- [ ] 5.7 Highlight changed fields
-- [ ] 5.8 Add pagination controls
-- [ ] 5.9 Add "View Record" link to jump to affected entity
+- [x] 5.1 Create `/settings/audit-log` page (admin only)
+- [x] 5.2 Add "Audit Log" to settings navigation
+- [x] 5.3 Create filter controls (table, action, user, date range)
+- [x] 5.4 Create audit log table with columns
+- [x] 5.5 Implement expandable rows for change details
+- [x] 5.6 Show before/after values in diff format
+- [x] 5.7 Highlight changed fields
+- [x] 5.8 Add pagination controls
+- [x] 5.9 Add "View Record" link to jump to affected entity
 
 ## 6. Record History Component
 
@@ -63,17 +63,17 @@
 
 ## 7. Error Code System
 
-- [ ] 7.1 Create `lib/errors/codes.ts` with all error code constants
-- [ ] 7.2 Create `lib/errors/messages.ts` with user-friendly messages
-- [ ] 7.3 Create `AppError` class extending Error
-- [ ] 7.4 Create `createError` utility function
-- [ ] 7.5 Create `formatErrorResponse` utility function
+- [x] 7.1 Create `lib/errors/codes.ts` with all error code constants
+- [x] 7.2 Create `lib/errors/messages.ts` with user-friendly messages
+- [x] 7.3 Create `AppError` class extending Error
+- [x] 7.4 Create `createError` utility function
+- [x] 7.5 Create `formatErrorResponse` utility function
 
 ## 8. Error Handling Utilities
 
-- [ ] 8.1 Create `lib/errors/index.ts` barrel export
-- [ ] 8.2 Create error type guards (isAppError, isValidationError)
-- [ ] 8.3 Create error logging utility (console + future tracking)
+- [x] 8.1 Create `lib/errors/index.ts` barrel export
+- [x] 8.2 Create error type guards (isAppError, isValidationError)
+- [x] 8.3 Create error logging utility (console + future tracking)
 - [ ] 8.4 Create `withErrorHandling` wrapper for server actions
 
 ## 9. Update Server Actions - Customers

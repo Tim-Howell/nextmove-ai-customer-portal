@@ -9,6 +9,7 @@ const settingsNav = [
   { href: "/settings/users", label: "Staff Users" },
   { href: "/settings/customer-users", label: "Customer Users" },
   { href: "/settings/portal-branding", label: "Portal Branding" },
+  { href: "/settings/audit-log", label: "Audit Log" },
 ];
 
 export default async function SettingsLayout({

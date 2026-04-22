@@ -264,3 +264,30 @@ export interface RequestWithRelations extends Request {
   };
 }
 
+// Audit Log types
+export type AuditAction = "create" | "update" | "delete" | "archive" | "restore";
+
+export interface AuditLog {
+  id: string;
+  table_name: string;
+  record_id: string;
+  action: AuditAction;
+  user_id: string | null;
+  user_email: string | null;
+  user_role: string | null;
+  old_values: Record<string, unknown> | null;
+  new_values: Record<string, unknown> | null;
+  changed_fields: string[] | null;
+  ip_address: string | null;
+  user_agent: string | null;
+  created_at: string;
+}
+
+export interface AuditLogWithUser extends AuditLog {
+  user?: {
+    id: string;
+    full_name: string | null;
+    email: string;
+  } | null;
+}
+
