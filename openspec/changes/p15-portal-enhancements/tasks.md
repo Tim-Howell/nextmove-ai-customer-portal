@@ -59,20 +59,20 @@
 
 ## 8. Customer Dashboard Redesign
 
-- [ ] 8.1 Design new customer dashboard layout
-- [ ] 8.2 Create customer info card (logo, company details)
-- [ ] 8.3 Create NextMove AI contacts section
-- [ ] 8.4 Create active priorities section
-- [ ] 8.5 Create active contracts section
-- [ ] 8.6 Keep summary stats (hours, requests count, etc.)
-- [ ] 8.7 Remove individual time logs list from customer view
-- [ ] 8.8 Replace current CustomerDashboard component
+- [x] 8.1 Design new customer dashboard layout
+- [x] 8.2 Create customer info card (logo, company details)
+- [x] 8.3 Create NextMove AI contacts section
+- [x] 8.4 Create active priorities section
+- [x] 8.5 Create active contracts section
+- [x] 8.6 Keep summary stats (hours, requests count, etc.)
+- [x] 8.7 Remove individual time logs list from customer view
+- [x] 8.8 Update dashboard to use new design dashboard component
 
 ## 9. Final Verification
 
-- [ ] 9.1 Test all features as admin
-- [ ] 9.2 Test all features as staff
-- [ ] 9.3 Test all features as customer_user
-- [ ] 9.4 Verify internal notes hidden from customers
-- [ ] 9.5 Update project.md with Phase 15 completion
-- [ ] 9.6 Commit all changes
+- [x] 9.1 Test all features as admin
+- [x] 9.2 Test all features as staff
+- [x] 9.3 Test all features as customer_user
+- [x] 9.4 Verify internal notes hidden from customers
+- [x] 9.5 Update project.md with Phase 15 completion
+- [x] 9.6 Commit all changes

@@ -582,18 +582,18 @@ The MVP is successful when:
 - [x] add customer-friendly empty states and messaging
 
 ### Phase 15 - Portal Enhancements
-- [ ] remove Time Logs from customer navigation (redundant with Reports)
-- [ ] rename Reports to Time Reports
-- [ ] enhance report filters (multi-select category, contract, billable, staff)
-- [ ] create default "On-Demand / Off Contract" contract for customers
-- [ ] make contract required on time entry
-- [ ] allow staff to enter time for other staff
-- [ ] add internal notes to customers, priorities, time logs
-- [ ] make user profiles editable (first name, last name, title)
-- [ ] show all users in settings for admin/staff
-- [ ] create portal branding settings (org name, logo, description)
-- [ ] add images to customers and priorities
-- [ ] redesign customer dashboard with company info and contacts
+- [x] remove Time Logs from customer navigation (redundant with Reports)
+- [x] rename Reports to Time Reports
+- [x] enhance report filters (multi-select category, contract, billable, staff)
+- [x] create default "On-Demand / Off Contract" contract for customers
+- [x] make contract required on time entry
+- [x] allow staff to enter time for other staff
+- [x] add internal notes to customers, priorities, time logs
+- [x] make user profiles editable (first name, last name, title)
+- [x] show all users in settings for admin/staff
+- [x] create portal branding settings (org name, logo, description)
+- [x] add images to customers and priorities
+- [x] redesign customer dashboard with company info and contacts
 
 ### Deferred Items (to address in relevant phases or Phase 13)
 **From Phase 2:**
