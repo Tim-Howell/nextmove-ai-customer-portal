@@ -2,6 +2,35 @@
 
 Before making this repository public, complete the following cleanup tasks to remove sensitive information and ensure the codebase is ready for public viewing.
 
+## Recommended Approach: Fresh Repository
+
+The cleanest way to go public is to create a new repository with a fresh history:
+
+1. Complete all cleanup tasks below in this private repo
+2. Create a new public repository with the desired name (e.g., `customer-portal`, `client-portal-nextjs`)
+3. Clone this repo locally, remove `.git` folder
+4. Initialize fresh git, commit all files as initial commit
+5. Push to new public repository
+
+```bash
+# After cleanup is complete:
+cd /path/to/cleaned-project
+rm -rf .git
+git init
+git add -A
+git commit -m "Initial commit - Customer Portal built with Next.js 15 and Supabase"
+git remote add origin https://github.com/YOUR_ORG/new-repo-name.git
+git push -u origin main
+```
+
+This approach:
+- ✅ Removes all git history (no risk of leaked secrets)
+- ✅ Allows renaming the repository
+- ✅ Clean single-commit starting point
+- ✅ Keeps private repo intact for reference
+
+---
+
 ## 🔴 Critical - Must Complete
 
 ### Sensitive Data Removal
@@ -15,10 +44,9 @@ Before making this repository public, complete the following cleanup tasks to re
 - [ ] Search entire codebase for `@nextmoveaiservices.com` and remove/replace
 - [ ] Search for any hardcoded API keys or secrets (should be none, but verify)
 
-### Git History Review
-- [ ] Consider if git history needs to be cleaned (if sensitive data was ever committed)
-  - Option: Use `git filter-branch` or BFG Repo-Cleaner
-  - Option: Start fresh with a squashed history
+### Git History
+- [ ] Using fresh repository approach (recommended) - no action needed
+- [ ] Or if keeping history: Use BFG Repo-Cleaner to remove sensitive commits
 
 ### Documentation Updates
 - [ ] Update README.md to be generic (remove company-specific references)
