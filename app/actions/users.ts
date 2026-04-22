@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { getProfile } from "@/lib/supabase/profile";
+import { getShowDemoData } from "./settings";
 
 export interface InternalUser {
   id: string;
@@ -145,9 +146,11 @@ export interface CustomerUser {
 
 export async function getCustomerUsers(): Promise<CustomerUser[]> {
   const supabase = await createClient();
+  const showDemoData = await getShowDemoData();
 
   // Query customer_contacts which are the actual customer portal users
-  const { data, error } = await supabase
+  // Only show contacts with portal_access_enabled = true (actual portal users)
+  let query = supabase
     .from("customer_contacts")
     .select(`
       id,
@@ -160,9 +163,17 @@ export async function getCustomerUsers(): Promise<CustomerUser[]> {
       is_active,
       portal_access_enabled,
       created_at,
-      customer:customers(name)
+      customer:customers!inner(name, is_demo)
     `)
+    .eq("portal_access_enabled", true)
     .order("full_name");
+  
+  // Filter out demo data if toggle is off
+  if (!showDemoData) {
+    query = query.eq("customer.is_demo", false);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("Error fetching customer users:", error);
