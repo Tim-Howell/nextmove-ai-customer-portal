@@ -1,0 +1,83 @@
+## 1. Deferred Items Review
+
+- [ ] 1.1 Review all deferred items from project.md and categorize as Must Fix / Nice to Have / Won't Fix
+- [ ] 1.2 Address role filter dropdown on user management page (deferred from Phase 2)
+- [ ] 1.3 Validate customer search, filtering, pagination works correctly
+- [ ] 1.4 Validate demo user login behavior with show_demo_data toggle
+- [ ] 1.5 Test portal access disable → user deactivation flow
+
+## 2. RLS Validation
+
+- [ ] 2.1 Create RLS test script (`scripts/test-rls.ts`)
+- [ ] 2.2 Test customer_user cannot modify contracts
+- [ ] 2.3 Test customer_user cannot modify time entries
+- [ ] 2.4 Test customer_user cannot modify customer contacts
+- [ ] 2.5 Test customer_user can only view own customer data
+- [ ] 2.6 Test cross-customer data access is blocked
+- [ ] 2.7 Fix any RLS policy gaps found during testing
+
+## 3. Playwright E2E Testing Setup
+
+- [ ] 3.1 Install Playwright and configure for Next.js
+- [ ] 3.2 Create test fixtures for admin, staff, and customer_user authentication
+- [ ] 3.3 Create base test utilities and helpers
+
+## 4. Admin E2E Tests
+
+- [ ] 4.1 Create admin authentication tests (login, logout, password reset)
+- [ ] 4.2 Create customer management tests (create, edit, archive)
+- [ ] 4.3 Create contract management tests (all contract types)
+- [ ] 4.4 Create time entry tests
+- [ ] 4.5 Create settings page tests
+
+## 5. Customer Portal E2E Tests
+
+- [ ] 5.1 Create customer authentication tests
+- [ ] 5.2 Create customer dashboard tests
+- [ ] 5.3 Create customer request submission tests
+- [ ] 5.4 Create data isolation tests (cannot access other customer data)
+- [ ] 5.5 Create restricted access tests (cannot access admin pages)
+
+## 6. UX States Validation
+
+- [ ] 6.1 Validate all loading states display correctly
+- [ ] 6.2 Validate all error boundaries work with retry
+- [ ] 6.3 Validate all empty states display with create actions
+- [ ] 6.4 Validate all toast notifications work
+
+## 7. Accessibility Review
+
+- [ ] 7.1 Review color contrast on all pages
+- [ ] 7.2 Add focus management to modals and dialogs
+- [ ] 7.3 Verify ARIA labels on interactive elements
+- [ ] 7.4 Test keyboard navigation on forms
+
+## 8. Responsive Design Review
+
+- [ ] 8.1 Test mobile layout (375px)
+- [ ] 8.2 Test tablet layout (768px)
+- [ ] 8.3 Test desktop layout (1280px)
+- [ ] 8.4 Fix any responsive issues found
+
+## 9. Migration Consolidation
+
+- [ ] 9.1 Export current schema from Supabase
+- [ ] 9.2 Create consolidated baseline migration file
+- [ ] 9.3 Archive original migration files
+- [ ] 9.4 Test consolidated migration on fresh Supabase project
+- [ ] 9.5 Verify application works with fresh database
+
+## 10. Production Configuration
+
+- [ ] 10.1 Configure custom SMTP in Supabase
+- [ ] 10.2 Create branded email templates (magic link, invitation, password reset)
+- [ ] 10.3 Update .env.example with all required variables
+- [ ] 10.4 Verify all Vercel environment variables are set
+- [ ] 10.5 Create production deployment checklist document
+
+## 11. Final Cleanup
+
+- [ ] 11.1 Remove any unused code or files
+- [ ] 11.2 Update README with final documentation
+- [ ] 11.3 Update AGENTS.md to reflect Phase 20 completion
+- [ ] 11.4 Final commit and deployment verification
