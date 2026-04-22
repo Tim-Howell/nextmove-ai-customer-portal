@@ -1,6 +1,10 @@
 ## Why
 
-Customer testing revealed that while the portal stores and exposes operational data correctly, it does not present that data in a customer-native way. The Contracts list shows contract records but doesn't summarize usage meaningfully. Staff names are missing from time entries and reports. Request submitters are blank. Customers must navigate to separate Reports pages to understand contract health when that information should be visible directly on contract views.
+Comprehensive testing by Manus AI revealed UX gaps in both customer and admin portal experiences. While the underlying data model is sound, the presentation layer doesn't always translate system data into user-friendly summaries. Key issues include:
+
+**Customer-side:** The Contracts list shows contract records but doesn't summarize usage meaningfully. Staff names are missing from time entries and reports. Request submitters are blank. Customers must navigate to separate Reports pages to understand contract health.
+
+**Admin-side:** (Pending admin testing findings - will be added when available)
 
 ## What Changes
 
@@ -12,6 +16,7 @@ Customer testing revealed that while the portal stores and exposes operational d
 - **CSV export headers**: Ensure report exports include header row with column names
 - **Access denied messaging**: Show explanatory toast when customer users attempt internal routes
 - **Empty state improvements**: Better messaging for empty team section on dashboard
+- **Admin improvements**: (To be added based on admin testing findings)
 
 ## Capabilities
 
