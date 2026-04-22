@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getPortalSettings } from "@/app/actions/portal-settings";
-import type { PortalSettings } from "@/app/actions/portal-settings";
+import type { PortalSettings } from "@/lib/validations/portal-settings";
 
 interface AppShellProps {
   children: React.ReactNode;

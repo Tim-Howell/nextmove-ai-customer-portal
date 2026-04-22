@@ -8,8 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { z } from "zod";
-import { updatePortalSettings, uploadLogo, type PortalSettings, type PortalSettingsFormData } from "@/app/actions/portal-settings";
+import { updatePortalSettings, uploadLogo } from "@/app/actions/portal-settings";
+import { portalSettingsSchema, type PortalSettings, type PortalSettingsFormData } from "@/lib/validations/portal-settings";
 import { Upload, Image as ImageIcon } from "lucide-react";
 
 interface PortalBrandingFormProps {
@@ -31,14 +31,7 @@ export function PortalBrandingForm({ settings }: PortalBrandingFormProps) {
     watch,
     formState: { errors },
   } = useForm<PortalSettingsFormData>({
-    resolver: zodResolver(z.object({
-      organization_name: z.string().min(1, "Organization name is required"),
-      website_url: z.string().url("Invalid URL").optional().or(z.literal("")),
-      logo_url: z.string().url("Invalid URL").optional().or(z.literal("")),
-      description: z.string().optional(),
-      primary_color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
-      secondary_color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"),
-    })),
+    resolver: zodResolver(portalSettingsSchema),
     defaultValues: {
       organization_name: settings?.organization_name || "",
       website_url: settings?.website_url || "",
