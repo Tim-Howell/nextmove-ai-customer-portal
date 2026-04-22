@@ -84,6 +84,13 @@ types/
 - Changes stored in `openspec/changes/`
 - Archived changes in `openspec/changes/archive/`
 
+## Deployment (Vercel)
+- Vercel auto-deploys on every push to `main`
+- **Skip deployment** for docs-only changes by adding `[skip ci]` to commit message
+  - Example: `git commit -m "Update README [skip ci]"`
+  - Use for: README, docs/, AGENTS.md, comments, non-code changes
+  - Do NOT use for: Any code changes, even minor ones
+
 ## Remaining Work
 
 ### Phase 20 - Go-Live Prep
