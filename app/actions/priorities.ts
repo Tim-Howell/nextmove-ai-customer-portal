@@ -183,6 +183,7 @@ export async function getOpenPrioritiesCount(
   customerId?: string
 ): Promise<number> {
   const supabase = await createClient();
+  const showDemoData = await getShowDemoData();
 
   // Get the "complete" status ID to exclude
   const { data: completeStatus } = await supabase
@@ -194,7 +195,7 @@ export async function getOpenPrioritiesCount(
 
   let query = supabase
     .from("priorities")
-    .select("id", { count: "exact", head: true });
+    .select("id, customer:customers!inner(is_demo)", { count: "exact", head: true });
 
   if (customerId) {
     query = query.eq("customer_id", customerId);
@@ -202,6 +203,11 @@ export async function getOpenPrioritiesCount(
 
   if (completeStatus) {
     query = query.neq("status_id", completeStatus.id);
+  }
+  
+  // Filter out demo data if toggle is off
+  if (!showDemoData) {
+    query = query.eq("customer.is_demo", false);
   }
 
   const { count, error } = await query;

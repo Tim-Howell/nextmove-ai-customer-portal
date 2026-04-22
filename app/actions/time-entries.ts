@@ -244,13 +244,14 @@ export async function getRecentTimeEntries(
   limit: number = 5
 ): Promise<TimeEntryWithRelations[]> {
   const supabase = await createClient();
+  const showDemoData = await getShowDemoData();
 
   let query = supabase
     .from("time_entries")
     .select(
       `
       *,
-      customer:customers(id, name),
+      customer:customers!inner(id, name, is_demo),
       contract:contracts(id, name),
       staff:profiles!time_entries_staff_id_fkey(id, full_name),
       category:reference_values!time_entries_category_id_fkey(id, type, value, label)
@@ -261,6 +262,11 @@ export async function getRecentTimeEntries(
 
   if (customerId) {
     query = query.eq("customer_id", customerId);
+  }
+  
+  // Filter out demo data if toggle is off
+  if (!showDemoData) {
+    query = query.eq("customer.is_demo", false);
   }
 
   const { data, error } = await query;

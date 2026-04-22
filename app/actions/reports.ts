@@ -136,6 +136,7 @@ export async function getRecentRequests(
 ): Promise<RequestWithRelations[]> {
   const supabase = await createClient();
   const profile = await getProfile();
+  const showDemoData = await getShowDemoData();
 
   const isInternal = profile?.role === "admin" || profile?.role === "staff";
 
@@ -151,7 +152,7 @@ export async function getRecentRequests(
       internal_notes,
       created_at,
       updated_at,
-      customer:customers(id, name),
+      customer:customers!inner(id, name, is_demo),
       status:reference_values!requests_status_id_fkey(id, value, label),
       submitter:profiles!requests_submitted_by_fkey(id, full_name)
     `)
@@ -163,6 +164,11 @@ export async function getRecentRequests(
     query = query.eq("customer_id", profile.customer_id);
   } else if (customerId) {
     query = query.eq("customer_id", customerId);
+  }
+  
+  // Filter out demo data if toggle is off
+  if (!showDemoData) {
+    query = query.eq("customer.is_demo", false);
   }
 
   const { data, error } = await query;
@@ -187,6 +193,7 @@ export async function getRecentPriorities(
 ): Promise<PriorityWithRelations[]> {
   const supabase = await createClient();
   const profile = await getProfile();
+  const showDemoData = await getShowDemoData();
 
   const isInternal = profile?.role === "admin" || profile?.role === "staff";
 
@@ -208,7 +215,7 @@ export async function getRecentPriorities(
       updated_by,
       created_at,
       updated_at,
-      customer:customers(id, name),
+      customer:customers!inner(id, name, is_demo),
       status:reference_values!priorities_status_id_fkey(id, value, label),
       priority_level:reference_values!priorities_priority_level_id_fkey(id, value, label)
     `)
@@ -218,6 +225,11 @@ export async function getRecentPriorities(
   // Apply customer filter if we have one
   if (effectiveCustomerId) {
     query = query.eq("customer_id", effectiveCustomerId);
+  }
+  
+  // Filter out demo data if toggle is off
+  if (!showDemoData) {
+    query = query.eq("customer.is_demo", false);
   }
 
   const { data, error } = await query;
@@ -233,16 +245,24 @@ export async function getRecentPriorities(
 export async function getCustomersForReport(): Promise<Customer[]> {
   const supabase = await createClient();
   const profile = await getProfile();
+  const showDemoData = await getShowDemoData();
 
   if (profile?.role !== "admin" && profile?.role !== "staff") {
     return [];
   }
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("customers")
     .select("*")
     .eq("status", "active")
     .order("name");
+    
+  // Filter out demo data if toggle is off
+  if (!showDemoData) {
+    query = query.eq("is_demo", false);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("Error fetching customers for report:", error);
@@ -255,12 +275,13 @@ export async function getCustomersForReport(): Promise<Customer[]> {
 export async function getContractsForReport(customerId?: string): Promise<{ id: string; name: string }[]> {
   const supabase = await createClient();
   const profile = await getProfile();
+  const showDemoData = await getShowDemoData();
 
   const isInternal = profile?.role === "admin" || profile?.role === "staff";
 
   let query = supabase
     .from("contracts")
-    .select("id, name")
+    .select("id, name, customer:customers!inner(is_demo)")
     .order("name");
 
   // For customers, filter to their contracts
@@ -268,6 +289,11 @@ export async function getContractsForReport(customerId?: string): Promise<{ id: 
     query = query.eq("customer_id", profile.customer_id);
   } else if (customerId) {
     query = query.eq("customer_id", customerId);
+  }
+  
+  // Filter out demo data if toggle is off
+  if (!showDemoData) {
+    query = query.eq("customer.is_demo", false);
   }
 
   const { data, error } = await query;
@@ -277,7 +303,7 @@ export async function getContractsForReport(customerId?: string): Promise<{ id: 
     return [];
   }
 
-  return (data || []) as { id: string; name: string }[];
+  return (data || []).map((c: any) => ({ id: c.id, name: c.name }));
 }
 
 export async function getStaffForReport(): Promise<{ id: string; full_name: string }[]> {
@@ -317,6 +343,7 @@ export interface ContractOverageInfo {
 export async function getContractsWithOverages(customerId?: string): Promise<ContractOverageInfo[]> {
   const supabase = await createClient();
   const profile = await getProfile();
+  const showDemoData = await getShowDemoData();
   const isInternal = profile?.role === "admin" || profile?.role === "staff";
 
   // Get contracts with hour limits
@@ -329,7 +356,7 @@ export async function getContractsWithOverages(customerId?: string): Promise<Con
       hours_per_period,
       billing_day,
       start_date,
-      customer:customers(name),
+      customer:customers!inner(name, is_demo),
       contract_type:contract_types(value, label)
     `);
 
@@ -337,6 +364,11 @@ export async function getContractsWithOverages(customerId?: string): Promise<Con
     query = query.eq("customer_id", profile.customer_id);
   } else if (customerId) {
     query = query.eq("customer_id", customerId);
+  }
+  
+  // Filter out demo data if toggle is off
+  if (!showDemoData) {
+    query = query.eq("customer.is_demo", false);
   }
 
   const { data: contracts, error } = await query;

@@ -53,10 +53,29 @@ async function getInternalStats(showDemoData: boolean): Promise<{
     customerQuery = customerQuery.eq("is_demo", false);
   }
 
+  // Build contracts query with demo data filter
+  let contractsQuery = supabase
+    .from("contracts")
+    .select("id, status:reference_values!contracts_status_id_fkey(value), customer:customers!inner(is_demo)");
+  
+  if (!showDemoData) {
+    contractsQuery = contractsQuery.eq("customer.is_demo", false);
+  }
+
+  // Build time entries query with demo data filter
+  let timeEntriesQuery = supabase
+    .from("time_entries")
+    .select("hours, customer:customers!inner(is_demo)")
+    .gte("entry_date", new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split("T")[0]);
+  
+  if (!showDemoData) {
+    timeEntriesQuery = timeEntriesQuery.eq("customer.is_demo", false);
+  }
+
   const [customersResult, contractsResult, timeEntriesResult, openPriorities, openRequests] = await Promise.all([
     customerQuery,
-    supabase.from("contracts").select("id, status:reference_values!contracts_status_id_fkey(value)"),
-    supabase.from("time_entries").select("hours").gte("entry_date", new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split("T")[0]),
+    contractsQuery,
+    timeEntriesQuery,
     getOpenPrioritiesCount(),
     getOpenRequestsCount(),
   ]);

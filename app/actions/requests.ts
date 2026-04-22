@@ -374,6 +374,7 @@ export async function getOpenRequestsCount(
   customerId?: string
 ): Promise<number> {
   const supabase = await createClient();
+  const showDemoData = await getShowDemoData();
 
   // Get the "closed" status ID to exclude
   const { data: closedStatus } = await supabase
@@ -385,7 +386,7 @@ export async function getOpenRequestsCount(
 
   let query = supabase
     .from("requests")
-    .select("id", { count: "exact", head: true });
+    .select("id, customer:customers!inner(is_demo)", { count: "exact", head: true });
 
   if (customerId) {
     query = query.eq("customer_id", customerId);
@@ -393,6 +394,11 @@ export async function getOpenRequestsCount(
 
   if (closedStatus) {
     query = query.neq("status_id", closedStatus.id);
+  }
+  
+  // Filter out demo data if toggle is off
+  if (!showDemoData) {
+    query = query.eq("customer.is_demo", false);
   }
 
   const { count, error } = await query;
