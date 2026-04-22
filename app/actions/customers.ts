@@ -165,7 +165,7 @@ export async function getCustomers() {
 
   const { data, error } = await supabase
     .from("customers")
-    .select("id, name, status")
+    .select("id, name, status, logo_url, primary_contact_id, secondary_contact_id")
     .order("name");
 
   if (error) {
@@ -173,5 +173,5 @@ export async function getCustomers() {
     return [];
   }
 
-  return (data || []) as { id: string; name: string; status: string }[];
+  return (data || []) as { id: string; name: string; status: string; logo_url: string | null; primary_contact_id: string | null; secondary_contact_id: string | null }[];
 }

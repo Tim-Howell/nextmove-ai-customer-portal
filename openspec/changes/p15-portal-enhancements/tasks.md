@@ -50,12 +50,12 @@
 
 ## 7. Visual Enhancements (Images)
 
-- [ ] 7.1 Add logo_url column to customers table
-- [ ] 7.2 Add image_url column to priorities table
-- [ ] 7.3 Create image upload component (square crop)
-- [ ] 7.4 Update customer form with logo upload
-- [ ] 7.5 Update priority form with image upload
-- [ ] 7.6 Display images in list views and detail pages
+- [x] 7.1 Add logo_url column to customers table
+- [x] 7.2 Add image_url column to priorities table
+- [x] 7.3 Create image upload component (square crop)
+- [x] 7.4 Update customer form with logo upload
+- [x] 7.5 Update priority form with image upload
+- [x] 7.6 Display images in list views and detail pages
 
 ## 8. Customer Dashboard Redesign
 

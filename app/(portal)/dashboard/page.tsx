@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { CustomerDashboard } from "@/components/dashboard/customer-dashboard";
+import { CustomerDashboardRedesigned } from "@/components/dashboard/customer-dashboard-redesigned";
 import { Users, FileText, Clock, Flag, MessageSquare, Plus, BarChart3 } from "lucide-react";
 import { getOpenPrioritiesCount } from "@/app/actions/priorities";
 import { getOpenRequestsCount } from "@/app/actions/requests";
@@ -71,7 +71,7 @@ export default async function DashboardPage() {
   if (role === "customer_user" && profile?.customer_id) {
     const customerName = await getCustomerName(profile.customer_id);
     return (
-      <CustomerDashboard
+      <CustomerDashboardRedesigned
         customerName={customerName}
         customerId={profile.customer_id}
       />
