@@ -10,7 +10,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 Customer portal for NextMove AI to manage customers, contracts, time tracking, priorities, and requests. Built with Next.js 15, Supabase, and TypeScript.
 
 ## Current Status (April 2026)
-- **All Phases Complete (1-20)** ✅
+- **All Phases Complete (1-21)** ✅
+- Phase 21: Portal improvements based on admin/customer testing
 - MVP ready for production deployment
 - Demo data seeding scripts available
 - Playwright E2E tests created
