@@ -19,19 +19,6 @@ BEGIN
 END;
 $$;
 
--- Function to get user role without RLS recursion
-CREATE OR REPLACE FUNCTION public.get_user_role(user_id uuid)
-RETURNS text
-LANGUAGE sql
-SECURITY DEFINER
-SET search_path = public
-STABLE
-AS $$
-  SELECT role FROM public.profiles WHERE id = user_id;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.get_user_role(uuid) TO authenticated;
-
 -- ============================================================================
 -- PROFILES TABLE
 -- ============================================================================
@@ -91,6 +78,19 @@ $$;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- Function to get user role without RLS recursion (must be after profiles table)
+CREATE OR REPLACE FUNCTION public.get_user_role(user_id uuid)
+RETURNS text
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+STABLE
+AS $$
+  SELECT role FROM public.profiles WHERE id = user_id;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.get_user_role(uuid) TO authenticated;
 
 -- Profiles RLS Policies
 CREATE POLICY "Users can read own profile"

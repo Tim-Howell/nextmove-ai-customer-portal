@@ -259,7 +259,6 @@ async function seedContracts(customers: any[], refs: any) {
         rollover_enabled: true,
         max_rollover_hours: 20,
         start_date: new Date(2024, 0, 1).toISOString().split("T")[0],
-        is_default: false,
       });
     }
     // Special handling for TechStart - Monthly Retainer WITHOUT rollover
@@ -273,7 +272,6 @@ async function seedContracts(customers: any[], refs: any) {
         billing_day: 1,
         rollover_enabled: false,
         start_date: new Date(2024, 0, 1).toISOString().split("T")[0],
-        is_default: false,
       });
     }
     // Other customers - standard retainer
@@ -285,7 +283,6 @@ async function seedContracts(customers: any[], refs: any) {
         status_id: activeStatus?.id,
         total_hours: 40,
         start_date: new Date(2024, 0, 1).toISOString().split("T")[0],
-        is_default: false,
       });
     }
 
@@ -299,7 +296,6 @@ async function seedContracts(customers: any[], refs: any) {
         total_hours: 100,
         start_date: new Date(2024, 3, 1).toISOString().split("T")[0],
         end_date: new Date(2024, 8, 30).toISOString().split("T")[0],
-        is_default: false,
       });
     }
 
@@ -311,7 +307,6 @@ async function seedContracts(customers: any[], refs: any) {
         contract_type_id: onDemandType?.id,
         status_id: activeStatus?.id,
         start_date: new Date(2024, 0, 1).toISOString().split("T")[0],
-        is_default: false,
       });
     }
   });
