@@ -95,7 +95,8 @@ export async function middleware(request: NextRequest) {
           .eq("key", "show_demo_data")
           .single();
 
-        const showDemoData = settings?.value === "true";
+        // Value is stored as JSONB boolean, not string
+        const showDemoData = settings?.value === true;
         if (!showDemoData) {
           // Demo data is disabled - block demo user login
           await supabase.auth.signOut();
