@@ -121,6 +121,26 @@ export async function middleware(request: NextRequest) {
         url.searchParams.set("error", "access_disabled");
         return NextResponse.redirect(url);
       }
+
+      // Define admin-only routes that customer users cannot access
+      const adminOnlyRoutes = [
+        "/customers",
+        "/settings/users",
+        "/settings/general",
+        "/settings/reference",
+        "/settings/audit",
+      ];
+      const isAdminOnlyRoute = adminOnlyRoutes.some(
+        (route) => pathname.startsWith(route)
+      );
+
+      if (isAdminOnlyRoute) {
+        // Customer user trying to access admin route - redirect to dashboard with error
+        const url = request.nextUrl.clone();
+        url.pathname = "/dashboard";
+        url.searchParams.set("error", "access_denied");
+        return NextResponse.redirect(url);
+      }
     }
   }
 

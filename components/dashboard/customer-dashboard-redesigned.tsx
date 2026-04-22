@@ -139,7 +139,7 @@ export async function CustomerDashboardRedesigned({ customerName, customerId }: 
           <CardContent>
             {staffContacts.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-4">
-                No contacts assigned yet
+                Your account manager will be assigned shortly. Contact support@nextmove-ai.com for assistance.
               </p>
             ) : (
               <div className="space-y-3">

@@ -171,12 +171,24 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Time Entries</CardTitle>
-          {isInternal && (
-            <Link href={`/time-logs/new?contractId=${id}&customerId=${contract.customer_id}`}>
-              <Button size="sm">Log Time</Button>
+          <div>
+            <CardTitle>Time Entries</CardTitle>
+            {timeEntries.length > 0 && (
+              <p className="text-sm text-muted-foreground mt-1">
+                {timeEntries.length} entries · {timeEntries.reduce((sum, e) => sum + Number(e.hours), 0).toFixed(1)} total hours
+              </p>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Link href={`/reports?contractIds=${id}`}>
+              <Button variant="outline" size="sm">View Full Report</Button>
             </Link>
-          )}
+            {isInternal && (
+              <Link href={`/time-logs/new?contractId=${id}&customerId=${contract.customer_id}`}>
+                <Button size="sm">Log Time</Button>
+              </Link>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -202,7 +214,7 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
                     <TableCell>
                       {new Date(entry.entry_date).toLocaleDateString()}
                     </TableCell>
-                    <TableCell>{entry.staff?.full_name || "—"}</TableCell>
+                    <TableCell>{entry.staff?.full_name || "Unknown"}</TableCell>
                     <TableCell>{entry.category?.label || "—"}</TableCell>
                     <TableCell className="max-w-xs truncate">
                       {entry.description || "—"}

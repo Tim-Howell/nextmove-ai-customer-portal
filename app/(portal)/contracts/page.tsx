@@ -28,6 +28,7 @@ import { isHourBasedContract } from "@/lib/validations/contract";
 import { ContractsFilter } from "@/components/contracts/contracts-filter";
 import { ArchiveContractButton } from "@/components/contracts/archive-contract-button";
 import { ShowArchivedToggle } from "@/components/ui/show-archived-toggle";
+import { ContractUsageSummary } from "@/components/contracts/contract-usage-summary";
 
 interface ContractsPageProps {
   searchParams: Promise<{
@@ -76,7 +77,7 @@ function ContractListContent({
           {isInternal && <TableHead>Customer</TableHead>}
           <TableHead>Type</TableHead>
           <TableHead>Status</TableHead>
-          <TableHead>Hours</TableHead>
+          <TableHead>Usage</TableHead>
           {isInternal && <TableHead className="text-right">Actions</TableHead>}
         </TableRow>
       </TableHeader>
@@ -130,16 +131,7 @@ function ContractListContent({
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  {isHourBased && contract.total_hours ? (
-                    <span>
-                      {contract.hours_used?.toFixed(1) || 0} / {contract.total_hours}
-                      {contract.hours_remaining != null && contract.hours_remaining < 0 && (
-                        <span className="text-destructive ml-1">(over)</span>
-                      )}
-                    </span>
-                  ) : (
-                    "—"
-                  )}
+                  <ContractUsageSummary contract={contract} compact />
                 </TableCell>
                 {isInternal && (
                   <TableCell className="text-right">

@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { getProfile, getCurrentUser } from "@/lib/supabase/profile";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { AccessDeniedToast } from "@/components/dashboard/access-denied-toast";
 import {
   Table,
   TableBody,
@@ -84,10 +86,15 @@ export default async function DashboardPage() {
   if (role === "customer_user" && profile?.customer_id) {
     const customerName = await getCustomerName(profile.customer_id);
     return (
-      <CustomerDashboardRedesigned
-        customerName={customerName}
-        customerId={profile.customer_id}
-      />
+      <>
+        <Suspense fallback={null}>
+          <AccessDeniedToast />
+        </Suspense>
+        <CustomerDashboardRedesigned
+          customerName={customerName}
+          customerId={profile.customer_id}
+        />
+      </>
     );
   }
 
