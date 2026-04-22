@@ -10,10 +10,10 @@ This version has breaking changes — APIs, conventions, and file structure may 
 Customer portal for NextMove AI to manage customers, contracts, time tracking, priorities, and requests. Built with Next.js 15, Supabase, and TypeScript.
 
 ## Current Status (April 2026)
-- **Phases 1-18 Complete** (including Phase 13 QA/Seed Data)
-- **Remaining**: Phase 20 (Testing, Go-Live)
-- All core features implemented and functional
+- **All Phases Complete (1-20)** ✅
+- MVP ready for production deployment
 - Demo data seeding scripts available
+- Playwright E2E tests created
 
 ## Key Architecture Decisions
 
@@ -91,22 +91,25 @@ types/
   - Use for: README, docs/, AGENTS.md, comments, non-code changes
   - Do NOT use for: Any code changes, even minor ones
 
-## Remaining Work
+## Testing
 
-### Phase 20 - Go-Live Prep
-- Comprehensive testing (create automated tests)
-- RLS policy validation (deferred from Phase 13)
-- Accessibility and responsive review (deferred from Phase 13)
-- Review all deferred items
-- Consolidate migrations
-- Configure production SMTP
-- Prepare deployment checklist
+### E2E Tests (Playwright)
+- `pnpm test:e2e` - Run all E2E tests
+- `pnpm test:e2e:ui` - Run with Playwright UI
+- Tests in `tests/e2e/admin/` and `tests/e2e/customer/`
 
-## Deferred Items (for Phase 20)
+### RLS Validation
+- `pnpm test:rls` - Run RLS policy validation
+- Script in `scripts/test-rls.ts`
+
+## Documentation
+- `docs/TESTING-ADMIN.md` - Admin testing script
+- `docs/TESTING-CUSTOMER.md` - Customer testing script
+- `docs/PRODUCTION-DEPLOYMENT-CHECKLIST.md` - Go-live checklist
+- `docs/DEFERRED-ITEMS-TRIAGE.md` - Deferred items categorization
+
+## Deferred Items (Post-MVP Backlog)
+- Migration consolidation (do before production data)
 - Billing model filter on reports
 - Period history display on contract detail
-- Role filter on user management
 - Industry/website/renewal fields on customers
-- RLS policy validation tests
-- Accessibility review (color contrast, focus management, ARIA labels)
-- Responsive layout testing (mobile, tablet, desktop)

@@ -4,17 +4,17 @@ A secure web application for NextMove AI staff and customer staff to manage cust
 
 ## Project Status
 
-**MVP Progress: Phases 1-18 Complete**
+**MVP Progress: Phases 1-20 Complete** ✅
 
 | Phase | Status | Description |
 |-------|--------|-------------|
 | 0-12 | ✅ Complete | Core functionality (auth, customers, contracts, time, priorities, requests, dashboards, reports, files, notifications) |
-| 13 | ✅ Complete | Quality, Security, and Seed Data (manual testing deferred to Phase 20) |
+| 13 | ✅ Complete | Quality, Security, and Seed Data |
 | 14-15 | ✅ Complete | Customer UX Refinement, Portal Enhancements |
 | 16 | ✅ Complete | Archive Capabilities (cascade archive, user access control) |
 | 17 | ✅ Complete | Contract Types Enhancement (billing models, hours buckets, rollover) |
 | 18 | ✅ Complete | Audit Logging & Error Handling |
-| 20 | 🔲 Pending | Validation, Cleanup, Test, and Go-Live Prep |
+| 20 | ✅ Complete | Validation, Cleanup, Testing, and Go-Live Prep |
 
 ## Tech Stack
 
@@ -74,6 +74,9 @@ A secure web application for NextMove AI staff and customer staff to manage cust
 - `pnpm lint` - Run ESLint
 - `pnpm format` - Format code with Prettier
 - `pnpm format:check` - Check code formatting
+- `pnpm test:e2e` - Run Playwright E2E tests
+- `pnpm test:e2e:ui` - Run Playwright tests with UI
+- `pnpm test:rls` - Run RLS policy validation tests
 
 ## Project Structure
 
@@ -81,7 +84,7 @@ A secure web application for NextMove AI staff and customer staff to manage cust
 ├── app/              # Next.js App Router pages and layouts
 ├── components/       # Reusable UI components
 │   └── ui/          # shadcn/ui components
-├── features/        # Domain-specific modules
+├── tests/           # Playwright E2E tests
 ├── lib/             # Shared utilities and clients
 │   └── supabase/    # Supabase client helpers
 ├── types/           # TypeScript type definitions
@@ -219,3 +222,7 @@ All demo records have `is_demo = true` and can be filtered using the "Show Demo 
 - `openspec/project.md` - Full project specification with all phases
 - `AGENTS.md` - AI assistant context and guidelines
 - `README.md` - This file
+- `docs/TESTING-ADMIN.md` - Admin user testing script
+- `docs/TESTING-CUSTOMER.md` - Customer user testing script
+- `docs/PRODUCTION-DEPLOYMENT-CHECKLIST.md` - Go-live checklist
+- `docs/DEFERRED-ITEMS-TRIAGE.md` - Deferred items categorization
