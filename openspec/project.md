@@ -602,6 +602,44 @@ The MVP is successful when:
 - [x] add images to customers and priorities
 - [x] redesign customer dashboard with company info and contacts
 
+### Phase 16 - Archive Capabilities
+- [ ] add archived_at timestamps to customers, contracts, contacts
+- [ ] implement customer archive with cascade (contracts, contacts, priorities, requests)
+- [ ] implement contract archive functionality
+- [ ] exclude archived items from dropdowns (time entry, priority, request forms)
+- [ ] include archived items in reports (historical data preserved)
+- [ ] add "Show Archived" toggle to customer and contract list views
+- [ ] prevent login for users of archived customers
+- [ ] prevent login for contacts with portal_access_enabled = false
+- [ ] mark priorities/requests as read-only when customer archived
+- [ ] enforce read-only on archived entities (prevent edits)
+
+### Phase 17 - Contract Types Enhancement
+- [ ] add billing_model field (hours_bucket, hours_subscription, fixed_cost, service_subscription, on_demand)
+- [ ] add subscription fields (hours_per_period, refresh_day, refresh_cycle)
+- [ ] add rollover fields (rollover_enabled, rollover_expiration_days, max_rollover_hours)
+- [ ] create contract_period_hours table for subscription tracking
+- [ ] implement hours bucket calculation (total - used, overage warning)
+- [ ] implement subscription period calculation (current period hours)
+- [ ] implement rollover logic (use rollover first, expiration tracking)
+- [ ] update contract form with conditional fields per billing model
+- [ ] update contract detail page with type-specific stats
+- [ ] show hours context in time entry form
+- [ ] add billing model filter to reports
+- [ ] migrate existing contracts to appropriate billing_model
+
+### Phase 18 - Audit Logging & Error Handling
+- [ ] create audit_logs table with change tracking fields
+- [ ] create database triggers for audited tables
+- [ ] capture user context in audit records
+- [ ] create audit log viewer page (admin only)
+- [ ] add record history component to detail pages
+- [ ] implement error code system (domain-operation-number format)
+- [ ] create error handling utilities
+- [ ] update all server actions with standardized error codes
+- [ ] create consistent error display components
+- [ ] add error logging for debugging
+
 ### Deferred Items (to address in relevant phases or Phase 13)
 **From Phase 2:**
 - [ ] Role filter dropdown on user management page (minor enhancement)
