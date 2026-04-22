@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { timeEntrySchema } from "@/lib/validations/time-entry";
 import type { TimeEntryFormData } from "@/lib/validations/time-entry";
 import type { TimeEntryWithRelations } from "@/types/database";
+import { getShowDemoData } from "./settings";
 
 export interface TimeEntriesFilter {
   customerId?: string;
@@ -20,13 +21,14 @@ export async function getTimeEntries(
   filter?: TimeEntriesFilter
 ): Promise<{ data: TimeEntryWithRelations[]; totalHours: number; error?: string }> {
   const supabase = await createClient();
+  const showDemoData = await getShowDemoData();
 
   let query = supabase
     .from("time_entries")
     .select(
       `
       *,
-      customer:customers(id, name),
+      customer:customers!inner(id, name, is_demo),
       contract:contracts(id, name),
       staff:profiles!time_entries_staff_id_fkey(id, full_name),
       entered_by_profile:profiles!time_entries_entered_by_fkey(id, full_name),
@@ -52,6 +54,11 @@ export async function getTimeEntries(
   }
   if (filter?.endDate) {
     query = query.lte("entry_date", filter.endDate);
+  }
+  
+  // Filter out demo data if toggle is off
+  if (!showDemoData) {
+    query = query.eq("customer.is_demo", false);
   }
 
   const { data, error } = await query;

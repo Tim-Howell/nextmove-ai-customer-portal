@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { contractSchema } from "@/lib/validations/contract";
 import type { ContractFormData } from "@/lib/validations/contract";
 import type { ContractWithRelations, ContractDocument } from "@/types/database";
+import { getShowDemoData } from "./settings";
 
 export interface ContractsFilter {
   customerId?: string;
@@ -17,13 +18,14 @@ export async function getContracts(
   filter?: ContractsFilter
 ): Promise<{ data: ContractWithRelations[]; error?: string }> {
   const supabase = await createClient();
+  const showDemoData = await getShowDemoData();
 
   let query = supabase
     .from("contracts")
     .select(
       `
       *,
-      customer:customers(id, name),
+      customer:customers!inner(id, name, is_demo),
       contract_type:contract_types(id, value, label, description, tracks_hours, has_hour_limit, is_recurring, supports_rollover),
       status:reference_values!contracts_status_id_fkey(id, type, value, label)
     `
@@ -38,6 +40,11 @@ export async function getContracts(
   } else if (!filter?.showArchived) {
     // If not filtering by status and not showing archived, exclude archived
     query = query.is("archived_at", null);
+  }
+  
+  // Filter out demo data if toggle is off
+  if (!showDemoData) {
+    query = query.eq("customer.is_demo", false);
   }
 
   const { data, error } = await query;

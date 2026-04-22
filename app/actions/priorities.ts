@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { prioritySchema, type PriorityFormData, PRIORITY_STATUS_VALUES } from "@/lib/validations/priority";
 import type { PriorityWithRelations } from "@/types/database";
+import { getShowDemoData } from "./settings";
 
 interface GetPrioritiesOptions {
   customerId?: string;
@@ -16,13 +17,14 @@ export async function getPriorities(
   options: GetPrioritiesOptions = {}
 ): Promise<{ data: PriorityWithRelations[] }> {
   const supabase = await createClient();
+  const showDemoData = await getShowDemoData();
   const { customerId, statusId, priorityLevelId } = options;
 
   let query = supabase
     .from("priorities")
     .select(`
       *,
-      customer:customers(id, name),
+      customer:customers!inner(id, name, is_demo),
       status:reference_values!priorities_status_id_fkey(id, value, label),
       priority_level:reference_values!priorities_priority_level_id_fkey(id, value, label),
       creator:profiles!priorities_created_by_fkey(id, full_name)
@@ -37,6 +39,11 @@ export async function getPriorities(
   }
   if (priorityLevelId) {
     query = query.eq("priority_level_id", priorityLevelId);
+  }
+  
+  // Filter out demo data if toggle is off
+  if (!showDemoData) {
+    query = query.eq("customer.is_demo", false);
   }
 
   const { data, error } = await query;

@@ -12,6 +12,7 @@ import {
 } from "@/lib/validations/request";
 import { sendRequestNotification, sendRequestStatusUpdate } from "@/lib/email/send";
 import type { RequestWithRelations } from "@/types/database";
+import { getShowDemoData } from "./settings";
 
 interface GetRequestsOptions {
   customerId?: string;
@@ -71,6 +72,7 @@ export async function getRequests(
   options: GetRequestsOptions = {}
 ): Promise<{ data: RequestWithRelations[] }> {
   const supabase = await createClient();
+  const showDemoData = await getShowDemoData();
   const { customerId, statusId } = options;
   const { role } = await getCurrentUserRole();
   const isInternal = role === "admin" || role === "staff";
@@ -87,7 +89,7 @@ export async function getRequests(
       internal_notes,
       created_at,
       updated_at,
-      customer:customers(id, name),
+      customer:customers!inner(id, name, is_demo),
       status:reference_values!requests_status_id_fkey(id, value, label),
       submitter:profiles!requests_submitted_by_fkey(id, full_name)
     `)
@@ -98,6 +100,11 @@ export async function getRequests(
   }
   if (statusId) {
     query = query.eq("status_id", statusId);
+  }
+  
+  // Filter out demo data if toggle is off
+  if (!showDemoData) {
+    query = query.eq("customer.is_demo", false);
   }
 
   const { data, error } = await query;

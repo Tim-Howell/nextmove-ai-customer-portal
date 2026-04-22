@@ -9,6 +9,7 @@ import type {
   PriorityWithRelations,
   Customer,
 } from "@/types/database";
+import { getShowDemoData } from "./settings";
 
 export interface ReportFilters {
   customerId?: string;
@@ -38,6 +39,7 @@ export async function getTimeEntriesReport(
 ): Promise<{ summary: ReportSummary; entries: TimeEntryReportRow[] }> {
   const supabase = await createClient();
   const profile = await getProfile();
+  const showDemoData = await getShowDemoData();
 
   const isInternal = profile?.role === "admin" || profile?.role === "staff";
 
@@ -55,7 +57,7 @@ export async function getTimeEntriesReport(
       is_billable,
       created_at,
       updated_at,
-      customer:customers(id, name),
+      customer:customers!inner(id, name, is_demo),
       contract:contracts(id, name),
       category:reference_values!time_entries_category_id_fkey(id, value, label),
       staff:profiles!time_entries_staff_id_fkey(id, full_name)
@@ -67,6 +69,11 @@ export async function getTimeEntriesReport(
     query = query.eq("customer_id", profile.customer_id);
   } else if (filters.customerId) {
     query = query.eq("customer_id", filters.customerId);
+  }
+  
+  // Filter out demo data if toggle is off
+  if (!showDemoData) {
+    query = query.eq("customer.is_demo", false);
   }
 
   // Apply date filters
