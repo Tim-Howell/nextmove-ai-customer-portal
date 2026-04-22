@@ -149,7 +149,7 @@ export default async function RequestsPage({ searchParams }: RequestsPageProps) 
                     </Link>
                   </TableCell>
                 )}
-                <TableCell>{request.submitter?.full_name || "—"}</TableCell>
+                <TableCell>{request.submitter?.full_name || "Unknown"}</TableCell>
                 <TableCell>
                   <Badge variant={getStatusBadgeVariant(request.status?.value || "")}>
                     {request.status?.label || "—"}

@@ -105,7 +105,7 @@ export function UserTable({ users }: UserTableProps) {
                 <div className="font-medium">
                   {user.first_name && user.last_name 
                     ? `${user.first_name} ${user.last_name}`
-                    : user.full_name || "â"}
+                    : user.full_name || user.email?.split("@")[0] || "Unknown User"}
                 </div>
               </div>
             </TableCell>

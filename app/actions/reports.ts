@@ -358,6 +358,11 @@ export async function getContractsWithOverages(customerId?: string): Promise<Con
     let hoursLimit = 0;
 
     if (isSubscription) {
+      // Skip if no hours_per_period is configured
+      if (!contract.hours_per_period || contract.hours_per_period <= 0) {
+        continue;
+      }
+
       // Calculate current period hours
       const billingDay = contract.billing_day || 1;
       const today = new Date();
@@ -375,11 +380,14 @@ export async function getContractsWithOverages(customerId?: string): Promise<Con
       hoursUsed = entries
         .filter((e: any) => new Date(e.entry_date) >= periodStart)
         .reduce((sum: number, e: any) => sum + Number(e.hours), 0);
-      hoursLimit = contract.hours_per_period || 0;
+      hoursLimit = contract.hours_per_period;
     } else {
-      // Hours bucket - total hours
+      // Hours bucket - skip if no total_hours configured
+      if (!contract.total_hours || contract.total_hours <= 0) {
+        continue;
+      }
       hoursUsed = entries.reduce((sum: number, e: any) => sum + Number(e.hours), 0);
-      hoursLimit = contract.total_hours || 0;
+      hoursLimit = contract.total_hours;
     }
 
     const hoursOver = hoursUsed - hoursLimit;

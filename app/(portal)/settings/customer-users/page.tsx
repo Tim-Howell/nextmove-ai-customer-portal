@@ -29,35 +29,37 @@ export default async function CustomerUsersPage() {
             <TableHead>Email</TableHead>
             <TableHead>Title</TableHead>
             <TableHead>Customer</TableHead>
+            <TableHead>Portal Access</TableHead>
             <TableHead>Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {users.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="text-center text-muted-foreground">
-                No customer users found
+              <TableCell colSpan={6} className="text-center text-muted-foreground">
+                No customer contacts found
               </TableCell>
             </TableRow>
           ) : (
             users.map((user) => (
               <TableRow key={user.id}>
                 <TableCell className="font-medium">
-                  {user.full_name || "—"}
+                  {user.full_name || user.email?.split("@")[0] || "Unknown"}
                 </TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.title || "—"}</TableCell>
                 <TableCell>
-                  {user.customer_id ? (
-                    <Link
-                      href={`/customers/${user.customer_id}`}
-                      className="hover:underline text-primary"
-                    >
-                      {user.customer_name || "Unknown"}
-                    </Link>
-                  ) : (
-                    <span className="text-muted-foreground">Not assigned</span>
-                  )}
+                  <Link
+                    href={`/customers/${user.customer_id}`}
+                    className="hover:underline text-primary"
+                  >
+                    {user.customer_name || "Unknown"}
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={user.portal_access_enabled ? "default" : "outline"}>
+                    {user.portal_access_enabled ? "Enabled" : "Disabled"}
+                  </Badge>
                 </TableCell>
                 <TableCell>
                   <Badge variant={user.is_active ? "default" : "secondary"}>

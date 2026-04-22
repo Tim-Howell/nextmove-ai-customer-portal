@@ -19,6 +19,7 @@ import { getOpenPrioritiesCount } from "@/app/actions/priorities";
 import { getOpenRequestsCount } from "@/app/actions/requests";
 import { getRecentRequests } from "@/app/actions/reports";
 import { getRecentTimeEntries } from "@/app/actions/time-entries";
+import { getShowDemoData } from "@/app/actions/settings";
 
 async function getCustomerName(customerId: string): Promise<string> {
   const supabase = await createClient();
@@ -30,7 +31,7 @@ async function getCustomerName(customerId: string): Promise<string> {
   return data?.name || "Your Company";
 }
 
-async function getInternalStats(): Promise<{
+async function getInternalStats(showDemoData: boolean): Promise<{
   customerCount: number;
   activeContractCount: number;
   hoursThisMonth: number;
@@ -39,8 +40,19 @@ async function getInternalStats(): Promise<{
 }> {
   const supabase = await createClient();
 
+  // Build customer query with demo data filter
+  let customerQuery = supabase
+    .from("customers")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "active")
+    .is("archived_at", null);
+  
+  if (!showDemoData) {
+    customerQuery = customerQuery.eq("is_demo", false);
+  }
+
   const [customersResult, contractsResult, timeEntriesResult, openPriorities, openRequests] = await Promise.all([
-    supabase.from("customers").select("id", { count: "exact", head: true }).eq("status", "active"),
+    customerQuery,
     supabase.from("contracts").select("id, status:reference_values!contracts_status_id_fkey(value)"),
     supabase.from("time_entries").select("hours").gte("entry_date", new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split("T")[0]),
     getOpenPrioritiesCount(),
@@ -79,7 +91,8 @@ export default async function DashboardPage() {
     );
   }
 
-  const stats = await getInternalStats();
+  const showDemoData = await getShowDemoData();
+  const stats = await getInternalStats(showDemoData);
   const [recentRequests, recentTimeEntries] = await Promise.all([
     getRecentRequests(undefined, 5),
     getRecentTimeEntries(undefined, 5),

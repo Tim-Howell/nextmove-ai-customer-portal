@@ -47,13 +47,13 @@ export function PriorityForm({
   } = useForm<PriorityFormData>({
     resolver: zodResolver(prioritySchema),
     defaultValues: {
-      customer_id: priority?.customer_id || "",
+      customer_id: priority?.customer_id || undefined,
       title: priority?.title || "",
       description: priority?.description || "",
       internal_notes: priority?.internal_notes || "",
       image_url: priority?.image_url || "",
-      status_id: priority?.status_id || "",
-      priority_level_id: priority?.priority_level_id || "",
+      status_id: priority?.status_id || undefined,
+      priority_level_id: priority?.priority_level_id || undefined,
       due_date: priority?.due_date || "",
     },
   });
@@ -95,8 +95,8 @@ export function PriorityForm({
           <div className="space-y-2">
             <Label htmlFor="customer_id">Customer *</Label>
             <Select
-              value={customerId}
-              onValueChange={(value) => setValue("customer_id", value)}
+              value={customerId || ""}
+              onValueChange={(value) => setValue("customer_id", value, { shouldValidate: true })}
               disabled={isLoading}
             >
               <SelectTrigger>
@@ -132,8 +132,8 @@ export function PriorityForm({
             <div className="space-y-2">
               <Label htmlFor="status_id">Status *</Label>
               <Select
-                value={statusId}
-                onValueChange={(value) => setValue("status_id", value)}
+                value={statusId || ""}
+                onValueChange={(value) => setValue("status_id", value, { shouldValidate: true })}
                 disabled={isLoading}
               >
                 <SelectTrigger>
@@ -155,8 +155,8 @@ export function PriorityForm({
             <div className="space-y-2">
               <Label htmlFor="priority_level_id">Priority Level *</Label>
               <Select
-                value={priorityLevelId}
-                onValueChange={(value) => setValue("priority_level_id", value)}
+                value={priorityLevelId || ""}
+                onValueChange={(value) => setValue("priority_level_id", value, { shouldValidate: true })}
                 disabled={isLoading}
               >
                 <SelectTrigger>

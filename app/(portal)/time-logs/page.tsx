@@ -80,7 +80,7 @@ function TimeEntryListContent({
             <TableHead>Date</TableHead>
             {isInternal && <TableHead>Customer</TableHead>}
             <TableHead>Contract</TableHead>
-            {isInternal && <TableHead>Staff</TableHead>}
+            <TableHead>Staff</TableHead>
             <TableHead>Category</TableHead>
             <TableHead>Description</TableHead>
             <TableHead className="text-right">Hours</TableHead>
@@ -90,7 +90,7 @@ function TimeEntryListContent({
         <TableBody>
           {timeEntries.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={isInternal ? 8 : 5} className="p-0">
+              <TableCell colSpan={isInternal ? 8 : 6} className="p-0">
                 <EmptyState
                   icon={Clock}
                   title="No time entries found"
@@ -128,19 +128,17 @@ function TimeEntryListContent({
                       "—"
                     )}
                   </TableCell>
-                  {isInternal && (
-                    <TableCell>
-                      <div>
-                        {entry.staff?.full_name || "—"}
-                        {entry.entered_by_profile && 
-                         entry.entered_by !== entry.staff_id && (
-                          <span className="block text-xs text-muted-foreground">
-                            (entered by {entry.entered_by_profile.full_name})
-                          </span>
-                        )}
-                      </div>
-                    </TableCell>
-                  )}
+                  <TableCell>
+                    <div>
+                      {entry.staff?.full_name || "Unknown"}
+                      {isInternal && entry.entered_by_profile && 
+                       entry.entered_by !== entry.staff_id && (
+                        <span className="block text-xs text-muted-foreground">
+                          (entered by {entry.entered_by_profile.full_name})
+                        </span>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <Badge variant="outline">{entry.category?.label || "—"}</Badge>
                   </TableCell>
@@ -168,7 +166,7 @@ function TimeEntryListContent({
                 </TableRow>
               ))}
               <TableRow className="bg-muted/50 font-medium">
-                <TableCell colSpan={isInternal ? 6 : 4} className="text-right">
+                <TableCell colSpan={isInternal ? 6 : 5} className="text-right">
                   Total Hours:
                 </TableCell>
                 <TableCell className="text-right">{totalHours.toFixed(1)}</TableCell>

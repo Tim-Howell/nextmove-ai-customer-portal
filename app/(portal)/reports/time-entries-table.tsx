@@ -29,6 +29,7 @@ export function TimeEntriesReportTable({
       { key: "entry_date" as const, header: "Date" },
       ...(showCustomer ? [{ key: "customer" as const, header: "Customer" }] : []),
       { key: "contract" as const, header: "Contract" },
+      { key: "staff" as const, header: "Staff" },
       { key: "category" as const, header: "Category" },
       { key: "hours" as const, header: "Hours" },
       { key: "is_billable" as const, header: "Billable" },
@@ -39,6 +40,7 @@ export function TimeEntriesReportTable({
       entry_date: entry.entry_date,
       customer: entry.customer?.name || "",
       contract: entry.contract?.name || "",
+      staff: entry.staff?.full_name || "Unknown",
       category: entry.category?.label || "",
       hours: entry.hours,
       is_billable: entry.is_billable ? "Yes" : "No",
@@ -71,6 +73,7 @@ export function TimeEntriesReportTable({
                   <TableHead>Date</TableHead>
                   {showCustomer && <TableHead>Customer</TableHead>}
                   <TableHead>Contract</TableHead>
+                  <TableHead>Staff</TableHead>
                   <TableHead>Category</TableHead>
                   <TableHead className="text-right">Hours</TableHead>
                   <TableHead>Billable</TableHead>
@@ -90,6 +93,9 @@ export function TimeEntriesReportTable({
                     )}
                     <TableCell className="truncate max-w-[150px]">
                       {entry.contract?.name || "—"}
+                    </TableCell>
+                    <TableCell>
+                      {entry.staff?.full_name || "Unknown"}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">{entry.category?.label || "—"}</Badge>

@@ -136,30 +136,32 @@ export interface CustomerUser {
   first_name: string | null;
   last_name: string | null;
   title: string | null;
-  customer_id: string | null;
+  customer_id: string;
   customer_name: string | null;
   is_active: boolean;
+  portal_access_enabled: boolean;
   created_at: string;
 }
 
 export async function getCustomerUsers(): Promise<CustomerUser[]> {
   const supabase = await createClient();
 
+  // Query customer_contacts which are the actual customer portal users
   const { data, error } = await supabase
-    .from("profiles")
+    .from("customer_contacts")
     .select(`
-      id, 
-      email, 
-      full_name, 
-      first_name, 
-      last_name, 
-      title, 
-      customer_id, 
-      is_active, 
+      id,
+      email,
+      full_name,
+      first_name,
+      last_name,
+      title,
+      customer_id,
+      is_active,
+      portal_access_enabled,
       created_at,
       customer:customers(name)
     `)
-    .eq("role", "customer_user")
     .order("full_name");
 
   if (error) {
@@ -167,9 +169,18 @@ export async function getCustomerUsers(): Promise<CustomerUser[]> {
     return [];
   }
 
-  return (data || []).map((user: any) => ({
-    ...user,
-    customer_name: user.customer?.name || null,
+  return (data || []).map((contact: any) => ({
+    id: contact.id,
+    email: contact.email,
+    full_name: contact.full_name,
+    first_name: contact.first_name,
+    last_name: contact.last_name,
+    title: contact.title,
+    customer_id: contact.customer_id,
+    customer_name: contact.customer?.name || null,
+    is_active: contact.is_active,
+    portal_access_enabled: contact.portal_access_enabled,
+    created_at: contact.created_at,
   })) as CustomerUser[];
 }
 
