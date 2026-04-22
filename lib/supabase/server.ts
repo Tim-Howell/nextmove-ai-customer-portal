@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
 function getSupabaseUrl(): string {
@@ -23,6 +24,17 @@ function getSupabaseAnonKey(): string {
   return key;
 }
 
+function getSupabaseServiceRoleKey(): string {
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!key) {
+    throw new Error(
+      "Missing SUPABASE_SERVICE_ROLE_KEY environment variable. " +
+        "Please add it to your .env.local file."
+    );
+  }
+  return key;
+}
+
 export async function createClient() {
   const cookieStore = await cookies();
 
@@ -41,6 +53,20 @@ export async function createClient() {
           // This can be ignored if you have middleware refreshing sessions.
         }
       },
+    },
+  });
+}
+
+/**
+ * Create a Supabase admin client with service role key.
+ * Use this for admin operations like inviting users.
+ * WARNING: This bypasses RLS - use carefully!
+ */
+export function createAdminClient() {
+  return createSupabaseClient(getSupabaseUrl(), getSupabaseServiceRoleKey(), {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
     },
   });
 }

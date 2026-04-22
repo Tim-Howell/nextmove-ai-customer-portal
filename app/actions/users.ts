@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { getProfile } from "@/lib/supabase/profile";
 
 export interface InternalUser {
@@ -49,6 +49,7 @@ export async function inviteUser(
   title?: string
 ) {
   const supabase = await createClient();
+  const adminClient = createAdminClient();
 
   const { data: existingUser } = await supabase
     .from("profiles")
@@ -64,7 +65,8 @@ export async function inviteUser(
     ? `${firstName} ${lastName}` 
     : firstName || lastName || null;
 
-  const { error } = await supabase.auth.admin.inviteUserByEmail(email, {
+  // Use admin client for inviting users (requires service role key)
+  const { error } = await adminClient.auth.admin.inviteUserByEmail(email, {
     data: { 
       role,
       first_name: firstName || null,
