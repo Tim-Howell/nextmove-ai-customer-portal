@@ -10,6 +10,7 @@ import type { ContractWithRelations, ContractDocument } from "@/types/database";
 export interface ContractsFilter {
   customerId?: string;
   statusId?: string;
+  showArchived?: boolean;
 }
 
 export async function getContracts(
@@ -34,6 +35,9 @@ export async function getContracts(
   }
   if (filter?.statusId) {
     query = query.eq("status_id", filter.statusId);
+  } else if (!filter?.showArchived) {
+    // If not filtering by status and not showing archived, exclude archived
+    query = query.is("archived_at", null);
   }
 
   const { data, error } = await query;
@@ -356,7 +360,10 @@ export async function archiveContract(id: string) {
 
   const { error } = await supabase
     .from("contracts")
-    .update({ status_id: archivedStatus.id })
+    .update({ 
+      status_id: archivedStatus.id,
+      archived_at: new Date().toISOString(),
+    })
     .eq("id", id);
 
   if (error) {
@@ -385,7 +392,10 @@ export async function unarchiveContract(id: string) {
 
   const { error } = await supabase
     .from("contracts")
-    .update({ status_id: activeStatus.id })
+    .update({ 
+      status_id: activeStatus.id,
+      archived_at: null,
+    })
     .eq("id", id);
 
   if (error) {

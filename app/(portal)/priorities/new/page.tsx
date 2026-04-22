@@ -9,6 +9,7 @@ async function getCustomers(): Promise<Customer[]> {
     .from("customers")
     .select("id, name")
     .eq("status", "active")
+    .is("archived_at", null)
     .order("name");
   return (data || []) as Customer[];
 }

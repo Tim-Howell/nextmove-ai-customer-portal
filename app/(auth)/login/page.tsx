@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,13 +20,27 @@ import { loginSchema, type LoginFormData } from "@/lib/validations/auth";
 import { login, sendMagicLink } from "@/app/actions/auth";
 import { Mail, KeyRound } from "lucide-react";
 
+const ERROR_MESSAGES: Record<string, string> = {
+  customer_archived: "Your organization's account has been archived. Please contact support for assistance.",
+  access_disabled: "Your portal access has been disabled. Please contact your administrator.",
+};
+
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [magicLinkEmail, setMagicLinkEmail] = useState("");
+
+  // Check for error in URL params (from middleware redirect)
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam && ERROR_MESSAGES[errorParam]) {
+      setError(ERROR_MESSAGES[errorParam]);
+    }
+  }, [searchParams]);
 
   const {
     register,

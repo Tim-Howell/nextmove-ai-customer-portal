@@ -18,6 +18,7 @@ async function getCustomers(): Promise<Customer[]> {
     .from("customers")
     .select("id, name")
     .neq("status", "archived")
+    .is("archived_at", null)
     .order("name");
   return (data || []) as Customer[];
 }
@@ -55,6 +56,9 @@ async function getContracts(): Promise<ContractWithHoursInfo[]> {
   if (archivedStatus) {
     query = query.neq("status_id", archivedStatus.id);
   }
+  
+  // Also filter out contracts with archived_at set
+  query = query.is("archived_at", null);
 
   const { data: contracts } = await query;
   if (!contracts) return [];

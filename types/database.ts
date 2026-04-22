@@ -10,6 +10,7 @@ export interface Customer {
   internal_notes: string | null;
   logo_url: string | null;
   is_demo: boolean;
+  archived_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -39,6 +40,8 @@ export interface CustomerContact {
   notes: string | null;
   is_demo: boolean;
   user_id: string | null;
+  is_archived: boolean;
+  archived_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -118,6 +121,7 @@ export interface Contract {
   description: string | null;
   is_default: boolean;
   created_by: string | null;
+  archived_at: string | null;
   created_at: string;
   updated_at: string;
   // Billing fields
@@ -214,6 +218,7 @@ export interface Priority {
   status_id: string;
   priority_level_id: string;
   due_date: string | null;
+  is_read_only: boolean;
   created_by: string | null;
   updated_by: string | null;
   created_at: string;
@@ -242,6 +247,7 @@ export interface Request {
   description: string | null;
   status_id: string;
   internal_notes: string | null;
+  is_read_only: boolean;
   created_at: string;
   updated_at: string;
 }

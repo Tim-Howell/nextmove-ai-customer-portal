@@ -84,6 +84,17 @@ export async function createPriority(
     return { error: parsed.error.errors[0]?.message || "Validation failed" };
   }
 
+  // Check if customer is archived
+  const { data: customer } = await supabase
+    .from("customers")
+    .select("archived_at")
+    .eq("id", parsed.data.customer_id)
+    .single();
+
+  if (customer?.archived_at) {
+    return { error: "Cannot create priorities for an archived customer" };
+  }
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -108,6 +119,17 @@ export async function updatePriority(
   formData: PriorityFormData
 ): Promise<{ error?: string }> {
   const supabase = await createClient();
+
+  // Check if priority is read-only
+  const { data: priority } = await supabase
+    .from("priorities")
+    .select("is_read_only")
+    .eq("id", id)
+    .single();
+
+  if (priority?.is_read_only) {
+    return { error: "This priority is read-only and cannot be edited" };
+  }
 
   const parsed = prioritySchema.safeParse(formData);
   if (!parsed.success) {

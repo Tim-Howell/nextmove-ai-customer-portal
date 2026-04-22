@@ -26,11 +26,13 @@ import type { ContractWithRelations, ReferenceValue, Customer } from "@/types/da
 import { isHourBasedContract } from "@/lib/validations/contract";
 import { ContractsFilter } from "@/components/contracts/contracts-filter";
 import { ArchiveContractButton } from "@/components/contracts/archive-contract-button";
+import { ShowArchivedToggle } from "@/components/ui/show-archived-toggle";
 
 interface ContractsPageProps {
   searchParams: Promise<{
     customerId?: string;
     statusId?: string;
+    showArchived?: string;
   }>;
 }
 
@@ -89,8 +91,9 @@ function ContractListContent({
             const isHourBased = contract.contract_type?.value
               ? isHourBasedContract(contract.contract_type.value)
               : false;
+            const isArchived = contract.archived_at !== null || contract.status?.value === "archived";
             return (
-              <TableRow key={contract.id}>
+              <TableRow key={contract.id} className={isArchived ? "opacity-60" : ""}>
                 <TableCell className="font-medium">
                   <Link
                     href={`/contracts/${contract.id}`}
@@ -98,6 +101,11 @@ function ContractListContent({
                   >
                     {contract.name}
                   </Link>
+                  {isArchived && (
+                    <Badge variant="secondary" className="ml-2 text-xs">
+                      Archived
+                    </Badge>
+                  )}
                 </TableCell>
                 {isInternal && (
                   <TableCell>
@@ -157,9 +165,10 @@ export default async function ContractsPage({ searchParams }: ContractsPageProps
   const params = await searchParams;
   const customerId = params.customerId;
   const statusId = params.statusId;
+  const showArchived = params.showArchived === "true";
 
   const [{ data: contracts }, statuses, customers, profile] = await Promise.all([
-    getContracts({ customerId, statusId }),
+    getContracts({ customerId, statusId, showArchived }),
     getReferenceValues("contract_status"),
     getCustomers(),
     getProfile(),
@@ -188,13 +197,16 @@ export default async function ContractsPage({ searchParams }: ContractsPageProps
         )}
       </div>
 
-      <ContractsFilter
-        customers={customers}
-        statuses={statuses}
-        currentCustomerId={customerId}
-        currentStatusId={statusId}
-        isInternal={isInternal}
-      />
+      <div className="flex items-center justify-between">
+        <ContractsFilter
+          customers={customers}
+          statuses={statuses}
+          currentCustomerId={customerId}
+          currentStatusId={statusId}
+          isInternal={isInternal}
+        />
+        <ShowArchivedToggle showArchived={showArchived} />
+      </div>
 
       <Suspense fallback={<div>Loading...</div>}>
         <ContractListContent contracts={contracts} isInternal={isInternal} />

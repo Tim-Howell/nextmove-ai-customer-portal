@@ -19,16 +19,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Search, Image as ImageIcon } from "lucide-react";
+import { Plus, Search, Image as ImageIcon, Archive } from "lucide-react";
 import type { CustomerWithContacts } from "@/types/database";
 import { getShowDemoData } from "@/app/actions/settings";
 import { ArchiveCustomerButton } from "@/components/customers/archive-customer-button";
+import { ShowArchivedToggle } from "@/components/ui/show-archived-toggle";
 
 interface CustomersPageProps {
   searchParams: Promise<{
     search?: string;
     status?: string;
     page?: string;
+    showArchived?: string;
   }>;
 }
 
@@ -38,7 +40,8 @@ async function getCustomers(
   search?: string,
   status?: string,
   page: number = 1,
-  showDemoData: boolean = false
+  showDemoData: boolean = false,
+  showArchived: boolean = false
 ): Promise<{ customers: CustomerWithContacts[]; total: number }> {
   const supabase = await createClient();
 
@@ -53,6 +56,9 @@ async function getCustomers(
 
   if (status && status !== "all") {
     query = query.eq("status", status);
+  } else if (!showArchived) {
+    // If not filtering by status and not showing archived, exclude archived
+    query = query.is("archived_at", null);
   }
 
   if (!showDemoData) {
@@ -108,8 +114,10 @@ function CustomerListContent({
               </TableCell>
             </TableRow>
           ) : (
-            customers.map((customer) => (
-              <TableRow key={customer.id}>
+            customers.map((customer) => {
+              const isArchived = customer.archived_at !== null || customer.status === "archived";
+              return (
+              <TableRow key={customer.id} className={isArchived ? "opacity-60" : ""}>
                 <TableCell>
                   {customer.logo_url ? (
                     <img
@@ -130,6 +138,11 @@ function CustomerListContent({
                   >
                     {customer.name}
                   </Link>
+                  {isArchived && (
+                    <Badge variant="secondary" className="ml-2 text-xs">
+                      Archived
+                    </Badge>
+                  )}
                   {customer.is_demo && (
                     <Badge variant="outline" className="ml-2 text-xs">
                       Demo
@@ -141,6 +154,8 @@ function CustomerListContent({
                     className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
                       customer.status === "active"
                         ? "bg-green-100 text-green-700"
+                        : customer.status === "archived"
+                        ? "bg-amber-100 text-amber-700"
                         : "bg-gray-100 text-gray-700"
                     }`}
                   >
@@ -164,7 +179,8 @@ function CustomerListContent({
                   </div>
                 </TableCell>
               </TableRow>
-            ))
+              );
+            })
           )}
         </TableBody>
       </Table>
@@ -206,9 +222,10 @@ export default async function CustomersPage({ searchParams }: CustomersPageProps
   const search = params.search;
   const status = params.status;
   const page = parseInt(params.page || "1", 10);
+  const showArchived = params.showArchived === "true";
   const showDemoData = await getShowDemoData();
 
-  const { customers, total } = await getCustomers(search, status, page, showDemoData);
+  const { customers, total } = await getCustomers(search, status, page, showDemoData, showArchived);
 
   return (
     <div className="space-y-6">
@@ -249,9 +266,11 @@ export default async function CustomersPage({ searchParams }: CustomersPageProps
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="active">Active</SelectItem>
               <SelectItem value="inactive">Inactive</SelectItem>
+              <SelectItem value="archived">Archived</SelectItem>
             </SelectContent>
           </Select>
         </form>
+        <ShowArchivedToggle showArchived={showArchived} />
       </div>
 
       <Suspense fallback={<div>Loading...</div>}>

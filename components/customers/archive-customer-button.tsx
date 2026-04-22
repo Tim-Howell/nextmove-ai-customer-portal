@@ -70,11 +70,26 @@ export function ArchiveCustomerButton({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{actionText} Customer</AlertDialogTitle>
-          <AlertDialogDescription>
-            {isArchived 
-              ? `Are you sure you want to restore "${customerName}"? They will appear in dropdown lists again.`
-              : `Are you sure you want to archive "${customerName}"? They will be hidden from dropdown lists but their data will be preserved.`
-            }
+          <AlertDialogDescription asChild>
+            <div className="space-y-3">
+              {isArchived ? (
+                <p>Are you sure you want to restore &quot;{customerName}&quot;? They will appear in dropdown lists again.</p>
+              ) : (
+                <>
+                  <p>Are you sure you want to archive &quot;{customerName}&quot;?</p>
+                  <div className="bg-amber-50 border border-amber-200 rounded-md p-3 text-amber-800 text-sm">
+                    <p className="font-medium mb-1">This will also:</p>
+                    <ul className="list-disc list-inside space-y-1">
+                      <li>Archive all contracts for this customer</li>
+                      <li>Disable portal access for all contacts</li>
+                      <li>Mark all priorities as read-only</li>
+                      <li>Mark all requests as read-only</li>
+                    </ul>
+                  </div>
+                  <p className="text-muted-foreground">Data will be preserved but hidden from dropdown lists.</p>
+                </>
+              )}
+            </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
         {error && (

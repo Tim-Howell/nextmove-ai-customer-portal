@@ -105,6 +105,30 @@ export async function createTimeEntry(data: TimeEntryFormData) {
     return { error: validated.error.errors[0]?.message || "Validation failed" };
   }
 
+  // Check if contract is archived
+  if (validated.data.contract_id) {
+    const { data: contract } = await supabase
+      .from("contracts")
+      .select("archived_at")
+      .eq("id", validated.data.contract_id)
+      .single();
+
+    if (contract?.archived_at) {
+      return { error: "Cannot add time entries to an archived contract" };
+    }
+  }
+
+  // Check if customer is archived
+  const { data: customer } = await supabase
+    .from("customers")
+    .select("archived_at")
+    .eq("id", validated.data.customer_id)
+    .single();
+
+  if (customer?.archived_at) {
+    return { error: "Cannot add time entries for an archived customer" };
+  }
+
   const {
     data: { user },
   } = await supabase.auth.getUser();

@@ -183,6 +183,19 @@ export async function createRequest(
     ? (formData as RequestFormData).customer_id
     : customerId;
 
+  // Check if customer is archived
+  if (effectiveCustomerId) {
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("archived_at")
+      .eq("id", effectiveCustomerId)
+      .single();
+
+    if (customer?.archived_at) {
+      return { error: "Cannot create requests for an archived customer" };
+    }
+  }
+
   const insertData: Record<string, unknown> = {
     ...parsed.data,
     submitted_by: userId,
@@ -250,6 +263,17 @@ export async function updateRequest(
   // Only internal users can update requests
   if (role !== "admin" && role !== "staff") {
     return { error: "Not authorized" };
+  }
+
+  // Check if request is read-only
+  const { data: request } = await supabase
+    .from("requests")
+    .select("is_read_only")
+    .eq("id", id)
+    .single();
+
+  if (request?.is_read_only) {
+    return { error: "This request is read-only and cannot be edited" };
   }
 
   const parsed = requestSchema.safeParse(formData);

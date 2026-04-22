@@ -210,27 +210,87 @@ export async function getCustomers(includeArchived = true) {
 
 export async function archiveCustomer(id: string) {
   const supabase = await createClient();
+  const now = new Date().toISOString();
 
-  const { error } = await supabase
+  // 1. Archive the customer
+  const { error: customerError } = await supabase
     .from("customers")
-    .update({ status: "archived" })
+    .update({ 
+      status: "archived",
+      archived_at: now,
+    })
     .eq("id", id);
 
-  if (error) {
-    console.error("Error archiving customer:", error);
+  if (customerError) {
+    console.error("Error archiving customer:", customerError);
     return { error: "Failed to archive customer" };
   }
 
+  // 2. Cascade: Archive all customer contracts
+  const { error: contractsError } = await supabase
+    .from("contracts")
+    .update({ archived_at: now })
+    .eq("customer_id", id)
+    .is("archived_at", null);
+
+  if (contractsError) {
+    console.error("Error archiving customer contracts:", contractsError);
+  }
+
+  // 3. Cascade: Disable portal access for all customer contacts
+  const { error: contactsError } = await supabase
+    .from("customer_contacts")
+    .update({ 
+      portal_access_enabled: false,
+      is_archived: true,
+      archived_at: now,
+    })
+    .eq("customer_id", id);
+
+  if (contactsError) {
+    console.error("Error archiving customer contacts:", contactsError);
+  }
+
+  // 4. Cascade: Mark all open priorities as read-only
+  const { error: prioritiesError } = await supabase
+    .from("priorities")
+    .update({ is_read_only: true })
+    .eq("customer_id", id)
+    .eq("is_read_only", false);
+
+  if (prioritiesError) {
+    console.error("Error marking priorities as read-only:", prioritiesError);
+  }
+
+  // 5. Cascade: Mark all open requests as read-only
+  const { error: requestsError } = await supabase
+    .from("requests")
+    .update({ is_read_only: true })
+    .eq("customer_id", id)
+    .eq("is_read_only", false);
+
+  if (requestsError) {
+    console.error("Error marking requests as read-only:", requestsError);
+  }
+
   revalidatePath("/customers");
+  revalidatePath("/contracts");
+  revalidatePath("/priorities");
+  revalidatePath("/requests");
   return { success: true };
 }
 
 export async function unarchiveCustomer(id: string) {
   const supabase = await createClient();
 
+  // Only restore the customer - do NOT cascade restore contracts/contacts
+  // User must manually restore those if needed
   const { error } = await supabase
     .from("customers")
-    .update({ status: "active" })
+    .update({ 
+      status: "active",
+      archived_at: null,
+    })
     .eq("id", id);
 
   if (error) {
