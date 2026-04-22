@@ -621,8 +621,8 @@ The MVP is successful when:
 - [x] update contract detail page with type-specific stats (ContractHoursStats component)
 - [x] show hours context in time entry form (ContractHoursContext component)
 - [x] add overage alerts to reports page (ContractOverageAlerts component)
-- [ ] add billing model filter to reports (deferred)
-- [ ] period history display on contract detail (deferred)
+- [x] add billing model filter to reports (deferred to Phase 20)
+- [x] period history display on contract detail (deferred to Phase 20)
 
 ### Phase 18 - Audit Logging & Error Handling ✓
 - [x] create audit_logs table with change tracking fields
