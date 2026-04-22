@@ -62,7 +62,7 @@ export function ContractForm({
       // Billing fields
       billing_day: contract?.billing_day || null,
       hours_per_period: contract?.hours_per_period || null,
-      rollover_enabled: contract?.rollover_enabled || false,
+      rollover_enabled: contract?.rollover_enabled ?? false,
       rollover_expiration_days: contract?.rollover_expiration_days || null,
       max_rollover_hours: contract?.max_rollover_hours || null,
       fixed_cost: contract?.fixed_cost || null,
