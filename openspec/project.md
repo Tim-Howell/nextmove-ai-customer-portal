@@ -563,17 +563,17 @@ The MVP is successful when:
 - [x] optionally notify internal users of new requests
 - [x] optionally notify customers of request status changes
 
-### Phase 13 - Quality, Security, and Seed Data
-- [ ] validate RLS policies (customers cannot delete/modify contacts, profiles, contracts, hours - only submit requests and view data)
-- [ ] test role boundaries
-- [ ] add loading and error states
-- [ ] add empty states
-- [ ] add success notifications
-- [ ] review accessibility basics
-- [ ] review responsive layouts
-- [ ] seed demo data
-- [ ] test customer search and filtering with demo data
-- [ ] test customer pagination with demo data
+### Phase 13 - Quality, Security, and Seed Data ✓
+- [~] validate RLS policies (deferred to Phase 20)
+- [~] test role boundaries (deferred to Phase 20)
+- [x] add loading and error states
+- [x] add empty states
+- [x] add success notifications (toast system)
+- [~] review accessibility basics (deferred to Phase 20)
+- [~] review responsive layouts (deferred to Phase 20)
+- [x] seed demo data (scripts created)
+- [x] customer search and filtering implemented
+- [x] customer pagination implemented
 
 
 ### Phase 14 - Customer UX Refinement
@@ -644,7 +644,26 @@ The MVP is successful when:
 - [ ] prepare staging deployment
 - [ ] prepare production deployment checklist
 - [ ] configure custom SMTP in Supabase for production email (Magic Link invitations)
-- [ ] Configure email templates for invitations and magic links. 
+- [ ] Configure email templates for invitations and magic links.
+
+**Deferred from Phase 13 - RLS Policy Validation:**
+- [ ] Create RLS test scripts for customer_user role restrictions
+- [ ] Validate customer_user cannot modify contracts, time entries, contacts
+- [ ] Validate customer_user can only view own profile and customer data
+- [ ] Fix any RLS policy gaps found during testing
+
+**Deferred from Phase 13 - Accessibility and Responsive Review:**
+- [ ] Review color contrast on all pages
+- [ ] Add focus management to modals and dialogs
+- [ ] Verify ARIA labels on interactive elements
+- [ ] Test keyboard navigation on forms
+- [ ] Test responsive layout on mobile (375px), tablet (768px), desktop (1280px)
+
+**Deferred from Phase 13 - Final Validation:**
+- [ ] Test customer search, filtering, pagination with demo data
+- [ ] Verify all loading, error, and empty states display correctly
+- [ ] Verify all toast notifications work
+- [ ] Test demo user login behavior with show_demo_data toggle 
 
 ### Deferred Items (to address in relevant phases or Phase 13)
 **From Phase 2:**

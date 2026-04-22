@@ -10,7 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus } from "lucide-react";
+import { Plus, MessageSquare } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { getRequests } from "@/app/actions/requests";
 import { getReferenceValues } from "@/app/actions/reference";
 import { RequestsFilter } from "@/components/requests/requests-filter";
@@ -118,8 +119,13 @@ export default async function RequestsPage({ searchParams }: RequestsPageProps) 
         <TableBody>
           {requests.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={isInternal ? 6 : 4} className="text-center text-muted-foreground">
-                No requests found
+              <TableCell colSpan={isInternal ? 6 : 4} className="p-0">
+                <EmptyState
+                  icon={MessageSquare}
+                  title="No requests found"
+                  description={isInternal ? "No customer requests have been submitted" : "Submit a request to get started"}
+                  action={{ label: isInternal ? "New Request" : "Submit Request", href: "/requests/new" }}
+                />
               </TableCell>
             </TableRow>
           ) : (

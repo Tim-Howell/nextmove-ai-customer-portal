@@ -10,7 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Image as ImageIcon } from "lucide-react";
+import { Plus, Image as ImageIcon, Target } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { getPriorities } from "@/app/actions/priorities";
 import { getReferenceValues } from "@/app/actions/reference";
 import { PrioritiesFilter } from "@/components/priorities/priorities-filter";
@@ -138,8 +139,13 @@ export default async function PrioritiesPage({ searchParams }: PrioritiesPagePro
         <TableBody>
           {priorities.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={isInternal ? 7 : 5} className="text-center text-muted-foreground">
-                No priorities found
+              <TableCell colSpan={isInternal ? 7 : 5} className="p-0">
+                <EmptyState
+                  icon={Target}
+                  title="No priorities found"
+                  description={isInternal ? "Create priorities to track customer goals" : "No priorities have been set for your account"}
+                  action={isInternal ? { label: "New Priority", href: "/priorities/new" } : undefined}
+                />
               </TableCell>
             </TableRow>
           ) : (

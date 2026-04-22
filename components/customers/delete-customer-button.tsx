@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Trash2 } from "lucide-react";
 import { deleteCustomer } from "@/app/actions/customers";
+import { showSuccess, showError } from "@/lib/toast";
 
 interface DeleteCustomerButtonProps {
   customerId: string;
@@ -29,7 +30,13 @@ export function DeleteCustomerButton({
 
   async function handleDelete() {
     setIsDeleting(true);
-    await deleteCustomer(customerId);
+    const result = await deleteCustomer(customerId);
+    if (result?.error) {
+      showError(result.error);
+      setIsDeleting(false);
+    } else {
+      showSuccess("Customer deleted successfully");
+    }
   }
 
   return (

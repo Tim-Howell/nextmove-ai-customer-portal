@@ -24,6 +24,7 @@ import {
 } from "@/lib/validations/request";
 import { createRequest, updateRequest } from "@/app/actions/requests";
 import type { Request, Customer, ReferenceValue } from "@/types/database";
+import { showSuccess, showError } from "@/lib/toast";
 
 interface RequestFormProps {
   request?: Request;
@@ -78,7 +79,10 @@ export function RequestForm({
 
     if (result?.error) {
       setError(result.error);
+      showError(result.error);
       setIsLoading(false);
+    } else {
+      showSuccess(request ? "Request updated successfully" : "Request submitted successfully");
     }
   }
 

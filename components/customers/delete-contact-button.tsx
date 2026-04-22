@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Trash2 } from "lucide-react";
 import { deleteCustomerContact } from "@/app/actions/customers";
+import { showSuccess, showError } from "@/lib/toast";
 
 interface DeleteContactButtonProps {
   customerId: string;
@@ -35,7 +36,10 @@ export function DeleteContactButton({
     setIsDeleting(true);
     const result = await deleteCustomerContact(customerId, contactId);
     if (result.success) {
+      showSuccess("Contact deleted successfully");
       router.refresh();
+    } else if (result.error) {
+      showError(result.error);
     }
     setIsDeleting(false);
   }

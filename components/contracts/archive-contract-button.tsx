@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Archive, ArchiveRestore } from "lucide-react";
 import { archiveContract, unarchiveContract } from "@/app/actions/contracts";
+import { showSuccess, showError } from "@/lib/toast";
 
 interface ArchiveContractButtonProps {
   contractId: string;
@@ -44,8 +45,10 @@ export function ArchiveContractButton({
     
     if (result?.error) {
       setError(result.error);
+      showError(result.error);
       setIsLoading(false);
     } else {
+      showSuccess(isArchived ? "Contract restored successfully" : "Contract archived successfully");
       router.refresh();
     }
   }

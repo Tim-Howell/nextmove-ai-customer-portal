@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Trash2 } from "lucide-react";
 import { deletePriority } from "@/app/actions/priorities";
+import { showSuccess, showError } from "@/lib/toast";
 
 interface DeletePriorityButtonProps {
   priorityId: string;
@@ -33,7 +34,10 @@ export function DeletePriorityButton({ priorityId, priorityTitle }: DeletePriori
     
     if (result?.error) {
       setError(result.error);
+      showError(result.error);
       setIsDeleting(false);
+    } else {
+      showSuccess("Priority deleted successfully");
     }
   }
 

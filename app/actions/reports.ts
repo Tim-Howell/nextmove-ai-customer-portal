@@ -196,7 +196,7 @@ export async function getRecentPriorities(
       description,
       status_id,
       priority_level_id,
-      target_date,
+      due_date,
       created_by,
       updated_by,
       created_at,

@@ -10,9 +10,10 @@ This version has breaking changes — APIs, conventions, and file structure may 
 Customer portal for NextMove AI to manage customers, contracts, time tracking, priorities, and requests. Built with Next.js 15, Supabase, and TypeScript.
 
 ## Current Status (April 2026)
-- **Phases 1-18 Complete** (excluding Phase 13 QA/Seed Data)
-- **Remaining**: Phase 13 (QA, Seed Data), Phase 20 (Testing, Go-Live)
+- **Phases 1-18 Complete** (including Phase 13 QA/Seed Data)
+- **Remaining**: Phase 20 (Testing, Go-Live)
 - All core features implemented and functional
+- Demo data seeding scripts available
 
 ## Key Architecture Decisions
 
@@ -85,15 +86,10 @@ types/
 
 ## Remaining Work
 
-### Phase 13 - QA & Seed Data
-- Validate RLS policies
-- Test role boundaries
-- Add loading/error/empty states
-- Seed demo data
-- Test search/filtering/pagination
-
 ### Phase 20 - Go-Live Prep
 - Comprehensive testing (create automated tests)
+- RLS policy validation (deferred from Phase 13)
+- Accessibility and responsive review (deferred from Phase 13)
 - Review all deferred items
 - Consolidate migrations
 - Configure production SMTP
@@ -104,3 +100,6 @@ types/
 - Period history display on contract detail
 - Role filter on user management
 - Industry/website/renewal fields on customers
+- RLS policy validation tests
+- Accessibility review (color contrast, focus management, ARIA labels)
+- Responsive layout testing (mobile, tablet, desktop)

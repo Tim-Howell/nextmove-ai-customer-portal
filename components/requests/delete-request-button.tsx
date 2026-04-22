@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Trash2 } from "lucide-react";
 import { deleteRequest } from "@/app/actions/requests";
+import { showSuccess, showError } from "@/lib/toast";
 
 interface DeleteRequestButtonProps {
   requestId: string;
@@ -33,7 +34,10 @@ export function DeleteRequestButton({ requestId, requestTitle }: DeleteRequestBu
     
     if (result?.error) {
       setError(result.error);
+      showError(result.error);
       setIsDeleting(false);
+    } else {
+      showSuccess("Request deleted successfully");
     }
   }
 

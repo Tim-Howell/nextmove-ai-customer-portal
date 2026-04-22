@@ -20,6 +20,7 @@ import { ImageUpload } from "@/components/ui/image-upload";
 import { prioritySchema, type PriorityFormData } from "@/lib/validations/priority";
 import { createPriority, updatePriority } from "@/app/actions/priorities";
 import type { Priority, Customer, ReferenceValue } from "@/types/database";
+import { showSuccess, showError } from "@/lib/toast";
 
 interface PriorityFormProps {
   priority?: Priority;
@@ -71,7 +72,10 @@ export function PriorityForm({
 
     if (result?.error) {
       setError(result.error);
+      showError(result.error);
       setIsLoading(false);
+    } else {
+      showSuccess(priority ? "Priority updated successfully" : "Priority created successfully");
     }
   }
 

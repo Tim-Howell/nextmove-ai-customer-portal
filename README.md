@@ -4,12 +4,12 @@ A secure web application for NextMove AI staff and customer staff to manage cust
 
 ## Project Status
 
-**MVP Progress: Phases 1-18 Complete** (excluding Phase 13 QA/Seed Data)
+**MVP Progress: Phases 1-18 Complete**
 
 | Phase | Status | Description |
 |-------|--------|-------------|
 | 0-12 | ✅ Complete | Core functionality (auth, customers, contracts, time, priorities, requests, dashboards, reports, files, notifications) |
-| 13 | 🔲 Pending | Quality, Security, and Seed Data |
+| 13 | ✅ Complete | Quality, Security, and Seed Data (manual testing deferred to Phase 20) |
 | 14-15 | ✅ Complete | Customer UX Refinement, Portal Enhancements |
 | 16 | ✅ Complete | Archive Capabilities (cascade archive, user access control) |
 | 17 | ✅ Complete | Contract Types Enhancement (billing models, hours buckets, rollover) |
@@ -179,6 +179,40 @@ This project uses **OpenSpec** for structured development:
 - `openspec/project.md` - Master project specification
 - `openspec/changes/` - Active change proposals
 - `openspec/changes/archive/` - Completed changes
+
+## Demo Data
+
+For testing and demonstration purposes, you can seed the database with demo data.
+
+### Seeding Demo Data
+
+```bash
+# Seed demo customers, contracts, time entries, priorities, requests
+npx tsx scripts/seed-demo-data.ts
+
+# Create demo user accounts (run after seeding data)
+npx tsx scripts/create-demo-accounts.ts
+```
+
+### Demo Login Credentials
+
+| Email | Password | Customer |
+|-------|----------|----------|
+| `demo-acme1@example.com` | `DemoPass123!` | Acme Corporation |
+| `demo-techstart@example.com` | `DemoPass123!` | TechStart Solutions |
+
+**Note:** Demo accounts only work when the "Show Demo Data" setting is enabled in System Settings. When disabled, demo users cannot log in.
+
+### Demo Data Summary
+
+- **10 Customers** (8 active, 2 archived)
+- **25 Contacts** (13 with portal access)
+- **15 Contracts** (retainer, project, ad-hoc types)
+- **100 Time Entries** (for pagination testing)
+- **65+ Priorities** (Acme: 25, TechStart: 22, others spread)
+- **75+ Requests** (Acme: 25, TechStart: 22, others spread)
+
+All demo records have `is_demo = true` and can be filtered using the "Show Demo Data" toggle.
 
 ## Documentation
 

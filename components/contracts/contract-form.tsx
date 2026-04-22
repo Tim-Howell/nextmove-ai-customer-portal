@@ -24,6 +24,7 @@ import {
 } from "@/lib/validations/contract";
 import { createContract, updateContract } from "@/app/actions/contracts";
 import type { Contract, Customer, ReferenceValue, ContractType } from "@/types/database";
+import { showSuccess, showError } from "@/lib/toast";
 
 interface ContractFormProps {
   contract?: Contract;
@@ -94,7 +95,10 @@ export function ContractForm({
 
     if (result?.error) {
       setError(result.error);
+      showError(result.error);
       setIsLoading(false);
+    } else {
+      showSuccess(contract ? "Contract updated successfully" : "Contract created successfully");
     }
   }
 

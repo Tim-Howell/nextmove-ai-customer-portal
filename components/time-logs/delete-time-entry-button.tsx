@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Trash2 } from "lucide-react";
 import { deleteTimeEntry } from "@/app/actions/time-entries";
+import { showSuccess, showError } from "@/lib/toast";
 
 interface DeleteTimeEntryButtonProps {
   entryId: string;
@@ -34,8 +35,10 @@ export function DeleteTimeEntryButton({ entryId }: DeleteTimeEntryButtonProps) {
     
     if (result?.error) {
       setError(result.error);
+      showError(result.error);
       setIsDeleting(false);
     } else {
+      showSuccess("Time entry deleted successfully");
       router.refresh();
     }
   }

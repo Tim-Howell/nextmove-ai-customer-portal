@@ -21,6 +21,7 @@ import { timeEntrySchema, type TimeEntryFormData } from "@/lib/validations/time-
 import { createTimeEntry, updateTimeEntry } from "@/app/actions/time-entries";
 import { ContractHoursContext, type ContractWithHoursInfo } from "./contract-hours-context";
 import type { TimeEntry, Customer, ReferenceValue } from "@/types/database";
+import { showSuccess, showError } from "@/lib/toast";
 
 interface TimeEntryFormProps {
   timeEntry?: TimeEntry;
@@ -116,7 +117,10 @@ export function TimeEntryForm({
 
     if (result?.error) {
       setError(result.error);
+      showError(result.error);
       setIsLoading(false);
+    } else {
+      showSuccess(timeEntry ? "Time entry updated successfully" : "Time entry created successfully");
     }
   }
 

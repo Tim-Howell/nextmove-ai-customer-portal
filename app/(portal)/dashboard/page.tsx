@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { CustomerDashboardRedesigned } from "@/components/dashboard/customer-dashboard-redesigned";
-import { Users, FileText, Clock, Flag, MessageSquare, Plus, BarChart3 } from "lucide-react";
+import { Users, FileText, Clock, Flag, MessageSquare, Plus, BarChart3, Inbox } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { getOpenPrioritiesCount } from "@/app/actions/priorities";
 import { getOpenRequestsCount } from "@/app/actions/requests";
 import { getRecentRequests } from "@/app/actions/reports";
@@ -202,9 +203,11 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             {recentRequests.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">
-                No recent requests
-              </p>
+              <EmptyState
+                icon={MessageSquare}
+                title="No recent requests"
+                description="Customer requests will appear here"
+              />
             ) : (
               <Table>
                 <TableHeader>
@@ -245,9 +248,11 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             {recentTimeEntries.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">
-                No recent time entries
-              </p>
+              <EmptyState
+                icon={Clock}
+                title="No recent time entries"
+                description="Time entries will appear here"
+              />
             ) : (
               <Table>
                 <TableHeader>

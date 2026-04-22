@@ -19,7 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Search, Image as ImageIcon, Archive } from "lucide-react";
+import { Plus, Search, Image as ImageIcon, Archive, Users } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import type { CustomerWithContacts } from "@/types/database";
 import { getShowDemoData } from "@/app/actions/settings";
 import { ArchiveCustomerButton } from "@/components/customers/archive-customer-button";
@@ -34,7 +35,7 @@ interface CustomersPageProps {
   }>;
 }
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 20;
 
 async function getCustomers(
   search?: string,
@@ -109,8 +110,13 @@ function CustomerListContent({
         <TableBody>
           {customers.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="text-center text-muted-foreground">
-                No customers found
+              <TableCell colSpan={5} className="p-0">
+                <EmptyState
+                  icon={Users}
+                  title="No customers found"
+                  description={search ? "Try adjusting your search or filters" : "Get started by adding your first customer"}
+                  action={!search ? { label: "Add Customer", href: "/customers/new" } : undefined}
+                />
               </TableCell>
             </TableRow>
           ) : (

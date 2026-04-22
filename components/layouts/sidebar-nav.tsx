@@ -12,7 +12,6 @@ import {
   MessageSquare,
   BarChart3,
   Settings,
-  User,
 } from "lucide-react";
 
 interface NavItem {
@@ -37,7 +36,6 @@ const adminNavItems: NavItem[] = [
 
 const customerNavItems: NavItem[] = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { title: "Profile", href: "/profile", icon: User },
   { title: "Contracts", href: "/contracts", icon: FileText },
   { title: "Priorities", href: "/priorities", icon: Flag },
   { title: "Requests", href: "/requests", icon: MessageSquare },

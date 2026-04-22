@@ -74,7 +74,7 @@ export async function middleware(request: NextRequest) {
       // Check if customer is archived
       const { data: customer } = await supabase
         .from("customers")
-        .select("archived_at, status")
+        .select("archived_at, status, is_demo")
         .eq("id", profile.customer_id)
         .single();
 
@@ -85,6 +85,25 @@ export async function middleware(request: NextRequest) {
         url.pathname = "/login";
         url.searchParams.set("error", "customer_archived");
         return NextResponse.redirect(url);
+      }
+
+      // Check if demo user is trying to access when show_demo_data is off
+      if (customer?.is_demo) {
+        const { data: settings } = await supabase
+          .from("system_settings")
+          .select("value")
+          .eq("key", "show_demo_data")
+          .single();
+
+        const showDemoData = settings?.value === "true";
+        if (!showDemoData) {
+          // Demo data is disabled - block demo user login
+          await supabase.auth.signOut();
+          const url = request.nextUrl.clone();
+          url.pathname = "/login";
+          url.searchParams.set("error", "demo_disabled");
+          return NextResponse.redirect(url);
+        }
       }
 
       // Check if contact has portal access disabled

@@ -21,6 +21,7 @@ import { ImageUpload } from "@/components/ui/image-upload";
 import { customerSchema, type CustomerFormData } from "@/lib/validations/customer";
 import { createCustomer, updateCustomer } from "@/app/actions/customers";
 import type { Customer } from "@/types/database";
+import { showSuccess, showError } from "@/lib/toast";
 
 interface StaffMember {
   id: string;
@@ -73,7 +74,10 @@ export function CustomerForm({ customer, staffMembers, isAdmin = false }: Custom
 
     if (result?.error) {
       setError(result.error);
+      showError(result.error);
       setIsLoading(false);
+    } else {
+      showSuccess(customer ? "Customer updated successfully" : "Customer created successfully");
     }
   }
 

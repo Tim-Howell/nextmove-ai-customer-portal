@@ -11,7 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus } from "lucide-react";
+import { Plus, Clock } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { getTimeEntries, getStaffMembers } from "@/app/actions/time-entries";
 import { getReferenceValues } from "@/app/actions/reference";
 import { TimeLogsFilter } from "@/components/time-logs/time-logs-filter";
@@ -89,8 +90,13 @@ function TimeEntryListContent({
         <TableBody>
           {timeEntries.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={isInternal ? 8 : 5} className="text-center text-muted-foreground">
-                No time entries found
+              <TableCell colSpan={isInternal ? 8 : 5} className="p-0">
+                <EmptyState
+                  icon={Clock}
+                  title="No time entries found"
+                  description={isInternal ? "Start tracking time by logging your first entry" : "No time has been logged for your account yet"}
+                  action={isInternal ? { label: "Log Time", href: "/time-logs/new" } : undefined}
+                />
               </TableCell>
             </TableRow>
           ) : (

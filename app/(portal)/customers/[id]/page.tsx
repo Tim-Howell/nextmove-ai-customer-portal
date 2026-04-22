@@ -12,7 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Edit, Plus, User, Check, X } from "lucide-react";
+import { Edit, Plus, User, Check, X, Users } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { DeleteCustomerButton } from "@/components/customers/delete-customer-button";
 import { ArchiveCustomerButton } from "@/components/customers/archive-customer-button";
 import { DeleteContactButton } from "@/components/customers/delete-contact-button";
@@ -99,6 +100,7 @@ export default async function CustomerDetailPage({
   }
 
   const isAdmin = profile?.role === "admin";
+  const isInternal = profile?.role === "admin" || profile?.role === "staff";
 
   return (
     <div className="space-y-6">
@@ -187,9 +189,12 @@ export default async function CustomerDetailPage({
         </CardHeader>
         <CardContent>
           {contacts.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">
-              No contacts yet. Add a contact to get started.
-            </p>
+            <EmptyState
+              icon={Users}
+              title="No contacts yet"
+              description="Add a contact to enable portal access for this customer"
+              action={{ label: "Add Contact", href: `/customers/${id}/contacts/new` }}
+            />
           ) : (
             <Table>
               <TableHeader>

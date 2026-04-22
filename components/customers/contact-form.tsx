@@ -19,6 +19,7 @@ import {
   updateCustomerContact,
 } from "@/app/actions/customers";
 import type { CustomerContact } from "@/types/database";
+import { showSuccess, showError } from "@/lib/toast";
 
 interface ContactFormProps {
   customerId: string;
@@ -61,7 +62,10 @@ export function ContactForm({ customerId, contact }: ContactFormProps) {
 
     if (result?.error) {
       setError(result.error);
+      showError(result.error);
       setIsLoading(false);
+    } else {
+      showSuccess(contact ? "Contact updated successfully" : "Contact created successfully");
     }
   }
 

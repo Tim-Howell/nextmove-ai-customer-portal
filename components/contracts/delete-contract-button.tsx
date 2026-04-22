@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Trash2 } from "lucide-react";
 import { deleteContract } from "@/app/actions/contracts";
+import { showSuccess, showError } from "@/lib/toast";
 
 interface DeleteContractButtonProps {
   contractId: string;
@@ -34,7 +35,10 @@ export function DeleteContractButton({ contractId, contractName, variant = "defa
     
     if (result?.error) {
       setError(result.error);
+      showError(result.error);
       setIsDeleting(false);
+    } else {
+      showSuccess("Contract deleted successfully");
     }
   }
 

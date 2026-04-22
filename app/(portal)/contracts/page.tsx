@@ -18,7 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus } from "lucide-react";
+import { Plus, FileText } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { getContracts } from "@/app/actions/contracts";
 import { getReferenceValues } from "@/app/actions/reference";
 import { getProfile } from "@/lib/supabase/profile";
@@ -82,8 +83,13 @@ function ContractListContent({
       <TableBody>
         {contracts.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={isInternal ? 6 : 4} className="text-center text-muted-foreground">
-              No contracts found
+            <TableCell colSpan={isInternal ? 6 : 4} className="p-0">
+              <EmptyState
+                icon={FileText}
+                title="No contracts found"
+                description={isInternal ? "Get started by creating a new contract" : "No contracts are available for your account"}
+                action={isInternal ? { label: "New Contract", href: "/contracts/new" } : undefined}
+              />
             </TableCell>
           </TableRow>
         ) : (

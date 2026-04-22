@@ -195,7 +195,11 @@ export async function CustomerDashboardRedesigned({ customerName, customerId }: 
             ) : (
               <div className="space-y-3">
                 {activeContracts.map((contract) => (
-                  <div key={contract.id} className="flex items-center justify-between">
+                  <Link 
+                    key={contract.id} 
+                    href={`/contracts/${contract.id}`}
+                    className="flex items-center justify-between hover:bg-muted/50 rounded-lg p-2 -mx-2 transition-colors"
+                  >
                     <div>
                       <p className="font-medium">{contract.name}</p>
                       <p className="text-sm text-muted-foreground">
@@ -203,7 +207,7 @@ export async function CustomerDashboardRedesigned({ customerName, customerId }: 
                       </p>
                     </div>
                     <Badge variant="default">Active</Badge>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}

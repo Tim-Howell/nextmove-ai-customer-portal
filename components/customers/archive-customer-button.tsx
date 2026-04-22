@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Archive, ArchiveRestore } from "lucide-react";
 import { archiveCustomer, unarchiveCustomer } from "@/app/actions/customers";
+import { showSuccess, showError } from "@/lib/toast";
 
 interface ArchiveCustomerButtonProps {
   customerId: string;
@@ -44,8 +45,10 @@ export function ArchiveCustomerButton({
     
     if (result?.error) {
       setError(result.error);
+      showError(result.error);
       setIsLoading(false);
     } else {
+      showSuccess(isArchived ? "Customer restored successfully" : "Customer archived successfully");
       router.refresh();
     }
   }

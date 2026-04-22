@@ -23,6 +23,7 @@ import { Mail, KeyRound } from "lucide-react";
 const ERROR_MESSAGES: Record<string, string> = {
   customer_archived: "Your organization's account has been archived. Please contact support for assistance.",
   access_disabled: "Your portal access has been disabled. Please contact your administrator.",
+  demo_disabled: "Demo accounts are currently disabled. Please contact an administrator to enable demo data.",
 };
 
 export default function LoginPage() {
@@ -46,6 +47,7 @@ export default function LoginPage() {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -53,6 +55,9 @@ export default function LoginPage() {
       password: "",
     },
   });
+
+  const emailValue = watch("email") ?? "";
+  const passwordValue = watch("password") ?? "";
 
   async function onSubmit(data: LoginFormData) {
     setIsLoading(true);
@@ -147,6 +152,7 @@ export default function LoginPage() {
                 id="email"
                 type="email"
                 placeholder="you@example.com"
+                value={emailValue}
                 {...register("email")}
                 disabled={isLoading}
               />
@@ -167,6 +173,7 @@ export default function LoginPage() {
               <Input
                 id="password"
                 type="password"
+                value={passwordValue}
                 {...register("password")}
                 disabled={isLoading}
               />
