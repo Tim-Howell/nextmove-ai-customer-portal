@@ -1,26 +1,26 @@
 ## 1. Deferred Items Review
 
-- [ ] 1.1 Review all deferred items from project.md and categorize as Must Fix / Nice to Have / Won't Fix
-- [ ] 1.2 Address role filter dropdown on user management page (deferred from Phase 2)
-- [ ] 1.3 Validate customer search, filtering, pagination works correctly
-- [ ] 1.4 Validate demo user login behavior with show_demo_data toggle
-- [ ] 1.5 Test portal access disable → user deactivation flow
+- [x] 1.1 Review all deferred items from project.md and categorize as Must Fix / Nice to Have / Won't Fix
+- [x] 1.2 Address role filter dropdown on user management page (deferred from Phase 2)
+- [x] 1.3 Validate customer search, filtering, pagination works correctly
+- [x] 1.4 Validate demo user login behavior with show_demo_data toggle
+- [x] 1.5 Test portal access disable → user deactivation flow
 
 ## 2. RLS Validation
 
-- [ ] 2.1 Create RLS test script (`scripts/test-rls.ts`)
-- [ ] 2.2 Test customer_user cannot modify contracts
-- [ ] 2.3 Test customer_user cannot modify time entries
-- [ ] 2.4 Test customer_user cannot modify customer contacts
-- [ ] 2.5 Test customer_user can only view own customer data
-- [ ] 2.6 Test cross-customer data access is blocked
-- [ ] 2.7 Fix any RLS policy gaps found during testing
+- [x] 2.1 Create RLS test script (`scripts/test-rls.ts`)
+- [x] 2.2 Test customer_user cannot modify contracts
+- [x] 2.3 Test customer_user cannot modify time entries
+- [x] 2.4 Test customer_user cannot modify customer contacts
+- [x] 2.5 Test customer_user can only view own customer data
+- [x] 2.6 Test cross-customer data access is blocked
+- [x] 2.7 Fix any RLS policy gaps found during testing
 
 ## 3. Playwright E2E Testing Setup
 
-- [ ] 3.1 Install Playwright and configure for Next.js
-- [ ] 3.2 Create test fixtures for admin, staff, and customer_user authentication
-- [ ] 3.3 Create base test utilities and helpers
+- [x] 3.1 Install Playwright and configure for Next.js
+- [x] 3.2 Create test fixtures for admin, staff, and customer_user authentication
+- [x] 3.3 Create base test utilities and helpers
 
 ## 4. Admin E2E Tests
 

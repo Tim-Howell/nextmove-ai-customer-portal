@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   Table,
@@ -29,6 +29,12 @@ interface UserTableProps {
 
 export function UserTable({ users }: UserTableProps) {
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [roleFilter, setRoleFilter] = useState<"all" | "admin" | "staff">("all");
+
+  const filteredUsers = useMemo(() => {
+    if (roleFilter === "all") return users;
+    return users.filter((user) => user.role === roleFilter);
+  }, [users, roleFilter]);
 
   async function handleRoleChange(userId: string, newRole: "admin" | "staff") {
     setLoadingId(userId);
@@ -57,7 +63,29 @@ export function UserTable({ users }: UserTableProps) {
   }
 
   return (
-    <Table>
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-muted-foreground">Filter by role:</span>
+        <Select
+          value={roleFilter}
+          onValueChange={(value) => setRoleFilter(value as "all" | "admin" | "staff")}
+        >
+          <SelectTrigger className="w-32">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Roles</SelectItem>
+            <SelectItem value="admin">Admin</SelectItem>
+            <SelectItem value="staff">Staff</SelectItem>
+          </SelectContent>
+        </Select>
+        {roleFilter !== "all" && (
+          <span className="text-sm text-muted-foreground">
+            Showing {filteredUsers.length} of {users.length} users
+          </span>
+        )}
+      </div>
+      <Table>
       <TableHeader>
         <TableRow>
           <TableHead>Name</TableHead>
@@ -70,7 +98,7 @@ export function UserTable({ users }: UserTableProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {users.map((user) => (
+        {filteredUsers.map((user) => (
           <TableRow key={user.id}>
             <TableCell className="font-medium">
               <div>
@@ -130,6 +158,7 @@ export function UserTable({ users }: UserTableProps) {
           </TableRow>
         ))}
       </TableBody>
-    </Table>
+      </Table>
+    </div>
   );
 }
