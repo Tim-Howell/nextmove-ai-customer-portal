@@ -598,17 +598,17 @@ The MVP is successful when:
 - [x] add images to customers and priorities
 - [x] redesign customer dashboard with company info and contacts
 
-### Phase 16 - Archive Capabilities
-- [ ] add archived_at timestamps to customers, contracts, contacts
-- [ ] implement customer archive with cascade (contracts, contacts, priorities, requests)
-- [ ] implement contract archive functionality
-- [ ] exclude archived items from dropdowns (time entry, priority, request forms)
-- [ ] include archived items in reports (historical data preserved)
-- [ ] add "Show Archived" toggle to customer and contract list views
-- [ ] prevent login for users of archived customers
-- [ ] prevent login for contacts with portal_access_enabled = false
-- [ ] mark priorities/requests as read-only when customer archived
-- [ ] enforce read-only on archived entities (prevent edits)
+### Phase 16 - Archive Capabilities ✓
+- [x] add archived_at timestamps to customers, contracts, contacts
+- [x] implement customer archive with cascade (contracts, contacts, priorities, requests)
+- [x] implement contract archive functionality
+- [x] exclude archived items from dropdowns (time entry, priority, request forms)
+- [x] include archived items in reports (historical data preserved)
+- [x] add "Show Archived" toggle to customer and contract list views
+- [x] prevent login for users of archived customers
+- [x] prevent login for contacts with portal_access_enabled = false
+- [x] mark priorities/requests as read-only when customer archived
+- [x] enforce read-only on archived entities (prevent edits)
 
 ### Phase 17 - Contract Types Enhancement ✓
 - [x] create contract_types table with behavior flags (tracks_hours, has_hour_limit, is_recurring, supports_rollover)
@@ -624,17 +624,17 @@ The MVP is successful when:
 - [ ] add billing model filter to reports (deferred)
 - [ ] period history display on contract detail (deferred)
 
-### Phase 18 - Audit Logging & Error Handling
-- [ ] create audit_logs table with change tracking fields
-- [ ] create database triggers for audited tables
-- [ ] capture user context in audit records
-- [ ] create audit log viewer page (admin only)
-- [ ] add record history component to detail pages
-- [ ] implement error code system (domain-operation-number format)
-- [ ] create error handling utilities
-- [ ] update all server actions with standardized error codes
-- [ ] create consistent error display components
-- [ ] add error logging for debugging
+### Phase 18 - Audit Logging & Error Handling ✓
+- [x] create audit_logs table with change tracking fields
+- [x] create database triggers for audited tables
+- [x] capture user context in audit records
+- [x] create audit log viewer page (admin only)
+- [x] add record history component to detail pages
+- [x] implement error code system (domain-operation-number format)
+- [x] create error handling utilities
+- [x] update all server actions with standardized error codes
+- [x] create consistent error display components
+- [x] add error logging for debugging
 
 ### Phase 20 - Validation, Cleanup, Test, and Go-Live Prep
 - [ ] Review all deferred items and validate completion
@@ -644,6 +644,7 @@ The MVP is successful when:
 - [ ] prepare staging deployment
 - [ ] prepare production deployment checklist
 - [ ] configure custom SMTP in Supabase for production email (Magic Link invitations)
+- [ ] Configure email templates for invitations and magic links. 
 
 ### Deferred Items (to address in relevant phases or Phase 13)
 **From Phase 2:**
