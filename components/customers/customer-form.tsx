@@ -49,7 +49,7 @@ export function CustomerForm({ customer, staffMembers, isAdmin = false }: Custom
     resolver: zodResolver(customerSchema),
     defaultValues: {
       name: customer?.name || "",
-      status: customer?.status || "active",
+      status: (customer?.status === "active" || customer?.status === "inactive") ? customer.status : "active",
       primary_contact_id: customer?.primary_contact_id || null,
       secondary_contact_id: customer?.secondary_contact_id || null,
       notes: customer?.notes || "",
