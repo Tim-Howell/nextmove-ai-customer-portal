@@ -64,8 +64,12 @@ export async function expectPageTitle(page: Page, title: string | RegExp) {
 /**
  * Verify URL contains path
  */
-export async function expectUrl(page: Page, path: string) {
-  await expect(page).toHaveURL(new RegExp(path));
+export async function expectUrl(page: Page, path: string | RegExp) {
+  if (typeof path === "string") {
+    await expect(page).toHaveURL(new RegExp(path));
+  } else {
+    await expect(page).toHaveURL(path);
+  }
 }
 
 /**
