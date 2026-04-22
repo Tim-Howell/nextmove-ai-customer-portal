@@ -324,3 +324,61 @@ export async function getDocumentDownloadUrl(
 
   return { url: data.signedUrl };
 }
+
+export async function archiveContract(id: string) {
+  const supabase = await createClient();
+
+  // Get the archived status ID
+  const { data: archivedStatus } = await supabase
+    .from("reference_values")
+    .select("id")
+    .eq("type", "contract_status")
+    .eq("value", "archived")
+    .single();
+
+  if (!archivedStatus) {
+    return { error: "Archived status not found. Please add 'archived' to contract_status reference values." };
+  }
+
+  const { error } = await supabase
+    .from("contracts")
+    .update({ status_id: archivedStatus.id })
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error archiving contract:", error);
+    return { error: "Failed to archive contract" };
+  }
+
+  revalidatePath("/contracts");
+  return { success: true };
+}
+
+export async function unarchiveContract(id: string) {
+  const supabase = await createClient();
+
+  // Get the active status ID
+  const { data: activeStatus } = await supabase
+    .from("reference_values")
+    .select("id")
+    .eq("type", "contract_status")
+    .eq("value", "active")
+    .single();
+
+  if (!activeStatus) {
+    return { error: "Active status not found" };
+  }
+
+  const { error } = await supabase
+    .from("contracts")
+    .update({ status_id: activeStatus.id })
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error unarchiving contract:", error);
+    return { error: "Failed to unarchive contract" };
+  }
+
+  revalidatePath("/contracts");
+  return { success: true };
+}

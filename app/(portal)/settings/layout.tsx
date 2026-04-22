@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
 const settingsNav = [
   { href: "/settings", label: "General" },
   { href: "/settings/reference-data", label: "Reference Data" },
-  { href: "/settings/users", label: "Users" },
+  { href: "/settings/users", label: "Staff Users" },
+  { href: "/settings/customer-users", label: "Customer Users" },
   { href: "/settings/portal-branding", label: "Portal Branding" },
 ];
 

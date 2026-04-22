@@ -29,21 +29,48 @@ export async function updatePortalSettings(data: PortalSettingsFormData) {
     return { error: validated.error.errors[0]?.message || "Validation failed" };
   }
 
-  const { error } = await supabase
+  // Get the existing settings row (there should only be one)
+  const { data: existing } = await supabase
     .from("portal_settings")
-    .update({
-      organization_name: validated.data.organization_name,
-      website_url: validated.data.website_url || null,
-      logo_url: validated.data.logo_url || null,
-      description: validated.data.description || null,
-      primary_color: validated.data.primary_color,
-      secondary_color: validated.data.secondary_color,
-    })
-    .eq("id", "00000000-0000-0000-0000-000000000000");
+    .select("id")
+    .limit(1)
+    .single();
 
-  if (error) {
-    console.error("Error updating portal settings:", error);
-    return { error: "Failed to update portal settings" };
+  if (!existing) {
+    // Create if doesn't exist
+    const { error: insertError } = await supabase
+      .from("portal_settings")
+      .insert({
+        organization_name: validated.data.organization_name,
+        website_url: validated.data.website_url || null,
+        logo_url: validated.data.logo_url || null,
+        description: validated.data.description || null,
+        primary_color: validated.data.primary_color,
+        secondary_color: validated.data.secondary_color,
+      });
+
+    if (insertError) {
+      console.error("Error creating portal settings:", insertError);
+      return { error: "Failed to create portal settings" };
+    }
+  } else {
+    // Update existing row
+    const { error } = await supabase
+      .from("portal_settings")
+      .update({
+        organization_name: validated.data.organization_name,
+        website_url: validated.data.website_url || null,
+        logo_url: validated.data.logo_url || null,
+        description: validated.data.description || null,
+        primary_color: validated.data.primary_color,
+        secondary_color: validated.data.secondary_color,
+      })
+      .eq("id", existing.id);
+
+    if (error) {
+      console.error("Error updating portal settings:", error);
+      return { error: "Failed to update portal settings" };
+    }
   }
 
   revalidatePath("/settings/portal-branding");

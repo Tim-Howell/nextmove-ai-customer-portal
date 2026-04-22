@@ -70,9 +70,9 @@
 
 ## 9. Final Verification
 
-- [ ] 9.1 Test all features as admin
-- [ ] 9.2 Test all features as staff
-- [ ] 9.3 Test all features as customer_user
-- [ ] 9.4 Verify internal notes hidden from customers
-- [ ] 9.5 Update project.md with Phase 15 completion
-- [ ] 9.6 Commit all changes
+- [x] 9.1 Test all features as admin
+- [x] 9.2 Test all features as staff
+- [x] 9.3 Test all features as customer_user
+- [x] 9.4 Verify internal notes hidden from customers
+- [x] 9.5 Update project.md with Phase 15 completion
+- [x] 9.6 Commit all changes

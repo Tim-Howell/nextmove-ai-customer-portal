@@ -44,6 +44,7 @@ export function TimeEntryForm({
 }: TimeEntryFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [logForSomeoneElse, setLogForSomeoneElse] = useState(false);
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -176,28 +177,46 @@ export function TimeEntryForm({
           </div>
 
           {isInternal && staff.length > 0 && (
-            <div className="space-y-2">
-              <Label htmlFor="staff_id">Log Time For</Label>
-              <Select
-                value={staffId || "self"}
-                onValueChange={(value) => setValue("staff_id", value === "self" ? undefined : value)}
-                disabled={isLoading}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Myself" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="self">Myself</SelectItem>
-                  {staff.map((member) => (
-                    <SelectItem key={member.id} value={member.id}>
-                      {member.full_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                Select a staff member to log time on their behalf
-              </p>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="log_for_someone_else"
+                  checked={logForSomeoneElse}
+                  onCheckedChange={(checked: boolean | "indeterminate") => {
+                    const isChecked = checked === true;
+                    setLogForSomeoneElse(isChecked);
+                    if (!isChecked) {
+                      setValue("staff_id", undefined);
+                    }
+                  }}
+                  disabled={isLoading}
+                />
+                <Label htmlFor="log_for_someone_else" className="font-normal">
+                  Log time for someone else
+                </Label>
+              </div>
+
+              {logForSomeoneElse && (
+                <div className="space-y-2">
+                  <Label htmlFor="staff_id">Staff Member</Label>
+                  <Select
+                    value={staffId || ""}
+                    onValueChange={(value) => setValue("staff_id", value)}
+                    disabled={isLoading}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select staff member" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {staff.map((member) => (
+                        <SelectItem key={member.id} value={member.id}>
+                          {member.full_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
           )}
 

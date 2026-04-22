@@ -22,6 +22,7 @@ import {
 import { Plus, Search, Image as ImageIcon } from "lucide-react";
 import type { CustomerWithContacts } from "@/types/database";
 import { getShowDemoData } from "@/app/actions/settings";
+import { ArchiveCustomerButton } from "@/components/customers/archive-customer-button";
 
 interface CustomersPageProps {
   searchParams: Promise<{
@@ -148,11 +149,19 @@ function CustomerListContent({
                 </TableCell>
                 <TableCell>—</TableCell>
                 <TableCell className="text-right">
-                  <Link href={`/customers/${customer.id}/edit`}>
-                    <Button variant="ghost" size="sm">
-                      Edit
-                    </Button>
-                  </Link>
+                  <div className="flex justify-end gap-1">
+                    <Link href={`/customers/${customer.id}/edit`}>
+                      <Button variant="ghost" size="sm">
+                        Edit
+                      </Button>
+                    </Link>
+                    <ArchiveCustomerButton
+                      customerId={customer.id}
+                      customerName={customer.name}
+                      isArchived={customer.status === "archived"}
+                      variant="icon"
+                    />
+                  </div>
                 </TableCell>
               </TableRow>
             ))

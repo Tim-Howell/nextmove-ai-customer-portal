@@ -25,6 +25,7 @@ import { getProfile } from "@/lib/supabase/profile";
 import type { ContractWithRelations, ReferenceValue, Customer } from "@/types/database";
 import { isHourBasedContract } from "@/lib/validations/contract";
 import { ContractsFilter } from "@/components/contracts/contracts-filter";
+import { ArchiveContractButton } from "@/components/contracts/archive-contract-button";
 
 interface ContractsPageProps {
   searchParams: Promise<{
@@ -128,11 +129,19 @@ function ContractListContent({
                 </TableCell>
                 {isInternal && (
                   <TableCell className="text-right">
-                    <Link href={`/contracts/${contract.id}/edit`}>
-                      <Button variant="ghost" size="sm">
-                        Edit
-                      </Button>
-                    </Link>
+                    <div className="flex justify-end gap-1">
+                      <Link href={`/contracts/${contract.id}/edit`}>
+                        <Button variant="ghost" size="sm">
+                          Edit
+                        </Button>
+                      </Link>
+                      <ArchiveContractButton
+                        contractId={contract.id}
+                        contractName={contract.name}
+                        isArchived={contract.status?.value === "archived"}
+                        variant="icon"
+                      />
+                    </div>
                   </TableCell>
                 )}
               </TableRow>

@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import { Edit, Plus, User, Check, X } from "lucide-react";
 import { DeleteCustomerButton } from "@/components/customers/delete-customer-button";
+import { ArchiveCustomerButton } from "@/components/customers/archive-customer-button";
 import { DeleteContactButton } from "@/components/customers/delete-contact-button";
 import { ContactInvitationStatus } from "@/components/customers/contact-invitation-status";
 import { getInvitationStatus } from "@/app/actions/invitations";
@@ -120,6 +121,11 @@ export default async function CustomerDetailPage({
               Edit
             </Button>
           </Link>
+          <ArchiveCustomerButton
+            customerId={id}
+            customerName={customer.name}
+            isArchived={customer.status === "archived"}
+          />
           {isAdmin && <DeleteCustomerButton customerId={id} customerName={customer.name} />}
         </div>
       </div>

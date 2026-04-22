@@ -19,9 +19,10 @@ import { deleteContract } from "@/app/actions/contracts";
 interface DeleteContractButtonProps {
   contractId: string;
   contractName: string;
+  variant?: "default" | "icon";
 }
 
-export function DeleteContractButton({ contractId, contractName }: DeleteContractButtonProps) {
+export function DeleteContractButton({ contractId, contractName, variant = "default" }: DeleteContractButtonProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,10 +41,16 @@ export function DeleteContractButton({ contractId, contractName }: DeleteContrac
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive">
-          <Trash2 className="mr-2 h-4 w-4" />
-          Delete
-        </Button>
+        {variant === "icon" ? (
+          <Button variant="ghost" size="sm">
+            <Trash2 className="h-4 w-4 text-destructive" />
+          </Button>
+        ) : (
+          <Button variant="destructive">
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
+          </Button>
+        )}
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

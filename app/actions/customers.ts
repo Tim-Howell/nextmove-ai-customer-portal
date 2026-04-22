@@ -186,13 +186,19 @@ export async function deleteCustomerContact(customerId: string, contactId: strin
   return { success: true };
 }
 
-export async function getCustomers() {
+export async function getCustomers(includeArchived = true) {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("customers")
     .select("id, name, status, logo_url, primary_contact_id, secondary_contact_id")
     .order("name");
+
+  if (!includeArchived) {
+    query = query.neq("status", "archived");
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("Error fetching customers:", error);
@@ -200,4 +206,38 @@ export async function getCustomers() {
   }
 
   return (data || []) as { id: string; name: string; status: string; logo_url: string | null; primary_contact_id: string | null; secondary_contact_id: string | null }[];
+}
+
+export async function archiveCustomer(id: string) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("customers")
+    .update({ status: "archived" })
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error archiving customer:", error);
+    return { error: "Failed to archive customer" };
+  }
+
+  revalidatePath("/customers");
+  return { success: true };
+}
+
+export async function unarchiveCustomer(id: string) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("customers")
+    .update({ status: "active" })
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error unarchiving customer:", error);
+    return { error: "Failed to unarchive customer" };
+  }
+
+  revalidatePath("/customers");
+  return { success: true };
 }

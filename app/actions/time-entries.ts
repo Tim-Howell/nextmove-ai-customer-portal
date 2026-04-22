@@ -221,7 +221,7 @@ export async function getRecentTimeEntries(
       *,
       customer:customers(id, name),
       contract:contracts(id, name),
-      staff:profiles(id, full_name),
+      staff:profiles!time_entries_staff_id_fkey(id, full_name),
       category:reference_values!time_entries_category_id_fkey(id, type, value, label)
     `
     )

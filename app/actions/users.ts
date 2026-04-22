@@ -41,7 +41,13 @@ export async function getInternalUsers(
   return data as InternalUser[];
 }
 
-export async function inviteUser(email: string, role: "admin" | "staff") {
+export async function inviteUser(
+  email: string, 
+  role: "admin" | "staff",
+  firstName?: string,
+  lastName?: string,
+  title?: string
+) {
   const supabase = await createClient();
 
   const { data: existingUser } = await supabase
@@ -54,8 +60,18 @@ export async function inviteUser(email: string, role: "admin" | "staff") {
     return { error: "User with this email already exists" };
   }
 
+  const fullName = firstName && lastName 
+    ? `${firstName} ${lastName}` 
+    : firstName || lastName || null;
+
   const { error } = await supabase.auth.admin.inviteUserByEmail(email, {
-    data: { role },
+    data: { 
+      role,
+      first_name: firstName || null,
+      last_name: lastName || null,
+      full_name: fullName,
+      title: title || null,
+    },
   });
 
   if (error) {
@@ -109,6 +125,50 @@ export async function toggleUserActive(userId: string, isActive: boolean) {
 
   revalidatePath("/settings/users");
   return { success: true };
+}
+
+export interface CustomerUser {
+  id: string;
+  email: string;
+  full_name: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  title: string | null;
+  customer_id: string | null;
+  customer_name: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+export async function getCustomerUsers(): Promise<CustomerUser[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select(`
+      id, 
+      email, 
+      full_name, 
+      first_name, 
+      last_name, 
+      title, 
+      customer_id, 
+      is_active, 
+      created_at,
+      customer:customers(name)
+    `)
+    .eq("role", "customer_user")
+    .order("full_name");
+
+  if (error) {
+    console.error("Error fetching customer users:", error);
+    return [];
+  }
+
+  return (data || []).map((user: any) => ({
+    ...user,
+    customer_name: user.customer?.name || null,
+  })) as CustomerUser[];
 }
 
 export async function getUserById(id: string) {

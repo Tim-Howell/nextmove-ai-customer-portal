@@ -41,12 +41,14 @@ A secure web application for NextMove AI staff and customer staff to manage cust
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anon key
    - `SUPABASE_SERVICE_ROLE_KEY` - Your Supabase service role key (server-side only)
 
-5. Start the development server:
+5. Set up Supabase Storage buckets (see [Storage Buckets](#storage-buckets) below)
+
+6. Start the development server:
    ```bash
    pnpm dev
    ```
 
-6. Open [http://localhost:3000](http://localhost:3000)
+7. Open [http://localhost:3000](http://localhost:3000)
 
 ## Scripts
 
@@ -80,3 +82,41 @@ A secure web application for NextMove AI staff and customer staff to manage cust
 3. Deploy
 
 Preview deployments are automatically created for pull requests.
+
+## Storage Buckets
+
+This application requires two Supabase Storage buckets:
+
+### `portal-assets` (Public)
+Used for publicly accessible branding assets:
+- Organization logo
+- Customer logos
+- Priority images
+
+**Setup:**
+1. Create bucket named `portal-assets` in Supabase Storage
+2. Set bucket to **Public**
+3. Run the following SQL to add policies:
+   ```sql
+   -- Allow authenticated users to upload
+   create policy "Allow authenticated uploads to portal-assets"
+   on storage.objects for insert
+   to authenticated
+   with check (bucket_id = 'portal-assets');
+
+   -- Allow public read access
+   create policy "Allow public read access to portal-assets"
+   on storage.objects for select
+   to public
+   using (bucket_id = 'portal-assets');
+   ```
+
+### `portal-documents` (Private)
+Used for secure documents with access control:
+- Contract PDFs
+- Request attachments
+
+**Setup:**
+1. Create bucket named `portal-documents` in Supabase Storage
+2. Keep bucket **Private**
+3. RLS policies control access based on user role and customer association

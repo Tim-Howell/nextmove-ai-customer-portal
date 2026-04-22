@@ -16,6 +16,7 @@ import { getContract, getContractDocuments } from "@/app/actions/contracts";
 import { getTimeEntries } from "@/app/actions/time-entries";
 import { isHourBasedContract } from "@/lib/validations/contract";
 import { DeleteContractButton } from "@/components/contracts/delete-contract-button";
+import { ArchiveContractButton } from "@/components/contracts/archive-contract-button";
 import { ContractDocuments } from "@/components/contracts/contract-documents";
 import { createClient } from "@/lib/supabase/server";
 
@@ -96,6 +97,11 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
                 Edit
               </Button>
             </Link>
+            <ArchiveContractButton
+              contractId={id}
+              contractName={contract.name}
+              isArchived={contract.status?.value === "archived"}
+            />
             {isAdmin && <DeleteContractButton contractId={id} contractName={contract.name} />}
           </div>
         )}

@@ -319,9 +319,16 @@ Keep admin settings simple and table-driven.
 ### 8.3 File Storage
 Use Supabase Storage for MVP file handling.
 
+**Storage Buckets:**
+- `portal-assets` - **Public bucket** for branding assets (organization logo, customer logos, priority images). These files are publicly accessible and displayed in the UI.
+- `portal-documents` - **Private bucket** for secure documents (contract PDFs, request attachments). Access controlled via RLS policies, only accessible to authorized users.
+
 MVP file use cases:
 - optionally upload contract PDFs
 - optionally upload supporting files for requests
+- upload organization logo for portal branding
+- upload customer logos
+- upload priority images
 
 Initial file metadata:
 - file name
