@@ -23,7 +23,7 @@ export async function getContracts(
       `
       *,
       customer:customers(id, name),
-      contract_type:reference_values!contracts_contract_type_id_fkey(id, type, value, label),
+      contract_type:contract_types(id, value, label, description, tracks_hours, has_hour_limit, is_recurring, supports_rollover),
       status:reference_values!contracts_status_id_fkey(id, type, value, label)
     `
     )
@@ -70,7 +70,7 @@ export async function getContract(
       `
       *,
       customer:customers(id, name),
-      contract_type:reference_values!contracts_contract_type_id_fkey(id, type, value, label),
+      contract_type:contract_types(id, value, label, description, tracks_hours, has_hour_limit, is_recurring, supports_rollover),
       status:reference_values!contracts_status_id_fkey(id, type, value, label)
     `
     )
@@ -117,6 +117,13 @@ export async function createContract(data: ContractFormData) {
     total_hours: validated.data.total_hours || null,
     description: validated.data.description || null,
     created_by: user?.id || null,
+    // Billing fields
+    billing_day: validated.data.billing_day || null,
+    hours_per_period: validated.data.hours_per_period || null,
+    rollover_enabled: validated.data.rollover_enabled || false,
+    rollover_expiration_days: validated.data.rollover_expiration_days || null,
+    max_rollover_hours: validated.data.max_rollover_hours || null,
+    fixed_cost: validated.data.fixed_cost || null,
   });
 
   if (error) {
@@ -147,6 +154,13 @@ export async function updateContract(id: string, data: ContractFormData) {
       end_date: validated.data.end_date || null,
       total_hours: validated.data.total_hours || null,
       description: validated.data.description || null,
+      // Billing fields
+      billing_day: validated.data.billing_day || null,
+      hours_per_period: validated.data.hours_per_period || null,
+      rollover_enabled: validated.data.rollover_enabled || false,
+      rollover_expiration_days: validated.data.rollover_expiration_days || null,
+      max_rollover_hours: validated.data.max_rollover_hours || null,
+      fixed_cost: validated.data.fixed_cost || null,
     })
     .eq("id", id);
 
@@ -381,4 +395,21 @@ export async function unarchiveContract(id: string) {
 
   revalidatePath("/contracts");
   return { success: true };
+}
+
+export async function getContractTypes() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("contract_types")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order");
+
+  if (error) {
+    console.error("Error fetching contract types:", error);
+    return [];
+  }
+
+  return data || [];
 }

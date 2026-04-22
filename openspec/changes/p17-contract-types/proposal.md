@@ -3,6 +3,13 @@
 ## Summary
 Implement comprehensive contract type handling to support different billing models: Hours Bucket, Hours Subscription, Fixed Cost, and Service Subscription. Each type has unique properties for hour tracking, refresh cycles, rollover rules, and overage handling.
 
+## Design Decisions
+1. **Reference Values → Contract Types Table**: Replace reference values with a `contract_types` table that has both label AND behavior configuration
+2. **On-Demand Calculation**: Calculate rollover/period hours on-demand when viewing (no stored period records)
+3. **Overage Handling**: Allow entry, show warning at time of entry AND in reports
+4. **Period Start**: Configurable billing_day (1-28) per contract, protected from invalid dates
+5. **Future Types**: Code-driven with predefined types, view-only in UI (no add/modify)
+
 ## Contract Type Definitions
 
 ### 1. Hours Bucket

@@ -89,6 +89,22 @@ export interface CustomerContactWithInvitation extends CustomerContact {
   invitation_status: InvitationStatus;
 }
 
+// Contract Type definition
+export interface ContractType {
+  id: string;
+  value: string;
+  label: string;
+  description: string | null;
+  sort_order: number;
+  is_active: boolean;
+  tracks_hours: boolean;
+  has_hour_limit: boolean;
+  is_recurring: boolean;
+  supports_rollover: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 // Contract types
 export interface Contract {
   id: string;
@@ -100,9 +116,17 @@ export interface Contract {
   end_date: string | null;
   total_hours: number | null;
   description: string | null;
+  is_default: boolean;
   created_by: string | null;
   created_at: string;
   updated_at: string;
+  // Billing fields
+  billing_day: number | null;
+  hours_per_period: number | null;
+  rollover_enabled: boolean;
+  rollover_expiration_days: number | null;
+  max_rollover_hours: number | null;
+  fixed_cost: number | null;
 }
 
 export interface ContractWithRelations extends Contract {
@@ -110,10 +134,18 @@ export interface ContractWithRelations extends Contract {
     id: string;
     name: string;
   };
-  contract_type?: ReferenceValue;
+  contract_type?: ContractType;
   status?: ReferenceValue;
+  // Calculated fields
   hours_used?: number;
   hours_remaining?: number | null;
+  // Subscription-specific calculated fields
+  current_period_start?: string;
+  current_period_end?: string;
+  period_hours_used?: number;
+  period_hours_remaining?: number | null;
+  rollover_hours_available?: number;
+  is_over_limit?: boolean;
 }
 
 export interface ContractDocument {

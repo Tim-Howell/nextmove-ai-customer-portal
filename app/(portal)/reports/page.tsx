@@ -1,9 +1,10 @@
 import { Suspense } from "react";
 import { getProfile } from "@/lib/supabase/profile";
-import { getTimeEntriesReport, getCustomersForReport, getContractsForReport, getStaffForReport, type ReportFilters } from "@/app/actions/reports";
+import { getTimeEntriesReport, getCustomersForReport, getContractsForReport, getStaffForReport, getContractsWithOverages, type ReportFilters } from "@/app/actions/reports";
 import { getReferenceValues } from "@/app/actions/reference";
 import { ReportFilters as ReportFiltersComponent } from "@/components/reports/report-filters";
 import { ReportSummaryCards } from "@/components/reports/report-summary";
+import { ContractOverageAlerts } from "@/components/reports/contract-overage-alerts";
 import { TimeEntriesReportTable } from "./time-entries-table";
 
 interface ReportsPageProps {
@@ -38,12 +39,13 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
     staffIds,
   };
 
-  const [{ summary, entries }, customers, categories, contracts, staff] = await Promise.all([
+  const [{ summary, entries }, customers, categories, contracts, staff, overages] = await Promise.all([
     getTimeEntriesReport(filters),
     isInternal ? getCustomersForReport() : Promise.resolve([]),
     getReferenceValues("time_category"),
     getContractsForReport(filters.customerId),
     isInternal ? getStaffForReport() : Promise.resolve([]),
+    getContractsWithOverages(filters.customerId),
   ]);
 
   return (
@@ -69,6 +71,8 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
       </Suspense>
 
       <ReportSummaryCards summary={summary} />
+
+      <ContractOverageAlerts overages={overages} />
 
       <TimeEntriesReportTable entries={entries} showCustomer={isInternal} />
     </div>

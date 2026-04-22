@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -19,15 +20,15 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import {
   contractSchema,
   type ContractFormData,
-  isHourBasedContract,
+  CONTRACT_TYPE_VALUES,
 } from "@/lib/validations/contract";
 import { createContract, updateContract } from "@/app/actions/contracts";
-import type { Contract, Customer, ReferenceValue } from "@/types/database";
+import type { Contract, Customer, ReferenceValue, ContractType } from "@/types/database";
 
 interface ContractFormProps {
   contract?: Contract;
   customers: Customer[];
-  contractTypes: ReferenceValue[];
+  contractTypes: ContractType[];
   contractStatuses: ReferenceValue[];
 }
 
@@ -57,15 +58,31 @@ export function ContractForm({
       end_date: contract?.end_date || "",
       total_hours: contract?.total_hours || null,
       description: contract?.description || "",
+      // Billing fields
+      billing_day: contract?.billing_day || null,
+      hours_per_period: contract?.hours_per_period || null,
+      rollover_enabled: contract?.rollover_enabled || false,
+      rollover_expiration_days: contract?.rollover_expiration_days || null,
+      max_rollover_hours: contract?.max_rollover_hours || null,
+      fixed_cost: contract?.fixed_cost || null,
     },
   });
 
   const customerId = watch("customer_id");
   const contractTypeId = watch("contract_type_id");
   const statusId = watch("status_id");
+  const rolloverEnabled = watch("rollover_enabled");
 
   const selectedType = contractTypes.find((t) => t.id === contractTypeId);
-  const showHoursField = selectedType ? isHourBasedContract(selectedType.value) : false;
+  const typeValue = selectedType?.value || "";
+  
+  // Determine which fields to show based on contract type
+  const isHoursBucket = typeValue === CONTRACT_TYPE_VALUES.HOURS_BUCKET;
+  const isHoursSubscription = typeValue === CONTRACT_TYPE_VALUES.HOURS_SUBSCRIPTION;
+  const isFixedCost = typeValue === CONTRACT_TYPE_VALUES.FIXED_COST;
+  const showTotalHours = isHoursBucket;
+  const showSubscriptionFields = isHoursSubscription;
+  const showFixedCost = isFixedCost;
 
   async function onSubmit(data: ContractFormData) {
     setIsLoading(true);
@@ -200,9 +217,10 @@ export function ContractForm({
             </div>
           </div>
 
-          {showHoursField && (
+          {/* Hours Bucket: Total Hours */}
+          {showTotalHours && (
             <div className="space-y-2">
-              <Label htmlFor="total_hours">Total Hours</Label>
+              <Label htmlFor="total_hours">Total Hours in Bucket *</Label>
               <Input
                 id="total_hours"
                 type="number"
@@ -210,11 +228,126 @@ export function ContractForm({
                 min="0"
                 {...register("total_hours")}
                 disabled={isLoading}
-                placeholder="Enter total hours for this contract"
+                placeholder="Total hours available in this bucket"
               />
               {errors.total_hours && (
                 <p className="text-sm text-destructive">{errors.total_hours.message}</p>
               )}
+              <p className="text-xs text-muted-foreground">
+                Fixed pool of hours to be used within the contract period
+              </p>
+            </div>
+          )}
+
+          {/* Hours Subscription: Period Hours & Billing Day */}
+          {showSubscriptionFields && (
+            <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
+              <h4 className="font-medium">Subscription Settings</h4>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="hours_per_period">Hours Per Month *</Label>
+                  <Input
+                    id="hours_per_period"
+                    type="number"
+                    step="0.5"
+                    min="0"
+                    {...register("hours_per_period")}
+                    disabled={isLoading}
+                    placeholder="e.g., 10"
+                  />
+                  {errors.hours_per_period && (
+                    <p className="text-sm text-destructive">{errors.hours_per_period.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="billing_day">Billing Day (1-28) *</Label>
+                  <Input
+                    id="billing_day"
+                    type="number"
+                    min="1"
+                    max="28"
+                    {...register("billing_day")}
+                    disabled={isLoading}
+                    placeholder="e.g., 1"
+                  />
+                  {errors.billing_day && (
+                    <p className="text-sm text-destructive">{errors.billing_day.message}</p>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Day of month when hours refresh
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="rollover_enabled"
+                    checked={rolloverEnabled}
+                    onCheckedChange={(checked) => setValue("rollover_enabled", checked === true)}
+                    disabled={isLoading}
+                  />
+                  <Label htmlFor="rollover_enabled" className="font-normal">
+                    Enable rollover of unused hours
+                  </Label>
+                </div>
+
+                {rolloverEnabled && (
+                  <div className="grid grid-cols-2 gap-4 pl-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="rollover_expiration_days">Rollover Expiration (days)</Label>
+                      <Input
+                        id="rollover_expiration_days"
+                        type="number"
+                        min="1"
+                        {...register("rollover_expiration_days")}
+                        disabled={isLoading}
+                        placeholder="e.g., 90"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Leave empty to expire at end of contract
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="max_rollover_hours">Max Rollover Hours</Label>
+                      <Input
+                        id="max_rollover_hours"
+                        type="number"
+                        step="0.5"
+                        min="0"
+                        {...register("max_rollover_hours")}
+                        disabled={isLoading}
+                        placeholder="e.g., 20"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Maximum hours that can accumulate
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Fixed Cost */}
+          {showFixedCost && (
+            <div className="space-y-2">
+              <Label htmlFor="fixed_cost">Contract Value ($)</Label>
+              <Input
+                id="fixed_cost"
+                type="number"
+                step="0.01"
+                min="0"
+                {...register("fixed_cost")}
+                disabled={isLoading}
+                placeholder="e.g., 5000.00"
+              />
+              <p className="text-xs text-muted-foreground">
+                Fixed price for reference. Hours are tracked but not billed by hour.
+              </p>
             </div>
           )}
 

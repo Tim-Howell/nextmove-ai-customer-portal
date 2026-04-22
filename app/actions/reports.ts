@@ -295,3 +295,107 @@ export async function getStaffForReport(): Promise<{ id: string; full_name: stri
 
   return (data || []) as { id: string; full_name: string }[];
 }
+
+export interface ContractOverageInfo {
+  id: string;
+  name: string;
+  customer_name: string;
+  contract_type_label: string;
+  hours_used: number;
+  hours_limit: number;
+  hours_over: number;
+  is_subscription: boolean;
+}
+
+export async function getContractsWithOverages(customerId?: string): Promise<ContractOverageInfo[]> {
+  const supabase = await createClient();
+  const profile = await getProfile();
+  const isInternal = profile?.role === "admin" || profile?.role === "staff";
+
+  // Get contracts with hour limits
+  let query = supabase
+    .from("contracts")
+    .select(`
+      id,
+      name,
+      total_hours,
+      hours_per_period,
+      billing_day,
+      start_date,
+      customer:customers(name),
+      contract_type:contract_types(value, label)
+    `);
+
+  if (!isInternal && profile?.customer_id) {
+    query = query.eq("customer_id", profile.customer_id);
+  } else if (customerId) {
+    query = query.eq("customer_id", customerId);
+  }
+
+  const { data: contracts, error } = await query;
+  if (error || !contracts) return [];
+
+  const overages: ContractOverageInfo[] = [];
+
+  for (const contract of contracts as any[]) {
+    const typeValue = contract.contract_type?.value;
+    
+    // Only check contracts with hour limits
+    if (typeValue !== "hours_bucket" && typeValue !== "hours_subscription") {
+      continue;
+    }
+
+    // Get time entries for this contract
+    const { data: entries } = await supabase
+      .from("time_entries")
+      .select("hours, entry_date")
+      .eq("contract_id", contract.id);
+
+    if (!entries) continue;
+
+    const isSubscription = typeValue === "hours_subscription";
+    let hoursUsed = 0;
+    let hoursLimit = 0;
+
+    if (isSubscription) {
+      // Calculate current period hours
+      const billingDay = contract.billing_day || 1;
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      const day = today.getDate();
+
+      let periodStart: Date;
+      if (day >= billingDay) {
+        periodStart = new Date(year, month, billingDay);
+      } else {
+        periodStart = new Date(year, month - 1, billingDay);
+      }
+
+      hoursUsed = entries
+        .filter((e: any) => new Date(e.entry_date) >= periodStart)
+        .reduce((sum: number, e: any) => sum + Number(e.hours), 0);
+      hoursLimit = contract.hours_per_period || 0;
+    } else {
+      // Hours bucket - total hours
+      hoursUsed = entries.reduce((sum: number, e: any) => sum + Number(e.hours), 0);
+      hoursLimit = contract.total_hours || 0;
+    }
+
+    const hoursOver = hoursUsed - hoursLimit;
+    if (hoursOver > 0) {
+      overages.push({
+        id: contract.id,
+        name: contract.name,
+        customer_name: contract.customer?.name || "Unknown",
+        contract_type_label: contract.contract_type?.label || "Unknown",
+        hours_used: hoursUsed,
+        hours_limit: hoursLimit,
+        hours_over: hoursOver,
+        is_subscription: isSubscription,
+      });
+    }
+  }
+
+  return overages.sort((a, b) => b.hours_over - a.hours_over);
+}

@@ -3,6 +3,7 @@ import { getProfile } from "@/lib/supabase/profile";
 import { TimeEntryForm } from "@/components/time-logs/time-entry-form";
 import { getReferenceValues } from "@/app/actions/reference";
 import type { Customer } from "@/types/database";
+import type { ContractWithHoursInfo } from "@/components/time-logs/contract-hours-context";
 
 interface NewTimeEntryPageProps {
   searchParams: Promise<{
@@ -21,7 +22,7 @@ async function getCustomers(): Promise<Customer[]> {
   return (data || []) as Customer[];
 }
 
-async function getContracts(): Promise<{ id: string; name: string; customer_id: string; is_default?: boolean }[]> {
+async function getContracts(): Promise<ContractWithHoursInfo[]> {
   const supabase = await createClient();
   
   // Get archived status ID to filter it out
@@ -34,15 +35,61 @@ async function getContracts(): Promise<{ id: string; name: string; customer_id: 
 
   let query = supabase
     .from("contracts")
-    .select("id, name, customer_id, is_default")
+    .select(`
+      id, 
+      name, 
+      customer_id, 
+      is_default,
+      total_hours,
+      hours_per_period,
+      billing_day,
+      start_date,
+      end_date,
+      rollover_enabled,
+      rollover_expiration_days,
+      max_rollover_hours,
+      contract_type:contract_types(value)
+    `)
     .order("name");
 
   if (archivedStatus) {
     query = query.neq("status_id", archivedStatus.id);
   }
 
-  const { data } = await query;
-  return data || [];
+  const { data: contracts } = await query;
+  if (!contracts) return [];
+
+  // Fetch time entries for each contract to calculate hours
+  const contractsWithEntries = await Promise.all(
+    contracts.map(async (contract: any) => {
+      const { data: entries } = await supabase
+        .from("time_entries")
+        .select("hours, entry_date")
+        .eq("contract_id", contract.id);
+
+      return {
+        id: contract.id,
+        name: contract.name,
+        customer_id: contract.customer_id,
+        is_default: contract.is_default,
+        contract_type_value: contract.contract_type?.value,
+        total_hours: contract.total_hours,
+        hours_per_period: contract.hours_per_period,
+        billing_day: contract.billing_day,
+        start_date: contract.start_date,
+        end_date: contract.end_date,
+        rollover_enabled: contract.rollover_enabled,
+        rollover_expiration_days: contract.rollover_expiration_days,
+        max_rollover_hours: contract.max_rollover_hours,
+        time_entries: (entries || []).map((e: any) => ({
+          hours: Number(e.hours),
+          entry_date: e.entry_date,
+        })),
+      };
+    })
+  );
+
+  return contractsWithEntries;
 }
 
 async function getStaff(): Promise<{ id: string; full_name: string }[]> {

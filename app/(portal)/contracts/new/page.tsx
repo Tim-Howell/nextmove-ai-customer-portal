@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { ContractForm } from "@/components/contracts/contract-form";
 import { getReferenceValues } from "@/app/actions/reference";
-import type { Customer, ReferenceValue } from "@/types/database";
+import { getContractTypes } from "@/app/actions/contracts";
+import type { Customer } from "@/types/database";
 
 async function getCustomers(): Promise<Customer[]> {
   const supabase = await createClient();
@@ -16,7 +17,7 @@ async function getCustomers(): Promise<Customer[]> {
 export default async function NewContractPage() {
   const [customers, contractTypes, contractStatuses] = await Promise.all([
     getCustomers(),
-    getReferenceValues("contract_type"),
+    getContractTypes(),
     getReferenceValues("contract_status"),
   ]);
 

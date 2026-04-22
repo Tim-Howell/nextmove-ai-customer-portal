@@ -11,13 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft, Edit, FileText, Clock } from "lucide-react";
+import { ArrowLeft, Edit, FileText } from "lucide-react";
 import { getContract, getContractDocuments } from "@/app/actions/contracts";
 import { getTimeEntries } from "@/app/actions/time-entries";
-import { isHourBasedContract } from "@/lib/validations/contract";
 import { DeleteContractButton } from "@/components/contracts/delete-contract-button";
 import { ArchiveContractButton } from "@/components/contracts/archive-contract-button";
 import { ContractDocuments } from "@/components/contracts/contract-documents";
+import { ContractHoursStats } from "@/components/contracts/contract-hours-stats";
 import { createClient } from "@/lib/supabase/server";
 
 interface ContractDetailPageProps {
@@ -67,9 +67,12 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
 
   const isInternal = userRole === "admin" || userRole === "staff";
   const isAdmin = userRole === "admin";
-  const isHourBased = contract.contract_type?.value
-    ? isHourBasedContract(contract.contract_type.value)
-    : false;
+  
+  // Prepare time entries for hours calculation
+  const timeEntriesForCalc = timeEntries.map(entry => ({
+    hours: Number(entry.hours),
+    entry_date: entry.entry_date,
+  }));
 
   return (
     <div className="space-y-6">
@@ -153,46 +156,10 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
           </CardContent>
         </Card>
 
-        {isHourBased && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                Hours Summary
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <p className="text-2xl font-bold">{contract.total_hours || 0}</p>
-                  <p className="text-sm text-muted-foreground">Total</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{contract.hours_used?.toFixed(1) || 0}</p>
-                  <p className="text-sm text-muted-foreground">Used</p>
-                </div>
-                <div>
-                  <p className={`text-2xl font-bold ${(contract.hours_remaining ?? 0) < 0 ? "text-destructive" : ""}`}>
-                    {contract.hours_remaining?.toFixed(1) ?? "—"}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Remaining</p>
-                </div>
-              </div>
-              {contract.total_hours && (
-                <div className="mt-4">
-                  <div className="h-2 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className={`h-full ${(contract.hours_remaining ?? 0) < 0 ? "bg-destructive" : "bg-primary"}`}
-                      style={{
-                        width: `${Math.min(100, ((contract.hours_used || 0) / contract.total_hours) * 100)}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
+        <ContractHoursStats 
+          contract={contract} 
+          timeEntries={timeEntriesForCalc} 
+        />
       </div>
 
       <ContractDocuments

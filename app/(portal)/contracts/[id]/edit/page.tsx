@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ContractForm } from "@/components/contracts/contract-form";
 import { ContractDocuments } from "@/components/contracts/contract-documents";
-import { getContract, getContractDocuments } from "@/app/actions/contracts";
+import { getContract, getContractDocuments, getContractTypes } from "@/app/actions/contracts";
 import { getReferenceValues } from "@/app/actions/reference";
 import type { Customer } from "@/types/database";
 
@@ -27,7 +27,7 @@ export default async function EditContractPage({ params }: EditContractPageProps
     getContract(id),
     getContractDocuments(id),
     getCustomers(),
-    getReferenceValues("contract_type"),
+    getContractTypes(),
     getReferenceValues("contract_status"),
   ]);
 

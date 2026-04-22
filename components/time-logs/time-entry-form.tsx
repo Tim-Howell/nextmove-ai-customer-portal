@@ -19,12 +19,13 @@ import {
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { timeEntrySchema, type TimeEntryFormData } from "@/lib/validations/time-entry";
 import { createTimeEntry, updateTimeEntry } from "@/app/actions/time-entries";
+import { ContractHoursContext, type ContractWithHoursInfo } from "./contract-hours-context";
 import type { TimeEntry, Customer, ReferenceValue } from "@/types/database";
 
 interface TimeEntryFormProps {
   timeEntry?: TimeEntry;
   customers: Customer[];
-  contracts: { id: string; name: string; customer_id: string; is_default?: boolean }[];
+  contracts: ContractWithHoursInfo[];
   categories: ReferenceValue[];
   staff?: { id: string; full_name: string }[];
   defaultCustomerId?: string;
@@ -74,10 +75,15 @@ export function TimeEntryForm({
   const categoryId = watch("category_id");
   const isBillable = watch("is_billable");
   const staffId = watch("staff_id");
+  const hours = watch("hours");
 
   const filteredContracts = customerId
     ? contracts.filter((c) => c.customer_id === customerId)
     : [];
+  
+  const selectedContract = contractId 
+    ? contracts.find((c) => c.id === contractId) 
+    : null;
 
   // Auto-select default contract when customer changes
   useEffect(() => {
@@ -175,6 +181,13 @@ export function TimeEntryForm({
               <p className="text-sm text-destructive">{errors.contract_id.message}</p>
             )}
           </div>
+
+          {selectedContract && (
+            <ContractHoursContext 
+              contract={selectedContract} 
+              pendingHours={hours ? Number(hours) : 0}
+            />
+          )}
 
           {isInternal && staff.length > 0 && (
             <div className="space-y-4">
