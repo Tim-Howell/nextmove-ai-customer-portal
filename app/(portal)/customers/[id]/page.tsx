@@ -17,6 +17,7 @@ import { DeleteCustomerButton } from "@/components/customers/delete-customer-but
 import { ArchiveCustomerButton } from "@/components/customers/archive-customer-button";
 import { DeleteContactButton } from "@/components/customers/delete-contact-button";
 import { ContactInvitationStatus } from "@/components/customers/contact-invitation-status";
+import { RecordHistory } from "@/components/audit/record-history";
 import { getInvitationStatus } from "@/app/actions/invitations";
 import type { CustomerWithContacts, CustomerContact, InvitationStatus, CustomerInvitation } from "@/types/database";
 
@@ -250,6 +251,14 @@ export default async function CustomerDetailPage({
           )}
         </CardContent>
       </Card>
+
+      {isInternal && (
+        <RecordHistory
+          tableName="customers"
+          recordId={id}
+          title="Change History"
+        />
+      )}
     </div>
   );
 }

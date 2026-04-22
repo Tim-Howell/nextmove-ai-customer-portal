@@ -563,7 +563,7 @@ The MVP is successful when:
 - [x] optionally notify internal users of new requests
 - [x] optionally notify customers of request status changes
 
-### Phase 13 - Quality, Security, and Launch Prep
+### Phase 13 - Quality, Security, and Seed Data
 - [ ] validate RLS policies (customers cannot delete/modify contacts, profiles, contracts, hours - only submit requests and view data)
 - [ ] test role boundaries
 - [ ] add loading and error states
@@ -574,11 +574,7 @@ The MVP is successful when:
 - [ ] seed demo data
 - [ ] test customer search and filtering with demo data
 - [ ] test customer pagination with demo data
-- [ ] consolidate all database migrations before go-live (after feature complete, before customer data)
-- [ ] prepare staging deployment
-- [ ] prepare production deployment checklist
-- [ ] validate all past changes are 100% complete including any deferred items
-- [ ] configure custom SMTP in Supabase for production email (Magic Link invitations)
+
 
 ### Phase 14 - Customer UX Refinement
 - [x] hide customer dropdown filters from customer_user views (time logs, reports)
@@ -639,6 +635,15 @@ The MVP is successful when:
 - [ ] update all server actions with standardized error codes
 - [ ] create consistent error display components
 - [ ] add error logging for debugging
+
+### Phase 20 - Validation, Cleanup, Test, and Go-Live Prep
+- [ ] Review all deferred items and validate completion
+- [ ] Do comprehensive testing of all features. Create automated tests for future testing
+- [ ] validate all past changes are 100% complete including any deferred items
+- [ ] consolidate all database migrations before go-live (after feature complete, before customer data)
+- [ ] prepare staging deployment
+- [ ] prepare production deployment checklist
+- [ ] configure custom SMTP in Supabase for production email (Magic Link invitations)
 
 ### Deferred Items (to address in relevant phases or Phase 13)
 **From Phase 2:**

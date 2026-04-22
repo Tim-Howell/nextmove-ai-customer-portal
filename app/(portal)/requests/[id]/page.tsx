@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Edit, MessageSquare, Calendar, Lock } from "lucide-react";
 import { getRequest } from "@/app/actions/requests";
 import { DeleteRequestButton } from "@/components/requests/delete-request-button";
+import { RecordHistory } from "@/components/audit/record-history";
 import { createClient } from "@/lib/supabase/server";
 
 interface RequestDetailPageProps {
@@ -158,6 +159,14 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
             <p className="whitespace-pre-wrap">{request.internal_notes}</p>
           </CardContent>
         </Card>
+      )}
+
+      {isInternal && (
+        <RecordHistory
+          tableName="requests"
+          recordId={id}
+          title="Change History"
+        />
       )}
     </div>
   );

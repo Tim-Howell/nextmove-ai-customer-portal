@@ -5,13 +5,17 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { customerSchema, customerContactSchema } from "@/lib/validations/customer";
 import type { CustomerFormData, CustomerContactFormData } from "@/lib/validations/customer";
+import { ERROR_CODES, logError } from "@/lib/errors";
 
 export async function createCustomer(data: CustomerFormData) {
   const supabase = await createClient();
 
   const validated = customerSchema.safeParse(data);
   if (!validated.success) {
-    return { error: validated.error.errors[0]?.message || "Validation failed" };
+    return { 
+      error: validated.error.errors[0]?.message || "Validation failed",
+      code: ERROR_CODES.CUS_CRE_002,
+    };
   }
 
   // Create the customer
@@ -30,8 +34,8 @@ export async function createCustomer(data: CustomerFormData) {
     .single();
 
   if (error || !newCustomer) {
-    console.error("Error creating customer:", error);
-    return { error: "Failed to create customer" };
+    logError(error, "createCustomer");
+    return { error: "Failed to create customer", code: ERROR_CODES.CUS_CRE_002 };
   }
 
   // Auto-create default "On-Demand / Off Contract" contract
@@ -222,8 +226,8 @@ export async function archiveCustomer(id: string) {
     .eq("id", id);
 
   if (customerError) {
-    console.error("Error archiving customer:", customerError);
-    return { error: "Failed to archive customer" };
+    logError(customerError, "archiveCustomer");
+    return { error: "Failed to archive customer", code: ERROR_CODES.CUS_ARC_002 };
   }
 
   // 2. Cascade: Archive all customer contracts

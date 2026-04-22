@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Edit, Flag, Calendar } from "lucide-react";
 import { getPriority } from "@/app/actions/priorities";
 import { DeletePriorityButton } from "@/components/priorities/delete-priority-button";
+import { RecordHistory } from "@/components/audit/record-history";
 import { createClient } from "@/lib/supabase/server";
 
 interface PriorityDetailPageProps {
@@ -171,6 +172,14 @@ export default async function PriorityDetailPage({ params }: PriorityDetailPageP
             <p className="whitespace-pre-wrap">{priority.description}</p>
           </CardContent>
         </Card>
+      )}
+
+      {isInternal && (
+        <RecordHistory
+          tableName="priorities"
+          recordId={id}
+          title="Change History"
+        />
       )}
     </div>
   );

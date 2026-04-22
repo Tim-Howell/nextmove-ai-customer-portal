@@ -8,6 +8,8 @@ export {
   type AppErrorOptions,
 } from "./app-error";
 
+import { isAppError as checkAppError, AppError } from "./app-error";
+
 export function logError(error: unknown, context?: string): void {
   const prefix = context ? `[${context}]` : "";
   
@@ -31,4 +33,25 @@ export function formatErrorForClient(error: unknown): { error: string; code?: st
   }
   
   return { error: "An unexpected error occurred" };
+}
+
+type ActionResult<T> = { data?: T; error?: string; code?: string };
+
+export function withErrorHandling<TArgs extends unknown[], TResult>(
+  action: (...args: TArgs) => Promise<ActionResult<TResult>>,
+  context?: string
+): (...args: TArgs) => Promise<ActionResult<TResult>> {
+  return async (...args: TArgs): Promise<ActionResult<TResult>> => {
+    try {
+      return await action(...args);
+    } catch (error) {
+      logError(error, context);
+      
+      if (checkAppError(error)) {
+        return { error: error.message, code: error.code };
+      }
+      
+      return formatErrorForClient(error);
+    }
+  };
 }

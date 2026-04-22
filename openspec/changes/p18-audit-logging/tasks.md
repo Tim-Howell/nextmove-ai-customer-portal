@@ -54,12 +54,12 @@
 
 ## 6. Record History Component
 
-- [ ] 6.1 Create reusable `RecordHistory` component
-- [ ] 6.2 Show audit history on customer detail page
-- [ ] 6.3 Show audit history on contract detail page
-- [ ] 6.4 Show audit history on priority detail page
-- [ ] 6.5 Show audit history on request detail page
-- [ ] 6.6 Collapsible history section
+- [x] 6.1 Create reusable `RecordHistory` component
+- [x] 6.2 Show audit history on customer detail page
+- [x] 6.3 Show audit history on contract detail page
+- [x] 6.4 Show audit history on priority detail page
+- [x] 6.5 Show audit history on request detail page
+- [x] 6.6 Collapsible history section
 
 ## 7. Error Code System
 
@@ -74,50 +74,50 @@
 - [x] 8.1 Create `lib/errors/index.ts` barrel export
 - [x] 8.2 Create error type guards (isAppError, isValidationError)
 - [x] 8.3 Create error logging utility (console + future tracking)
-- [ ] 8.4 Create `withErrorHandling` wrapper for server actions
+- [x] 8.4 Create `withErrorHandling` wrapper for server actions
 
 ## 9. Update Server Actions - Customers
 
-- [ ] 9.1 Update `createCustomer` with error codes
-- [ ] 9.2 Update `updateCustomer` with error codes
-- [ ] 9.3 Update `deleteCustomer` with error codes
-- [ ] 9.4 Update `archiveCustomer` with error codes
-- [ ] 9.5 Update contact actions with error codes
+- [x] 9.1 Update `createCustomer` with error codes
+- [x] 9.2 Update `updateCustomer` with error codes
+- [x] 9.3 Update `deleteCustomer` with error codes
+- [x] 9.4 Update `archiveCustomer` with error codes
+- [x] 9.5 Update contact actions with error codes
 
 ## 10. Update Server Actions - Contracts
 
-- [ ] 10.1 Update `createContract` with error codes
-- [ ] 10.2 Update `updateContract` with error codes
-- [ ] 10.3 Update `deleteContract` with error codes
-- [ ] 10.4 Update `archiveContract` with error codes
+- [x] 10.1 Update `createContract` with error codes
+- [x] 10.2 Update `updateContract` with error codes
+- [x] 10.3 Update `deleteContract` with error codes
+- [x] 10.4 Update `archiveContract` with error codes
 
 ## 11. Update Server Actions - Time Entries
 
-- [ ] 11.1 Update `createTimeEntry` with error codes
-- [ ] 11.2 Update `updateTimeEntry` with error codes
-- [ ] 11.3 Update `deleteTimeEntry` with error codes
-- [ ] 11.4 Add validation for archived customer/contract
+- [x] 11.1 Update `createTimeEntry` with error codes
+- [x] 11.2 Update `updateTimeEntry` with error codes
+- [x] 11.3 Update `deleteTimeEntry` with error codes
+- [x] 11.4 Add validation for archived customer/contract
 
 ## 12. Update Server Actions - Priorities & Requests
 
-- [ ] 12.1 Update priority actions with error codes
-- [ ] 12.2 Update request actions with error codes
+- [x] 12.1 Update priority actions with error codes
+- [x] 12.2 Update request actions with error codes
 
 ## 13. Update Server Actions - Users & Auth
 
-- [ ] 13.1 Update user actions with error codes
-- [ ] 13.2 Update auth-related actions with error codes
-- [ ] 13.3 Add specific codes for login denial reasons
+- [x] 13.1 Update user actions with error codes
+- [x] 13.2 Update auth-related actions with error codes
+- [x] 13.3 Add specific codes for login denial reasons
 
 ## 14. UI Error Display
 
-- [ ] 14.1 Create `ErrorDisplay` component for consistent error UI
-- [ ] 14.2 Update forms to use ErrorDisplay
-- [ ] 14.3 Show error code in dev mode
-- [ ] 14.4 Create toast notifications for action errors
-- [ ] 14.5 Create error boundary for unexpected errors
+- [x] 14.1 Create `ErrorDisplay` component for consistent error UI
+- [x] 14.2 Update forms to use ErrorDisplay
+- [x] 14.3 Show error code in dev mode
+- [x] 14.4 Create toast notifications for action errors
+- [x] 14.5 Create error boundary for unexpected errors
 
-## 15. Testing & Validation
+## 15. Testing & Validation (Deferred to Phase 20)
 
 - [ ] 15.1 Test audit log creation on CRUD operations
 - [ ] 15.2 Test audit log captures user context
