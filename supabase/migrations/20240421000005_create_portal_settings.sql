@@ -20,14 +20,13 @@ comment on column public.portal_settings.description is 'Organization descriptio
 comment on column public.portal_settings.primary_color is 'Primary brand color';
 comment on column public.portal_settings.secondary_color is 'Secondary brand color';
 
--- Insert default settings
+-- Insert default settings (only if table is empty)
 insert into public.portal_settings (organization_name, website_url, description)
-values (
+select 
   'NextMove AI',
   'https://nextmove-ai.com',
   'AI-powered customer portal for streamlined service management'
-)
-on conflict do nothing;
+where not exists (select 1 from public.portal_settings);
 
 -- Create function to update updated_at timestamp
 create or replace function public.update_portal_settings_updated_at()

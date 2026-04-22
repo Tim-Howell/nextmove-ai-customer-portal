@@ -16,11 +16,11 @@
 
 - [x] 3.1 Create migration for default "On-Demand / Off Contract" contract per customer
 - [x] 3.2 Add seed script to create default contracts for existing customers
-- [ ] 3.3 Update contract creation to auto-create default contract
+- [x] 3.3 Update contract creation to auto-create default contract
 - [x] 3.4 Make contract required in time entry form validation
 - [x] 3.5 Add "entered_for" field to time_entries table (staff_id reference)
 - [x] 3.6 Update time entry form to allow staff selection (staff only)
-- [ ] 3.7 Update time entry display to show who entered vs who performed
+- [x] 3.7 Update time entry display to show who entered vs who performed
 
 ## 4. Internal Notes
 
@@ -70,9 +70,9 @@
 
 ## 9. Final Verification
 
-- [x] 9.1 Test all features as admin
-- [x] 9.2 Test all features as staff
-- [x] 9.3 Test all features as customer_user
-- [x] 9.4 Verify internal notes hidden from customers
-- [x] 9.5 Update project.md with Phase 15 completion
-- [x] 9.6 Commit all changes
+- [ ] 9.1 Test all features as admin
+- [ ] 9.2 Test all features as staff
+- [ ] 9.3 Test all features as customer_user
+- [ ] 9.4 Verify internal notes hidden from customers
+- [ ] 9.5 Update project.md with Phase 15 completion
+- [ ] 9.6 Commit all changes

@@ -122,7 +122,19 @@ function TimeEntryListContent({
                       "—"
                     )}
                   </TableCell>
-                  {isInternal && <TableCell>{entry.staff?.full_name || "—"}</TableCell>}
+                  {isInternal && (
+                    <TableCell>
+                      <div>
+                        {entry.staff?.full_name || "—"}
+                        {entry.entered_by_profile && 
+                         entry.entered_by !== entry.staff_id && (
+                          <span className="block text-xs text-muted-foreground">
+                            (entered by {entry.entered_by_profile.full_name})
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                  )}
                   <TableCell>
                     <Badge variant="outline">{entry.category?.label || "—"}</Badge>
                   </TableCell>

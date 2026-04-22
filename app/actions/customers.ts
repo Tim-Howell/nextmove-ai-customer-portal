@@ -14,19 +14,45 @@ export async function createCustomer(data: CustomerFormData) {
     return { error: validated.error.errors[0]?.message || "Validation failed" };
   }
 
-  const { error } = await supabase.from("customers").insert({
-    name: validated.data.name,
-    status: validated.data.status,
-    primary_contact_id: validated.data.primary_contact_id || null,
-    secondary_contact_id: validated.data.secondary_contact_id || null,
-    notes: validated.data.notes || null,
-    internal_notes: validated.data.internal_notes || null,
-    logo_url: validated.data.logo_url || null,
-  });
+  // Create the customer
+  const { data: newCustomer, error } = await supabase
+    .from("customers")
+    .insert({
+      name: validated.data.name,
+      status: validated.data.status,
+      primary_contact_id: validated.data.primary_contact_id || null,
+      secondary_contact_id: validated.data.secondary_contact_id || null,
+      notes: validated.data.notes || null,
+      internal_notes: validated.data.internal_notes || null,
+      logo_url: validated.data.logo_url || null,
+    })
+    .select("id")
+    .single();
 
-  if (error) {
+  if (error || !newCustomer) {
     console.error("Error creating customer:", error);
     return { error: "Failed to create customer" };
+  }
+
+  // Auto-create default "On-Demand / Off Contract" contract
+  const { data: refValues } = await supabase
+    .from("reference_values")
+    .select("id, type, value")
+    .in("type", ["contract_status", "contract_type"])
+    .in("value", ["active", "hours_subscription"]);
+
+  const activeStatusId = refValues?.find(r => r.type === "contract_status" && r.value === "active")?.id;
+  const contractTypeId = refValues?.find(r => r.type === "contract_type" && r.value === "hours_subscription")?.id;
+
+  if (activeStatusId && contractTypeId) {
+    await supabase.from("contracts").insert({
+      customer_id: newCustomer.id,
+      name: "On-Demand / Off Contract",
+      contract_type_id: contractTypeId,
+      status_id: activeStatusId,
+      is_default: true,
+      start_date: new Date().toISOString().split("T")[0],
+    });
   }
 
   revalidatePath("/customers");

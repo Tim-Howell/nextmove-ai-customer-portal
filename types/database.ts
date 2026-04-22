@@ -140,6 +140,7 @@ export interface TimeEntry {
   customer_id: string;
   contract_id: string | null;
   staff_id: string;
+  entered_by: string | null;
   entry_date: string;
   hours: number;
   category_id: string;
@@ -163,6 +164,10 @@ export interface TimeEntryWithRelations extends TimeEntry {
     id: string;
     full_name: string | null;
   };
+  entered_by_profile?: {
+    id: string;
+    full_name: string | null;
+  } | null;
   category?: ReferenceValue;
 }
 

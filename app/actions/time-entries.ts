@@ -28,7 +28,8 @@ export async function getTimeEntries(
       *,
       customer:customers(id, name),
       contract:contracts(id, name),
-      staff:profiles(id, full_name),
+      staff:profiles!time_entries_staff_id_fkey(id, full_name),
+      entered_by_profile:profiles!time_entries_entered_by_fkey(id, full_name),
       category:reference_values!time_entries_category_id_fkey(id, type, value, label)
     `
     )
@@ -80,7 +81,8 @@ export async function getTimeEntry(
       *,
       customer:customers(id, name),
       contract:contracts(id, name),
-      staff:profiles(id, full_name),
+      staff:profiles!time_entries_staff_id_fkey(id, full_name),
+      entered_by_profile:profiles!time_entries_entered_by_fkey(id, full_name),
       category:reference_values!time_entries_category_id_fkey(id, type, value, label)
     `
     )
@@ -115,11 +117,13 @@ export async function createTimeEntry(data: TimeEntryFormData) {
     customer_id: validated.data.customer_id,
     contract_id: validated.data.contract_id,
     staff_id: validated.data.staff_id || user.id,
+    entered_by: user.id,
     entry_date: validated.data.entry_date,
     hours: validated.data.hours,
     category_id: validated.data.category_id,
     description: validated.data.description || null,
     is_billable: validated.data.is_billable,
+    internal_notes: validated.data.internal_notes || null,
   });
 
   if (error) {
