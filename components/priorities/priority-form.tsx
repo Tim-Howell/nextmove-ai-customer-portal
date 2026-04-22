@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { ImageUpload } from "@/components/ui/image-upload";
 import { prioritySchema, type PriorityFormData } from "@/lib/validations/priority";
 import { createPriority, updatePriority } from "@/app/actions/priorities";
 import type { Priority, Customer, ReferenceValue } from "@/types/database";
@@ -49,6 +50,7 @@ export function PriorityForm({
       title: priority?.title || "",
       description: priority?.description || "",
       internal_notes: priority?.internal_notes || "",
+      image_url: priority?.image_url || "",
       status_id: priority?.status_id || "",
       priority_level_id: priority?.priority_level_id || "",
       due_date: priority?.due_date || "",
@@ -203,6 +205,16 @@ export function PriorityForm({
             <p className="text-xs text-muted-foreground">
               These notes are only visible to NextMove AI staff members
             </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Image</Label>
+            <ImageUpload
+              value={watch("image_url")}
+              onChange={(url) => setValue("image_url", url)}
+              disabled={isLoading}
+              aspectRatio="wide"
+            />
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">

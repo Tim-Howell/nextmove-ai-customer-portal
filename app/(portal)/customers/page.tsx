@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, Image as ImageIcon } from "lucide-react";
 import type { CustomerWithContacts } from "@/types/database";
 import { getShowDemoData } from "@/app/actions/settings";
 
@@ -92,6 +92,7 @@ function CustomerListContent({
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-12"></TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Primary Contact</TableHead>
@@ -101,13 +102,26 @@ function CustomerListContent({
         <TableBody>
           {customers.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={4} className="text-center text-muted-foreground">
+              <TableCell colSpan={5} className="text-center text-muted-foreground">
                 No customers found
               </TableCell>
             </TableRow>
           ) : (
             customers.map((customer) => (
               <TableRow key={customer.id}>
+                <TableCell>
+                  {customer.logo_url ? (
+                    <img
+                      src={customer.logo_url}
+                      alt={`${customer.name} logo`}
+                      className="w-8 h-8 object-contain rounded"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 bg-muted rounded flex items-center justify-center">
+                      <ImageIcon className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                  )}
+                </TableCell>
                 <TableCell className="font-medium">
                   <Link
                     href={`/customers/${customer.id}`}

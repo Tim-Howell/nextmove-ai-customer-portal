@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ImageUpload } from "@/components/ui/image-upload";
 import { customerSchema, type CustomerFormData } from "@/lib/validations/customer";
 import { createCustomer, updateCustomer } from "@/app/actions/customers";
 import type { Customer } from "@/types/database";
@@ -52,6 +53,7 @@ export function CustomerForm({ customer, staffMembers, isAdmin = false }: Custom
       secondary_contact_id: customer?.secondary_contact_id || null,
       notes: customer?.notes || "",
       internal_notes: customer?.internal_notes || "",
+      logo_url: customer?.logo_url || "",
       is_demo: customer?.is_demo || false,
     },
   });
@@ -162,6 +164,16 @@ export function CustomerForm({ customer, staffMembers, isAdmin = false }: Custom
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Logo</Label>
+            <ImageUpload
+              value={watch("logo_url")}
+              onChange={(url) => setValue("logo_url", url)}
+              disabled={isLoading}
+              aspectRatio="wide"
+            />
           </div>
 
           <div className="space-y-2">

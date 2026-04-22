@@ -7,6 +7,7 @@ export const customerSchema = z.object({
   secondary_contact_id: z.string().uuid().nullable().optional(),
   notes: z.string().nullable().optional(),
   internal_notes: z.string().nullable().optional(),
+  logo_url: z.string().url("Invalid URL").nullable().optional(),
   is_demo: z.boolean().optional(),
 });
 

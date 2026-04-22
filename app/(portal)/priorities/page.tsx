@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus } from "lucide-react";
+import { Plus, Image as ImageIcon } from "lucide-react";
 import { getPriorities } from "@/app/actions/priorities";
 import { getReferenceValues } from "@/app/actions/reference";
 import { PrioritiesFilter } from "@/components/priorities/priorities-filter";
@@ -126,6 +126,7 @@ export default async function PrioritiesPage({ searchParams }: PrioritiesPagePro
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-12"></TableHead>
             <TableHead>Title</TableHead>
             {isInternal && <TableHead>Customer</TableHead>}
             <TableHead>Status</TableHead>
@@ -137,13 +138,26 @@ export default async function PrioritiesPage({ searchParams }: PrioritiesPagePro
         <TableBody>
           {priorities.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={isInternal ? 6 : 4} className="text-center text-muted-foreground">
+              <TableCell colSpan={isInternal ? 7 : 5} className="text-center text-muted-foreground">
                 No priorities found
               </TableCell>
             </TableRow>
           ) : (
             priorities.map((priority) => (
               <TableRow key={priority.id}>
+                <TableCell>
+                  {priority.image_url ? (
+                    <img
+                      src={priority.image_url}
+                      alt={`${priority.title} image`}
+                      className="w-8 h-8 object-cover rounded"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 bg-muted rounded flex items-center justify-center">
+                      <ImageIcon className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                  )}
+                </TableCell>
                 <TableCell>
                   <Link
                     href={`/priorities/${priority.id}`}

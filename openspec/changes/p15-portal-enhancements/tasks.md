@@ -43,10 +43,10 @@
 
 ## 6. Portal Branding
 
-- [ ] 6.1 Create portal_settings table (org name, website, logo_url, description)
-- [ ] 6.2 Create portal settings page (admin only)
-- [ ] 6.3 Upload logo to Supabase storage
-- [ ] 6.4 Display portal branding in header/footer as appropriate
+- [x] 6.1 Create portal_settings table (org name, website, logo_url, description)
+- [x] 6.2 Create portal settings page (admin only)
+- [x] 6.3 Upload logo to Supabase storage
+- [x] 6.4 Display portal branding in header/footer as appropriate
 
 ## 7. Visual Enhancements (Images)
 

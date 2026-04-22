@@ -8,6 +8,7 @@ export interface Customer {
   secondary_contact_id: string | null;
   notes: string | null;
   internal_notes: string | null;
+  logo_url: string | null;
   is_demo: boolean;
   created_at: string;
   updated_at: string;
@@ -172,6 +173,7 @@ export interface Priority {
   title: string;
   description: string | null;
   internal_notes: string | null;
+  image_url: string | null;
   status_id: string;
   priority_level_id: string;
   due_date: string | null;

@@ -5,6 +5,7 @@ export const prioritySchema = z.object({
   title: z.string().min(1, "Title is required").max(200, "Title too long"),
   description: z.string().max(2000, "Description too long").optional().nullable(),
   internal_notes: z.string().max(2000, "Internal notes too long").optional().nullable(),
+  image_url: z.string().url("Invalid URL").nullable().optional(),
   status_id: z.string().uuid("Invalid status"),
   priority_level_id: z.string().uuid("Invalid priority level"),
   due_date: z.string().optional().nullable(),

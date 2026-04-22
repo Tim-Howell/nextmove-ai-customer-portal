@@ -20,6 +20,8 @@ export async function createCustomer(data: CustomerFormData) {
     primary_contact_id: validated.data.primary_contact_id || null,
     secondary_contact_id: validated.data.secondary_contact_id || null,
     notes: validated.data.notes || null,
+    internal_notes: validated.data.internal_notes || null,
+    logo_url: validated.data.logo_url || null,
   });
 
   if (error) {
@@ -47,6 +49,8 @@ export async function updateCustomer(id: string, data: CustomerFormData) {
       primary_contact_id: validated.data.primary_contact_id || null,
       secondary_contact_id: validated.data.secondary_contact_id || null,
       notes: validated.data.notes || null,
+      internal_notes: validated.data.internal_notes || null,
+      logo_url: validated.data.logo_url || null,
     })
     .eq("id", id);
 
