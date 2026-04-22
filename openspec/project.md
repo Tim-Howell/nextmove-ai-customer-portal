@@ -614,19 +614,19 @@ The MVP is successful when:
 - [ ] mark priorities/requests as read-only when customer archived
 - [ ] enforce read-only on archived entities (prevent edits)
 
-### Phase 17 - Contract Types Enhancement
-- [ ] add billing_model field (hours_bucket, hours_subscription, fixed_cost, service_subscription, on_demand)
-- [ ] add subscription fields (hours_per_period, refresh_day, refresh_cycle)
-- [ ] add rollover fields (rollover_enabled, rollover_expiration_days, max_rollover_hours)
-- [ ] create contract_period_hours table for subscription tracking
-- [ ] implement hours bucket calculation (total - used, overage warning)
-- [ ] implement subscription period calculation (current period hours)
-- [ ] implement rollover logic (use rollover first, expiration tracking)
-- [ ] update contract form with conditional fields per billing model
-- [ ] update contract detail page with type-specific stats
-- [ ] show hours context in time entry form
-- [ ] add billing model filter to reports
-- [ ] migrate existing contracts to appropriate billing_model
+### Phase 17 - Contract Types Enhancement ✓
+- [x] create contract_types table with behavior flags (tracks_hours, has_hour_limit, is_recurring, supports_rollover)
+- [x] add billing fields to contracts (billing_day, hours_per_period, rollover_enabled, rollover_expiration_days, max_rollover_hours, fixed_cost)
+- [x] migrate existing contracts from reference_values to contract_types table
+- [x] implement hours bucket calculation (total - used, overage warning)
+- [x] implement subscription period calculation (based on billing_day 1-28)
+- [x] implement rollover logic (use rollover first, expiration tracking, max cap)
+- [x] update contract form with conditional fields per contract type
+- [x] update contract detail page with type-specific stats (ContractHoursStats component)
+- [x] show hours context in time entry form (ContractHoursContext component)
+- [x] add overage alerts to reports page (ContractOverageAlerts component)
+- [ ] add billing model filter to reports (deferred)
+- [ ] period history display on contract detail (deferred)
 
 ### Phase 18 - Audit Logging & Error Handling
 - [ ] create audit_logs table with change tracking fields
