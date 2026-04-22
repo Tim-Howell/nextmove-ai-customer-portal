@@ -12,7 +12,7 @@ export const contractSchema = z.object({
   // Billing fields
   billing_day: z.coerce.number().min(1).max(28).nullable().optional(),
   hours_per_period: z.coerce.number().positive().nullable().optional(),
-  rollover_enabled: z.boolean().default(false),
+  rollover_enabled: z.boolean().optional().default(false),
   rollover_expiration_days: z.coerce.number().positive().nullable().optional(),
   max_rollover_hours: z.coerce.number().positive().nullable().optional(),
   fixed_cost: z.coerce.number().positive().nullable().optional(),
