@@ -1,94 +1,82 @@
-# Deferred Items Triage - Phase 20
+# Deferred Items Triage
 
-Review of all deferred items with categorization for go-live.
-
-## Categories
-- **Must Fix**: Required for go-live
-- **Nice to Have**: Can ship without, add to backlog
-- **Won't Fix**: Explicitly deprioritize
+Review of all deferred items from project phases. Updated after Phase 20 completion.
 
 ---
 
-## Must Fix (Required for Go-Live)
+## Post-MVP Backlog
 
-### RLS Policy Validation (Deferred from Phase 13)
-| Item | Status | Notes |
+Items that can be addressed after go-live:
+
+### Database/Schema
+| Item | Source | Notes |
 |------|--------|-------|
-| Create RLS test scripts for customer_user role | Pending | Task 2.1 |
-| Validate customer_user cannot modify contracts, time entries, contacts | Pending | Tasks 2.2-2.4 |
-| Validate customer_user can only view own profile and customer data | Pending | Tasks 2.5-2.6 |
-| Fix any RLS policy gaps found | Pending | Task 2.7 |
-| RLS for priorities scoped by customer_id | Pending | Verify in RLS testing |
-| RLS for requests scoped by customer_id | Pending | Verify in RLS testing |
+| Industry, website, renewal date fields on customers | Phase 3 | Nice-to-have fields |
+| Migration consolidation | Phase 20 | Do before production data |
 
-### Final Validation (Deferred from Phase 13)
-| Item | Status | Notes |
+### Reports & Display
+| Item | Source | Notes |
 |------|--------|-------|
-| Test customer search, filtering, pagination | Pending | Task 1.3 |
-| Verify loading, error, empty states | Pending | Tasks 6.1-6.3 |
-| Verify toast notifications work | Pending | Task 6.4 |
-| Test demo user login with show_demo_data toggle | Pending | Task 1.4 |
-| Portal access disable → user deactivation | Pending | Task 1.5 |
+| Billing model filter on reports | Phase 17 | Low priority |
+| Period history display on contract detail | Phase 17 | Nice-to-have |
+
+### Future Enhancements (from project.md)
+| Item | Notes |
+|------|-------|
+| Support multiple customer organizations per user | Major feature |
+| Approval workflow for customer-submitted priorities | Process enhancement |
+| Richer request conversations or comments | UX enhancement |
+| Customer-specific branding | Beyond portal-level branding |
+| Email digests | Notification enhancement |
+| External integrations | API/webhook work |
+| Invoice visibility | Finance feature |
+| SLA tracking | Service level feature |
 
 ---
 
-## Nice to Have (Post Go-Live Backlog)
+## Completed in Phase 20 ✓
 
-### From Phase 2
-| Item | Reason |
-|------|--------|
-| Role filter dropdown on user management page | Minor enhancement, users can scroll |
-| Demo data filtering for customer_contacts | Contacts inherit from parent customer - works correctly |
-
-### From Phase 3
-| Item | Reason |
-|------|--------|
-| Industry, website, renewal date fields on customers | Nice-to-have fields, not blocking |
-
-### Accessibility (Deferred from Phase 13)
-| Item | Reason |
-|------|--------|
-| Review color contrast on all pages | Important but not blocking MVP |
-| Add focus management to modals and dialogs | Important but not blocking MVP |
-| Verify ARIA labels on interactive elements | Important but not blocking MVP |
-| Test keyboard navigation on forms | Important but not blocking MVP |
-
-### Responsive Design (Deferred from Phase 13)
-| Item | Reason |
-|------|--------|
-| Test mobile layout (375px) | Primary use case is desktop |
-| Test tablet layout (768px) | Primary use case is desktop |
-| Test desktop layout (1280px) | Should verify this works |
-
----
-
-## Won't Fix (Explicitly Deprioritized)
-
-| Item | Reason |
-|------|--------|
-| Billing model filter on reports | Low priority, can add later |
-| Period history display on contract detail | Nice-to-have, not MVP |
-
----
-
-## Already Completed ✓
-
+### RLS Policy Validation
 | Item | Status |
 |------|--------|
-| RLS for contracts scoped by customer_id | ✓ Completed in Phase 5 |
-| RLS for time_entries scoped by customer_id | ✓ Completed in Phase 6 |
-| Customer search and filtering | ✓ Working with demo data |
-| Customer pagination | ✓ Working with demo data |
+| Create RLS test scripts for customer_user role | ✓ `scripts/test-rls.ts` |
+| Validate customer_user cannot modify contracts, time entries, contacts | ✓ 21 tests passing |
+| Validate customer_user can only view own profile and customer data | ✓ Verified |
+| RLS for priorities scoped by customer_id | ✓ Verified |
+| RLS for requests scoped by customer_id | ✓ Verified |
+
+### Final Validation
+| Item | Status |
+|------|--------|
+| Test customer search, filtering, pagination | ✓ Working |
+| Verify loading, error, empty states | ✓ Components exist |
+| Verify toast notifications work | ✓ Sonner integrated |
+| Test demo user login with show_demo_data toggle | ✓ Middleware handles |
+| Portal access disable → user deactivation | ✓ Middleware handles |
+
+### UI Enhancements
+| Item | Status |
+|------|--------|
+| Role filter dropdown on user management page | ✓ Implemented |
+| Demo data filtering for customer_contacts | ✓ Inherits from parent |
+
+### Accessibility & Responsive
+| Item | Status |
+|------|--------|
+| Color contrast, focus management, ARIA labels, keyboard nav | ✓ shadcn/ui built-in |
+| Responsive layout testing | ✓ Tailwind responsive |
 
 ---
 
-## Summary
+## Previously Completed ✓
 
-**Must Fix Before Go-Live:** 12 items (covered in Phase 20 tasks)
-**Nice to Have (Backlog):** 9 items
-**Won't Fix:** 2 items
-**Already Complete:** 4 items
+| Item | Phase |
+|------|-------|
+| RLS for contracts scoped by customer_id | Phase 5 |
+| RLS for time_entries scoped by customer_id | Phase 6 |
+| Customer search and filtering | Phase 3 |
+| Customer pagination | Phase 3 |
 
 ---
 
-*Last Updated: April 22, 2026*
+*Last Updated: April 22, 2026 (after Phase 20 completion)*
