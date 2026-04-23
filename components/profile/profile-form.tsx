@@ -17,6 +17,7 @@ import {
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { z } from "zod";
 import { updateUser } from "@/app/actions/users";
+import { updatePassword } from "@/app/actions/auth";
 import type { Profile } from "@/lib/supabase/profile";
 
 const profileSchema = z.object({
@@ -38,6 +39,12 @@ export function ProfileForm({ profile, customers }: ProfileFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [isPasswordLoading, setIsPasswordLoading] = useState(false);
 
   const {
     register,
@@ -157,22 +164,109 @@ export function ProfileForm({ profile, customers }: ProfileFormProps) {
           </div>
 
           <div className="pt-4 border-t">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium">Password</p>
-                <p className="text-xs text-muted-foreground">
-                  Change your account password
-                </p>
+            {!showPasswordForm ? (
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium">Password</p>
+                  <p className="text-xs text-muted-foreground">
+                    Change your account password
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowPasswordForm(true)}
+                >
+                  Change Password
+                </Button>
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => router.push("/forgot-password")}
-              >
-                Change Password
-              </Button>
-            </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-sm font-medium">Change Password</p>
+                {passwordError && (
+                  <p className="text-sm text-destructive">{passwordError}</p>
+                )}
+                {passwordSuccess && (
+                  <p className="text-sm text-green-600">Password updated successfully!</p>
+                )}
+                <div className="space-y-2">
+                  <Label htmlFor="new-password">New Password</Label>
+                  <Input
+                    id="new-password"
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    disabled={isPasswordLoading}
+                    placeholder="Enter new password"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password">Confirm Password</Label>
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    disabled={isPasswordLoading}
+                    placeholder="Confirm new password"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setShowPasswordForm(false);
+                      setNewPassword("");
+                      setConfirmPassword("");
+                      setPasswordError(null);
+                      setPasswordSuccess(false);
+                    }}
+                    disabled={isPasswordLoading}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={isPasswordLoading || !newPassword || !confirmPassword}
+                    onClick={async () => {
+                      setPasswordError(null);
+                      setPasswordSuccess(false);
+                      
+                      if (newPassword.length < 6) {
+                        setPasswordError("Password must be at least 6 characters");
+                        return;
+                      }
+                      if (newPassword !== confirmPassword) {
+                        setPasswordError("Passwords do not match");
+                        return;
+                      }
+                      
+                      setIsPasswordLoading(true);
+                      const result = await updatePassword(newPassword);
+                      setIsPasswordLoading(false);
+                      
+                      if (result.error) {
+                        setPasswordError(result.error);
+                      } else {
+                        setPasswordSuccess(true);
+                        setNewPassword("");
+                        setConfirmPassword("");
+                        setTimeout(() => {
+                          setShowPasswordForm(false);
+                          setPasswordSuccess(false);
+                        }, 2000);
+                      }
+                    }}
+                  >
+                    {isPasswordLoading ? "Updating..." : "Update Password"}
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="text-sm text-muted-foreground pt-2">

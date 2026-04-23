@@ -56,12 +56,6 @@ export async function GET(request: Request) {
         data.user.user_metadata
       );
       
-      // Check if this is a password recovery flow
-      // We check the type param passed from the login page redirect
-      if (type === "recovery") {
-        return NextResponse.redirect(`${origin}/reset-password`);
-      }
-      
       return NextResponse.redirect(`${origin}${next}`);
     }
   }
@@ -79,11 +73,6 @@ export async function GET(request: Request) {
         data.user.email,
         data.user.user_metadata
       );
-      
-      // For password recovery, redirect to reset-password page
-      if (type === "recovery") {
-        return NextResponse.redirect(`${origin}/reset-password`);
-      }
       
       return NextResponse.redirect(`${origin}${next}`);
     }

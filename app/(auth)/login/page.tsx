@@ -88,28 +88,6 @@ function LoginContent() {
     }
   }, [searchParams]);
 
-  // Handle auth code redirect (e.g., from password reset)
-  const code = searchParams.get("code");
-  useEffect(() => {
-    if (code) {
-      // Redirect to auth callback to process the code
-      const type = searchParams.get("type") || "recovery";
-      window.location.href = `/auth/callback?code=${code}&type=${type}`;
-    }
-  }, [code, searchParams]);
-
-  // Show loading state while redirecting for auth code
-  if (code) {
-    return (
-      <Card className="w-full">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl">Processing...</CardTitle>
-          <CardDescription>Please wait while we verify your request.</CardDescription>
-        </CardHeader>
-      </Card>
-    );
-  }
-
   const {
     register,
     handleSubmit,
@@ -234,15 +212,7 @@ function LoginContent() {
               )}
             </div>
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-accent hover:underline"
-                >
-                  Forgot password?
-                </Link>
-              </div>
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -273,6 +243,9 @@ function LoginContent() {
               <Mail className="mr-2 h-4 w-4" />
               Use Magic Link instead
             </Button>
+            <p className="text-xs text-muted-foreground italic text-center">
+              Forgot password? Login with magic link and reset your password in your profile settings.
+            </p>
           </CardFooter>
         </form>
       </Card>
