@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { createInternalNote } from "@/app/actions/internal-notes";
 import type { InternalNoteEntityType } from "@/types/database";
-import { Plus, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 interface AddNoteFormProps {
   entityType: InternalNoteEntityType;
@@ -14,7 +14,6 @@ interface AddNoteFormProps {
 }
 
 export function AddNoteForm({ entityType, entityId, onNoteAdded }: AddNoteFormProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const [noteText, setNoteText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,39 +35,24 @@ export function AddNoteForm({ entityType, entityId, onNoteAdded }: AddNoteFormPr
 
     if (result.success) {
       setNoteText("");
-      setIsOpen(false);
       onNoteAdded?.();
     } else {
       setError(result.error || "Failed to add note");
     }
   }
 
-  if (!isOpen) {
-    return (
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setIsOpen(true)}
-        className="gap-2"
-      >
-        <Plus className="h-4 w-4" />
-        Add Note
-      </Button>
-    );
-  }
-
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <Textarea
-        placeholder="Enter your note..."
+        placeholder="Add an internal note..."
         value={noteText}
         onChange={(e) => setNoteText(e.target.value)}
         rows={3}
         disabled={isSubmitting}
-        autoFocus
+        className="w-full"
       />
       {error && <p className="text-sm text-destructive">{error}</p>}
-      <div className="flex gap-2">
+      <div className="flex justify-end">
         <Button type="submit" size="sm" disabled={isSubmitting || !noteText.trim()}>
           {isSubmitting ? (
             <>
@@ -76,21 +60,8 @@ export function AddNoteForm({ entityType, entityId, onNoteAdded }: AddNoteFormPr
               Saving...
             </>
           ) : (
-            "Save Note"
+            "Add Note"
           )}
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => {
-            setIsOpen(false);
-            setNoteText("");
-            setError(null);
-          }}
-          disabled={isSubmitting}
-        >
-          Cancel
         </Button>
       </div>
     </form>

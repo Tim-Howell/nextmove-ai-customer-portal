@@ -259,11 +259,11 @@ export default async function CustomerDetailPage({
 
         <Card>
           <CardHeader>
-            <CardTitle>Notes</CardTitle>
+            <CardTitle>Description</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-              {customer.notes || "No notes"}
+              {customer.notes || "No description"}
             </p>
           </CardContent>
         </Card>

@@ -318,12 +318,12 @@ export function CustomerForm({ customer, staffMembers, customerContacts = [], is
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
+            <Label htmlFor="notes">Description</Label>
             <Textarea
               id="notes"
               {...register("notes")}
               disabled={isLoading}
-              placeholder="Additional notes about this customer"
+              placeholder="Description of this customer"
               rows={4}
             />
           </div>

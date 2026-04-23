@@ -30,18 +30,18 @@ export function InternalNotesSection({ entityType, entityId }: InternalNotesSect
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+      <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-lg">
           <StickyNote className="h-5 w-5" />
           Internal Notes
         </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
         <AddNoteForm
           entityType={entityType}
           entityId={entityId}
           onNoteAdded={fetchNotes}
         />
-      </CardHeader>
-      <CardContent>
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Loading notes...</p>
         ) : notes.length === 0 ? (
