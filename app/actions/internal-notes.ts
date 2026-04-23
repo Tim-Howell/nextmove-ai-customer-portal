@@ -63,7 +63,8 @@ export async function createInternalNote(
   // Validate input
   const validationResult = internalNoteSchema.safeParse(data);
   if (!validationResult.success) {
-    return { success: false, error: validationResult.error.errors[0].message };
+    const firstError = validationResult.error.errors[0];
+    return { success: false, error: firstError?.message || "Validation failed" };
   }
 
   const { error } = await supabase.from("internal_notes").insert({
