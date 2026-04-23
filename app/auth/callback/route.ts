@@ -48,7 +48,12 @@ export async function GET(request: Request) {
   if (code) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (!error && data.user) {
+    if (error) {
+      console.error("Code exchange error:", error.message);
+      return NextResponse.redirect(`${origin}/login?error=auth_callback_error&error_code=${error.code || 'unknown'}&error_description=${encodeURIComponent(error.message)}`);
+    }
+
+    if (data.user) {
       await handleCustomerUserSetup(
         supabase,
         data.user.id,
@@ -66,7 +71,12 @@ export async function GET(request: Request) {
       type: type as "magiclink" | "email" | "signup" | "invite" | "recovery",
     });
 
-    if (!error && data.user) {
+    if (error) {
+      console.error("OTP verification error:", error.message);
+      return NextResponse.redirect(`${origin}/login?error=auth_callback_error&error_code=${error.code || 'unknown'}&error_description=${encodeURIComponent(error.message)}`);
+    }
+
+    if (data.user) {
       await handleCustomerUserSetup(
         supabase,
         data.user.id,
@@ -78,5 +88,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(`${origin}/login?error=auth_callback_error`);
+  return NextResponse.redirect(`${origin}/login?error=auth_callback_error&error_description=No+code+or+token+provided`);
 }
