@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { getProfile } from "@/app/actions/users";
+import { getProfile } from "@/lib/supabase/profile";
 import { internalNoteSchema, type InternalNoteFormData } from "@/lib/validations/internal-note";
 import type { InternalNoteEntityType, InternalNoteWithAuthor } from "@/types/database";
 import { revalidatePath } from "next/cache";
