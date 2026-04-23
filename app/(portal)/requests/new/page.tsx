@@ -1,16 +1,29 @@
 import { createClient } from "@/lib/supabase/server";
 import { RequestForm } from "@/components/requests/request-form";
 import { getReferenceValues } from "@/app/actions/reference";
+import { getShowDemoData } from "@/app/actions/settings";
 import type { Customer } from "@/types/database";
+
+interface NewRequestPageProps {
+  searchParams: Promise<{ customerId?: string }>;
+}
 
 async function getCustomers(): Promise<Customer[]> {
   const supabase = await createClient();
-  const { data } = await supabase
+  const showDemoData = await getShowDemoData();
+  
+  let query = supabase
     .from("customers")
-    .select("id, name")
+    .select("id, name, is_demo")
     .eq("status", "active")
     .is("archived_at", null)
     .order("name");
+  
+  if (!showDemoData) {
+    query = query.eq("is_demo", false);
+  }
+  
+  const { data } = await query;
   return (data || []) as Customer[];
 }
 
@@ -31,7 +44,8 @@ async function getCurrentUserRole(): Promise<{ role: string; customerId: string 
   };
 }
 
-export default async function NewRequestPage() {
+export default async function NewRequestPage({ searchParams }: NewRequestPageProps) {
+  const { customerId } = await searchParams;
   const { role } = await getCurrentUserRole();
   const isInternal = role === "admin" || role === "staff";
 
@@ -46,6 +60,7 @@ export default async function NewRequestPage() {
         customers={customers}
         statuses={statuses}
         isInternal={isInternal}
+        defaultCustomerId={customerId}
       />
     </div>
   );

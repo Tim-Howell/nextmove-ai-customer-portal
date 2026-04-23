@@ -39,13 +39,19 @@ function LoginSkeleton() {
     <Card className="w-full">
       <CardHeader className="space-y-1 text-center">
         <div className="flex justify-center mb-4">
-          <div className="text-2xl font-bold text-primary">NextMove AI</div>
+          <div className="h-16 w-16 bg-muted rounded-full animate-pulse" />
         </div>
+        <div className="text-2xl font-bold text-primary">Loading...</div>
         <CardTitle className="text-2xl">Sign in</CardTitle>
-        <CardDescription>Loading...</CardDescription>
+        <CardDescription>Please wait...</CardDescription>
       </CardHeader>
     </Card>
   );
+}
+
+interface Branding {
+  organization_name: string;
+  logo_url: string | null;
 }
 
 function LoginContent() {
@@ -56,6 +62,23 @@ function LoginContent() {
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [magicLinkEmail, setMagicLinkEmail] = useState("");
+  const [branding, setBranding] = useState<Branding>({ organization_name: "NextMove AI", logo_url: null });
+
+  // Fetch branding settings
+  useEffect(() => {
+    async function fetchBranding() {
+      try {
+        const res = await fetch("/api/branding");
+        if (res.ok) {
+          const data = await res.json();
+          setBranding(data);
+        }
+      } catch (e) {
+        // Use defaults on error
+      }
+    }
+    fetchBranding();
+  }, []);
 
   // Check for error in URL params (from middleware redirect)
   useEffect(() => {
@@ -117,9 +140,12 @@ function LoginContent() {
     return (
       <Card className="w-full">
         <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="text-2xl font-bold text-primary">NextMove AI</div>
-          </div>
+          {branding.logo_url && (
+            <div className="flex justify-center mb-4">
+              <img src={branding.logo_url} alt={branding.organization_name} className="h-16 w-16 object-contain" />
+            </div>
+          )}
+          <div className="text-2xl font-bold text-primary">{branding.organization_name}</div>
           <CardTitle className="text-2xl">Check your email</CardTitle>
           <CardDescription>
             We sent a magic link to <strong>{magicLinkEmail}</strong>
@@ -153,9 +179,12 @@ function LoginContent() {
     return (
       <Card className="w-full">
         <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="text-2xl font-bold text-primary">NextMove AI</div>
-          </div>
+          {branding.logo_url && (
+            <div className="flex justify-center mb-4">
+              <img src={branding.logo_url} alt={branding.organization_name} className="h-16 w-16 object-contain" />
+            </div>
+          )}
+          <div className="text-2xl font-bold text-primary">{branding.organization_name}</div>
           <CardTitle className="text-2xl">Sign in with password</CardTitle>
           <CardDescription>
             Enter your email and password to access your account
@@ -231,9 +260,12 @@ function LoginContent() {
   return (
     <Card className="w-full">
       <CardHeader className="space-y-1 text-center">
-        <div className="flex justify-center mb-4">
-          <div className="text-2xl font-bold text-primary">NextMove AI</div>
-        </div>
+        {branding.logo_url && (
+          <div className="flex justify-center mb-4">
+            <img src={branding.logo_url} alt={branding.organization_name} className="h-16 w-16 object-contain" />
+          </div>
+        )}
+        <div className="text-2xl font-bold text-primary">{branding.organization_name}</div>
         <CardTitle className="text-2xl">Sign in</CardTitle>
         <CardDescription>
           Enter your email to receive a magic link

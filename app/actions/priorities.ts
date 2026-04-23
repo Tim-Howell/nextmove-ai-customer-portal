@@ -106,11 +106,18 @@ export async function createPriority(
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { error } = await supabase.from("priorities").insert({
+  // Convert empty strings to null for optional fields
+  const insertData = {
     ...parsed.data,
+    due_date: parsed.data.due_date || null,
+    image_url: parsed.data.image_url || null,
+    description: parsed.data.description || null,
+    internal_notes: parsed.data.internal_notes || null,
     created_by: user?.id,
     updated_by: user?.id,
-  });
+  };
+
+  const { error } = await supabase.from("priorities").insert(insertData);
 
   if (error) {
     console.error("Error creating priority:", error);

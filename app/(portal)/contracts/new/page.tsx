@@ -4,6 +4,10 @@ import { getReferenceValues } from "@/app/actions/reference";
 import { getContractTypes } from "@/app/actions/contracts";
 import type { Customer } from "@/types/database";
 
+interface NewContractPageProps {
+  searchParams: Promise<{ customerId?: string }>;
+}
+
 async function getCustomers(): Promise<Customer[]> {
   const supabase = await createClient();
   const { data } = await supabase
@@ -14,7 +18,8 @@ async function getCustomers(): Promise<Customer[]> {
   return (data || []) as Customer[];
 }
 
-export default async function NewContractPage() {
+export default async function NewContractPage({ searchParams }: NewContractPageProps) {
+  const { customerId } = await searchParams;
   const [customers, contractTypes, contractStatuses] = await Promise.all([
     getCustomers(),
     getContractTypes(),
@@ -27,6 +32,7 @@ export default async function NewContractPage() {
         customers={customers}
         contractTypes={contractTypes}
         contractStatuses={contractStatuses}
+        defaultCustomerId={customerId}
       />
     </div>
   );

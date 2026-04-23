@@ -129,7 +129,7 @@ export function EditReferenceValueDialog({
             </Label>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 pt-6 pb-2 mt-4 border-t">
             <Checkbox
               id="is_demo"
               checked={isDemo}
@@ -138,12 +138,12 @@ export function EditReferenceValueDialog({
               }
               disabled={isLoading}
             />
-            <Label htmlFor="is_demo" className="font-normal">
-              Demo data
+            <Label htmlFor="is_demo" className="font-normal text-muted-foreground">
+              Demo data (only visible when demo mode is enabled)
             </Label>
           </div>
 
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-2 pt-4">
             <Button
               type="button"
               variant="outline"

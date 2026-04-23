@@ -3,15 +3,6 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   Select,
   SelectContent,
@@ -19,11 +10,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Search, Image as ImageIcon, Archive, Users } from "lucide-react";
+import { Plus, Search, Users } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
+import { CardGrid } from "@/components/ui/card-grid";
+import { CustomerCard } from "@/components/customers/customer-card";
 import type { CustomerWithContacts } from "@/types/database";
 import { getShowDemoData } from "@/app/actions/settings";
-import { ArchiveCustomerButton } from "@/components/customers/archive-customer-button";
 import { ShowArchivedToggle } from "@/components/ui/show-archived-toggle";
 
 interface CustomersPageProps {
@@ -95,104 +87,34 @@ function CustomerListContent({
 }) {
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
 
+  if (customers.length === 0) {
+    return (
+      <EmptyState
+        icon={Users}
+        title="No customers found"
+        description={search ? "Try adjusting your search or filters" : "Get started by adding your first customer"}
+        action={!search ? { label: "Add Customer", href: "/customers/new" } : undefined}
+      />
+    );
+  }
+
   return (
     <>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-12"></TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Primary Contact</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {customers.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={5} className="p-0">
-                <EmptyState
-                  icon={Users}
-                  title="No customers found"
-                  description={search ? "Try adjusting your search or filters" : "Get started by adding your first customer"}
-                  action={!search ? { label: "Add Customer", href: "/customers/new" } : undefined}
-                />
-              </TableCell>
-            </TableRow>
-          ) : (
-            customers.map((customer) => {
-              const isArchived = customer.archived_at !== null || customer.status === "archived";
-              return (
-              <TableRow key={customer.id} className={isArchived ? "opacity-60" : ""}>
-                <TableCell>
-                  {customer.logo_url ? (
-                    <img
-                      src={customer.logo_url}
-                      alt={`${customer.name} logo`}
-                      className="w-8 h-8 object-contain rounded"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 bg-muted rounded flex items-center justify-center">
-                      <ImageIcon className="w-4 h-4 text-muted-foreground" />
-                    </div>
-                  )}
-                </TableCell>
-                <TableCell className="font-medium">
-                  <Link
-                    href={`/customers/${customer.id}`}
-                    className="hover:underline"
-                  >
-                    {customer.name}
-                  </Link>
-                  {isArchived && (
-                    <Badge variant="secondary" className="ml-2 text-xs">
-                      Archived
-                    </Badge>
-                  )}
-                  {customer.is_demo && (
-                    <Badge variant="outline" className="ml-2 text-xs">
-                      Demo
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <span
-                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                      customer.status === "active"
-                        ? "bg-green-100 text-green-700"
-                        : customer.status === "archived"
-                        ? "bg-amber-100 text-amber-700"
-                        : "bg-gray-100 text-gray-700"
-                    }`}
-                  >
-                    {customer.status}
-                  </span>
-                </TableCell>
-                <TableCell>—</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-1">
-                    <Link href={`/customers/${customer.id}/edit`}>
-                      <Button variant="ghost" size="sm">
-                        Edit
-                      </Button>
-                    </Link>
-                    <ArchiveCustomerButton
-                      customerId={customer.id}
-                      customerName={customer.name}
-                      isArchived={customer.status === "archived"}
-                      variant="icon"
-                    />
-                  </div>
-                </TableCell>
-              </TableRow>
-              );
-            })
-          )}
-        </TableBody>
-      </Table>
+      <CardGrid>
+        {customers.map((customer) => (
+          <CustomerCard
+            key={customer.id}
+            id={customer.id}
+            name={customer.name}
+            status={customer.status}
+            logoUrl={customer.logo_url}
+            website={customer.website}
+          />
+        ))}
+      </CardGrid>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4">
+        <div className="flex items-center justify-between mt-6">
           <p className="text-sm text-muted-foreground">
             Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}
             {Math.min(currentPage * ITEMS_PER_PAGE, total)} of {total} customers

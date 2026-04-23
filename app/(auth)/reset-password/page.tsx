@@ -23,12 +23,33 @@ import {
 import { resetPassword } from "@/app/actions/auth";
 import { createClient } from "@/lib/supabase/client";
 
+interface Branding {
+  organization_name: string;
+  logo_url: string | null;
+}
+
 export default function ResetPasswordPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isValidLink, setIsValidLink] = useState<boolean | null>(null);
+  const [branding, setBranding] = useState<Branding>({ organization_name: "NextMove AI", logo_url: null });
+
+  useEffect(() => {
+    async function fetchBranding() {
+      try {
+        const res = await fetch("/api/branding");
+        if (res.ok) {
+          const data = await res.json();
+          setBranding(data);
+        }
+      } catch (e) {
+        // Use defaults
+      }
+    }
+    fetchBranding();
+  }, []);
 
   const {
     register,
@@ -84,9 +105,12 @@ export default function ResetPasswordPage() {
     return (
       <Card className="w-full">
         <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="text-2xl font-bold text-primary">NextMove AI</div>
-          </div>
+          {branding.logo_url && (
+            <div className="flex justify-center mb-4">
+              <img src={branding.logo_url} alt={branding.organization_name} className="h-16 w-16 object-contain" />
+            </div>
+          )}
+          <div className="text-2xl font-bold text-primary">{branding.organization_name}</div>
           <CardTitle className="text-2xl">Invalid or expired link</CardTitle>
           <CardDescription>
             This password reset link is invalid or has expired. Please request a
@@ -106,9 +130,12 @@ export default function ResetPasswordPage() {
     return (
       <Card className="w-full">
         <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="text-2xl font-bold text-primary">NextMove AI</div>
-          </div>
+          {branding.logo_url && (
+            <div className="flex justify-center mb-4">
+              <img src={branding.logo_url} alt={branding.organization_name} className="h-16 w-16 object-contain" />
+            </div>
+          )}
+          <div className="text-2xl font-bold text-primary">{branding.organization_name}</div>
           <CardTitle className="text-2xl">Password reset successful</CardTitle>
           <CardDescription>
             Your password has been updated. Redirecting to sign in...
@@ -121,9 +148,12 @@ export default function ResetPasswordPage() {
   return (
     <Card className="w-full">
       <CardHeader className="space-y-1 text-center">
-        <div className="flex justify-center mb-4">
-          <div className="text-2xl font-bold text-primary">NextMove AI</div>
-        </div>
+        {branding.logo_url && (
+          <div className="flex justify-center mb-4">
+            <img src={branding.logo_url} alt={branding.organization_name} className="h-16 w-16 object-contain" />
+          </div>
+        )}
+        <div className="text-2xl font-bold text-primary">{branding.organization_name}</div>
         <CardTitle className="text-2xl">Reset password</CardTitle>
         <CardDescription>Enter your new password below</CardDescription>
       </CardHeader>

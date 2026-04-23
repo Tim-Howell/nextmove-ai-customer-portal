@@ -29,6 +29,8 @@ export async function createCustomer(data: CustomerFormData) {
       notes: validated.data.notes || null,
       internal_notes: validated.data.internal_notes || null,
       logo_url: validated.data.logo_url || null,
+      website: validated.data.website?.toLowerCase() || null,
+      is_demo: validated.data.is_demo || false,
     })
     .select("id")
     .single();
@@ -38,25 +40,37 @@ export async function createCustomer(data: CustomerFormData) {
     return { error: "Failed to create customer", code: ERROR_CODES.CUS_CRE_002 };
   }
 
-  // Auto-create default "On-Demand / Off Contract" contract
-  const { data: refValues } = await supabase
-    .from("reference_values")
-    .select("id, type, value")
-    .in("type", ["contract_status", "contract_type"])
-    .in("value", ["active", "hours_subscription"]);
+  // Auto-create base contract for ad-hoc/on-demand hours
+  const [{ data: activeStatus }, { data: onDemandType }] = await Promise.all([
+    supabase
+      .from("reference_values")
+      .select("id")
+      .eq("type", "contract_status")
+      .eq("value", "active")
+      .single(),
+    supabase
+      .from("contract_types")
+      .select("id")
+      .eq("value", "on_demand")
+      .single(),
+  ]);
 
-  const activeStatusId = refValues?.find(r => r.type === "contract_status" && r.value === "active")?.id;
-  const contractTypeId = refValues?.find(r => r.type === "contract_type" && r.value === "hours_subscription")?.id;
-
-  if (activeStatusId && contractTypeId) {
-    await supabase.from("contracts").insert({
+  if (activeStatus && onDemandType) {
+    const { error: contractError } = await supabase.from("contracts").insert({
       customer_id: newCustomer.id,
-      name: "On-Demand / Off Contract",
-      contract_type_id: contractTypeId,
-      status_id: activeStatusId,
+      name: "On-Demand Services - No Contract",
+      contract_type_id: onDemandType.id,
+      status_id: activeStatus.id,
       is_default: true,
-      start_date: new Date().toISOString().split("T")[0],
+      is_demo: validated.data.is_demo || false,
     });
+
+    if (contractError) {
+      // Rollback: delete the customer if base contract creation fails
+      await supabase.from("customers").delete().eq("id", newCustomer.id);
+      logError(contractError, "createCustomer - base contract");
+      return { error: "Failed to create base contract", code: ERROR_CODES.CUS_CRE_002 };
+    }
   }
 
   revalidatePath("/customers");
@@ -81,6 +95,12 @@ export async function updateCustomer(id: string, data: CustomerFormData) {
       notes: validated.data.notes || null,
       internal_notes: validated.data.internal_notes || null,
       logo_url: validated.data.logo_url || null,
+      website: validated.data.website?.toLowerCase() || null,
+      billing_contact_primary_id: validated.data.billing_contact_primary_id || null,
+      billing_contact_secondary_id: validated.data.billing_contact_secondary_id || null,
+      poc_primary_id: validated.data.poc_primary_id || null,
+      poc_secondary_id: validated.data.poc_secondary_id || null,
+      is_demo: validated.data.is_demo || false,
     })
     .eq("id", id);
 
@@ -108,6 +128,11 @@ export async function deleteCustomer(id: string) {
   redirect("/customers");
 }
 
+function formatPhoneDigitsOnly(phone: string | null | undefined): string | null {
+  if (!phone) return null;
+  return phone.replace(/\D/g, "") || null;
+}
+
 export async function createCustomerContact(
   customerId: string,
   data: CustomerContactFormData
@@ -119,18 +144,21 @@ export async function createCustomerContact(
     return { error: validated.error.errors[0]?.message || "Validation failed" };
   }
 
-  const { error } = await supabase.from("customer_contacts").insert({
+  const email = validated.data.email?.toLowerCase() || null;
+  const phone = formatPhoneDigitsOnly(validated.data.phone);
+
+  const { data: newContact, error } = await supabase.from("customer_contacts").insert({
     customer_id: customerId,
     full_name: validated.data.full_name,
     title: validated.data.title || null,
-    email: validated.data.email || null,
-    phone: validated.data.phone || null,
+    email,
+    phone,
     is_active: validated.data.is_active,
     portal_access_enabled: validated.data.portal_access_enabled,
     notes: validated.data.notes || null,
-  });
+  }).select("id").single();
 
-  if (error) {
+  if (error || !newContact) {
     console.error("Error creating contact:", error);
     return { error: "Failed to create contact" };
   }
@@ -151,13 +179,16 @@ export async function updateCustomerContact(
     return { error: validated.error.errors[0]?.message || "Validation failed" };
   }
 
+  const email = validated.data.email?.toLowerCase() || null;
+  const phone = formatPhoneDigitsOnly(validated.data.phone);
+
   const { error } = await supabase
     .from("customer_contacts")
     .update({
       full_name: validated.data.full_name,
       title: validated.data.title || null,
-      email: validated.data.email || null,
-      phone: validated.data.phone || null,
+      email,
+      phone,
       is_active: validated.data.is_active,
       portal_access_enabled: validated.data.portal_access_enabled,
       notes: validated.data.notes || null,

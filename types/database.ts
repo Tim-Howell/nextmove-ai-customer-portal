@@ -9,6 +9,11 @@ export interface Customer {
   notes: string | null;
   internal_notes: string | null;
   logo_url: string | null;
+  website: string | null;
+  billing_contact_primary_id: string | null;
+  billing_contact_secondary_id: string | null;
+  poc_primary_id: string | null;
+  poc_secondary_id: string | null;
   is_demo: boolean;
   archived_at: string | null;
   created_at: string;
@@ -25,6 +30,26 @@ export interface CustomerWithContacts extends Customer {
     id: string;
     full_name: string | null;
     email: string;
+  } | null;
+  billing_contact_primary?: {
+    id: string;
+    full_name: string;
+    email: string | null;
+  } | null;
+  billing_contact_secondary?: {
+    id: string;
+    full_name: string;
+    email: string | null;
+  } | null;
+  poc_primary?: {
+    id: string;
+    full_name: string;
+    email: string | null;
+  } | null;
+  poc_secondary?: {
+    id: string;
+    full_name: string;
+    email: string | null;
   } | null;
 }
 
@@ -215,6 +240,7 @@ export interface Priority {
   description: string | null;
   internal_notes: string | null;
   image_url: string | null;
+  icon: string | null;
   status_id: string;
   priority_level_id: string;
   due_date: string | null;

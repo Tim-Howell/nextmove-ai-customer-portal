@@ -73,8 +73,8 @@ function ContractListContent({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Contract Name</TableHead>
           {isInternal && <TableHead>Customer</TableHead>}
+          <TableHead>Contract Name</TableHead>
           <TableHead>Type</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Usage</TableHead>
@@ -101,7 +101,17 @@ function ContractListContent({
             const isArchived = contract.archived_at !== null || contract.status?.value === "archived";
             return (
               <TableRow key={contract.id} className={isArchived ? "opacity-60" : ""}>
-                <TableCell className="font-medium">
+                  {isInternal && (
+                  <TableCell>
+                    <Link
+                      href={`/customers/${contract.customer?.id}`}
+                      className="hover:underline text-muted-foreground"
+                    >
+                      {contract.customer?.name || "—"}
+                    </Link>
+                  </TableCell>
+                )}
+              <TableCell className="font-medium">
                   <Link
                     href={`/contracts/${contract.id}`}
                     className="hover:underline"
@@ -114,16 +124,6 @@ function ContractListContent({
                     </Badge>
                   )}
                 </TableCell>
-                {isInternal && (
-                  <TableCell>
-                    <Link
-                      href={`/customers/${contract.customer?.id}`}
-                      className="hover:underline text-muted-foreground"
-                    >
-                      {contract.customer?.name || "—"}
-                    </Link>
-                  </TableCell>
-                )}
                 <TableCell>{contract.contract_type?.label || "—"}</TableCell>
                 <TableCell>
                   <Badge variant={getStatusBadgeVariant(contract.status?.value || "")}>

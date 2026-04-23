@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ImageUpload } from "@/components/ui/image-upload";
+import { IconPicker } from "@/components/ui/icon-picker";
 import { prioritySchema, type PriorityFormData } from "@/lib/validations/priority";
 import { createPriority, updatePriority } from "@/app/actions/priorities";
 import type { Priority, Customer, ReferenceValue } from "@/types/database";
@@ -27,6 +27,7 @@ interface PriorityFormProps {
   customers: Customer[];
   statuses: ReferenceValue[];
   priorityLevels: ReferenceValue[];
+  defaultCustomerId?: string;
 }
 
 export function PriorityForm({
@@ -34,6 +35,7 @@ export function PriorityForm({
   customers,
   statuses,
   priorityLevels,
+  defaultCustomerId,
 }: PriorityFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -47,11 +49,12 @@ export function PriorityForm({
   } = useForm<PriorityFormData>({
     resolver: zodResolver(prioritySchema),
     defaultValues: {
-      customer_id: priority?.customer_id || undefined,
+      customer_id: priority?.customer_id || defaultCustomerId || undefined,
       title: priority?.title || "",
       description: priority?.description || "",
       internal_notes: priority?.internal_notes || "",
       image_url: priority?.image_url || "",
+      icon: priority?.icon || null,
       status_id: priority?.status_id || undefined,
       priority_level_id: priority?.priority_level_id || undefined,
       due_date: priority?.due_date || "",
@@ -61,6 +64,7 @@ export function PriorityForm({
   const customerId = watch("customer_id");
   const statusId = watch("status_id");
   const priorityLevelId = watch("priority_level_id");
+  const iconValue = watch("icon");
 
   async function onSubmit(data: PriorityFormData) {
     setIsLoading(true);
@@ -127,6 +131,12 @@ export function PriorityForm({
               <p className="text-sm text-destructive">{errors.title.message}</p>
             )}
           </div>
+
+          <IconPicker
+            value={iconValue}
+            onChange={(iconName) => setValue("icon", iconName)}
+            disabled={isLoading}
+          />
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -211,15 +221,6 @@ export function PriorityForm({
             </p>
           </div>
 
-          <div className="space-y-2">
-            <Label>Image</Label>
-            <ImageUpload
-              value={watch("image_url")}
-              onChange={(url) => setValue("image_url", url)}
-              disabled={isLoading}
-              aspectRatio="wide"
-            />
-          </div>
         </CardContent>
         <CardFooter className="flex justify-between">
           <Link href={priority ? `/priorities/${priority.id}` : "/priorities"}>

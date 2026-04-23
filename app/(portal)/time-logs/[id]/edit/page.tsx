@@ -4,6 +4,7 @@ import { getProfile } from "@/lib/supabase/profile";
 import { TimeEntryForm } from "@/components/time-logs/time-entry-form";
 import { getTimeEntry } from "@/app/actions/time-entries";
 import { getReferenceValues } from "@/app/actions/reference";
+import { getShowDemoData } from "@/app/actions/settings";
 import type { Customer } from "@/types/database";
 
 interface EditTimeEntryPageProps {
@@ -12,10 +13,18 @@ interface EditTimeEntryPageProps {
 
 async function getCustomers(): Promise<Customer[]> {
   const supabase = await createClient();
-  const { data } = await supabase
+  const showDemoData = await getShowDemoData();
+  
+  let query = supabase
     .from("customers")
-    .select("id, name")
+    .select("id, name, is_demo")
     .order("name");
+  
+  if (!showDemoData) {
+    query = query.eq("is_demo", false);
+  }
+  
+  const { data } = await query;
   return (data || []) as Customer[];
 }
 

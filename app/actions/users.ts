@@ -163,7 +163,7 @@ export async function getCustomerUsers(): Promise<CustomerUser[]> {
       is_active,
       portal_access_enabled,
       created_at,
-      customer:customers!inner(name, is_demo)
+      customer:customers!customer_contacts_customer_id_fkey(name, is_demo)
     `)
     .eq("portal_access_enabled", true)
     .order("full_name");

@@ -102,6 +102,51 @@ A secure web application for NextMove AI staff and customer staff to manage cust
 
 Preview deployments are automatically created for pull requests.
 
+## Email Configuration
+
+This application uses **Resend** for transactional emails via Supabase Auth.
+
+### Setup Steps
+
+1. **Create Resend Account** at [resend.com](https://resend.com)
+2. **Add and verify your domain** in Resend (e.g., `portal.yourdomain.com`)
+3. **Create API Key** with "Sending access" permission
+4. **Configure Supabase SMTP** (Project Settings → Authentication → SMTP Settings):
+   - Host: `smtp.resend.com`
+   - Port: `465`
+   - Username: `resend`
+   - Password: Your Resend API key
+   - Sender email: `noreply@portal.yourdomain.com`
+   - Sender name: Your company name
+
+### Email Templates
+
+Configure branded email templates in **Supabase → Authentication → Email Templates**:
+
+| Template | Purpose |
+|----------|---------|
+| Confirm signup | Magic link sign-in |
+| Reset password | Password reset flow |
+| Invite user | Customer portal invitations |
+| Magic link | Alternative sign-in |
+| Change email | Email address confirmation |
+| Reauthentication | Sensitive action verification |
+
+**Customization Required:**
+- Update company name and branding in each template
+- Replace logo URL with your organization's logo from `portal-assets` bucket
+  - Upload your logo via **Settings → Portal Branding** in the portal
+  - Copy the logo URL from the portal-assets bucket in Supabase Storage
+  - Paste the URL into each email template's `<img src="...">` tag
+- Modify colors to match your brand (header background, button color)
+- Update copyright year and company name in footer
+
+**Note:** Email templates in Supabase are static HTML and cannot dynamically fetch the logo from portal settings. When you change the logo in Portal Branding, you must also manually update the logo URL in each Supabase email template.
+
+Template variables available:
+- `{{ .ConfirmationURL }}` - The action link (sign-in, reset, etc.)
+- `{{ .Token }}` - Verification code (reauthentication only)
+
 ## Storage Buckets
 
 This application requires two Supabase Storage buckets:

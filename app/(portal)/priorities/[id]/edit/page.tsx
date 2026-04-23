@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PriorityForm } from "@/components/priorities/priority-form";
 import { getPriority } from "@/app/actions/priorities";
 import { getReferenceValues } from "@/app/actions/reference";
+import { getShowDemoData } from "@/app/actions/settings";
 import type { Customer } from "@/types/database";
 
 interface EditPriorityPageProps {
@@ -11,11 +12,19 @@ interface EditPriorityPageProps {
 
 async function getCustomers(): Promise<Customer[]> {
   const supabase = await createClient();
-  const { data } = await supabase
+  const showDemoData = await getShowDemoData();
+  
+  let query = supabase
     .from("customers")
-    .select("id, name")
+    .select("id, name, is_demo")
     .eq("status", "active")
     .order("name");
+  
+  if (!showDemoData) {
+    query = query.eq("is_demo", false);
+  }
+  
+  const { data } = await query;
   return (data || []) as Customer[];
 }
 

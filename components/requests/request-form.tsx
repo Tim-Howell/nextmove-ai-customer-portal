@@ -31,6 +31,7 @@ interface RequestFormProps {
   customers?: Customer[];
   statuses?: ReferenceValue[];
   isInternal: boolean;
+  defaultCustomerId?: string;
 }
 
 export function RequestForm({
@@ -38,6 +39,7 @@ export function RequestForm({
   customers = [],
   statuses = [],
   isInternal,
+  defaultCustomerId,
 }: RequestFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +56,7 @@ export function RequestForm({
     resolver: zodResolver(schema),
     defaultValues: isInternal
       ? {
-          customer_id: request?.customer_id || "",
+          customer_id: request?.customer_id || defaultCustomerId || "",
           title: request?.title || "",
           description: request?.description || "",
           status_id: request?.status_id || "",

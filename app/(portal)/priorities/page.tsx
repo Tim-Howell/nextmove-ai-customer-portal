@@ -1,17 +1,10 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Plus, Image as ImageIcon, Target } from "lucide-react";
+import { Plus, Target } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
+import { CardGrid } from "@/components/ui/card-grid";
+import { PriorityCard } from "@/components/priorities/priority-card";
 import { getPriorities } from "@/app/actions/priorities";
 import { getReferenceValues } from "@/app/actions/reference";
 import { PrioritiesFilter } from "@/components/priorities/priorities-filter";
@@ -51,33 +44,6 @@ async function getCurrentUserRole(): Promise<{ role: string; customerId: string 
   };
 }
 
-function getPriorityLevelBadgeVariant(levelValue: string): "default" | "secondary" | "destructive" | "outline" {
-  switch (levelValue) {
-    case "high":
-      return "destructive";
-    case "medium":
-      return "default";
-    case "low":
-      return "secondary";
-    default:
-      return "outline";
-  }
-}
-
-function getStatusBadgeVariant(statusValue: string): "default" | "secondary" | "destructive" | "outline" {
-  switch (statusValue) {
-    case "active":
-      return "default";
-    case "next_up":
-      return "secondary";
-    case "complete":
-      return "outline";
-    case "on_hold":
-      return "destructive";
-    default:
-      return "secondary";
-  }
-}
 
 export default async function PrioritiesPage({ searchParams }: PrioritiesPageProps) {
   const params = await searchParams;
@@ -124,93 +90,30 @@ export default async function PrioritiesPage({ searchParams }: PrioritiesPagePro
         isInternal={isInternal}
       />
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-12"></TableHead>
-            <TableHead>Title</TableHead>
-            {isInternal && <TableHead>Customer</TableHead>}
-            <TableHead>Status</TableHead>
-            <TableHead>Priority</TableHead>
-            <TableHead>Due Date</TableHead>
-            {isInternal && <TableHead className="text-right">Actions</TableHead>}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {priorities.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={isInternal ? 7 : 5} className="p-0">
-                <EmptyState
-                  icon={Target}
-                  title="No priorities found"
-                  description={isInternal ? "Create priorities to track customer goals" : "No priorities have been set for your account"}
-                  action={isInternal ? { label: "New Priority", href: "/priorities/new" } : undefined}
-                />
-              </TableCell>
-            </TableRow>
-          ) : (
-            priorities.map((priority) => (
-              <TableRow key={priority.id}>
-                <TableCell>
-                  {priority.image_url ? (
-                    <img
-                      src={priority.image_url}
-                      alt={`${priority.title} image`}
-                      className="w-8 h-8 object-cover rounded"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 bg-muted rounded flex items-center justify-center">
-                      <ImageIcon className="w-4 h-4 text-muted-foreground" />
-                    </div>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <Link
-                    href={`/priorities/${priority.id}`}
-                    className="font-medium hover:underline"
-                  >
-                    {priority.title}
-                  </Link>
-                </TableCell>
-                {isInternal && (
-                  <TableCell>
-                    <Link
-                      href={`/customers/${priority.customer?.id}`}
-                      className="text-muted-foreground hover:underline"
-                    >
-                      {priority.customer?.name || "—"}
-                    </Link>
-                  </TableCell>
-                )}
-                <TableCell>
-                  <Badge variant={getStatusBadgeVariant(priority.status?.value || "")}>
-                    {priority.status?.label || "—"}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={getPriorityLevelBadgeVariant(priority.priority_level?.value || "")}>
-                    {priority.priority_level?.label || "—"}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  {priority.due_date
-                    ? new Date(priority.due_date).toLocaleDateString()
-                    : "—"}
-                </TableCell>
-                {isInternal && (
-                  <TableCell className="text-right">
-                    <Link href={`/priorities/${priority.id}/edit`}>
-                      <Button variant="ghost" size="sm">
-                        Edit
-                      </Button>
-                    </Link>
-                  </TableCell>
-                )}
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+      {priorities.length === 0 ? (
+        <EmptyState
+          icon={Target}
+          title="No priorities found"
+          description={isInternal ? "Create priorities to track customer goals" : "No priorities have been set for your account"}
+          action={isInternal ? { label: "New Priority", href: "/priorities/new" } : undefined}
+        />
+      ) : (
+        <CardGrid>
+          {priorities.map((priority) => (
+            <PriorityCard
+              key={priority.id}
+              id={priority.id}
+              title={priority.title}
+              icon={priority.icon}
+              status={priority.status?.value || ""}
+              statusLabel={priority.status?.label || "Unknown"}
+              priorityLevel={priority.priority_level?.value || ""}
+              priorityLevelLabel={priority.priority_level?.label || "Normal"}
+              customerName={isInternal ? priority.customer?.name : undefined}
+            />
+          ))}
+        </CardGrid>
+      )}
     </div>
   );
 }

@@ -12,6 +12,7 @@ import {
   MessageSquare,
   BarChart3,
   Settings,
+  Contact,
 } from "lucide-react";
 
 interface NavItem {
@@ -23,6 +24,7 @@ interface NavItem {
 const internalNavItems: NavItem[] = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { title: "Customers", href: "/customers", icon: Users },
+  { title: "Contacts", href: "/contacts", icon: Contact },
   { title: "Contracts", href: "/contracts", icon: FileText },
   { title: "Time Logs", href: "/time-logs", icon: Clock },
   { title: "Priorities", href: "/priorities", icon: Flag },

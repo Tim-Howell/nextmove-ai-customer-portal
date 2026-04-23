@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -21,9 +21,30 @@ import {
 } from "@/lib/validations/auth";
 import { forgotPassword } from "@/app/actions/auth";
 
+interface Branding {
+  organization_name: string;
+  logo_url: string | null;
+}
+
 export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [branding, setBranding] = useState<Branding>({ organization_name: "NextMove AI", logo_url: null });
+
+  useEffect(() => {
+    async function fetchBranding() {
+      try {
+        const res = await fetch("/api/branding");
+        if (res.ok) {
+          const data = await res.json();
+          setBranding(data);
+        }
+      } catch (e) {
+        // Use defaults
+      }
+    }
+    fetchBranding();
+  }, []);
 
   const {
     register,
@@ -44,9 +65,12 @@ export default function ForgotPasswordPage() {
     return (
       <Card className="w-full">
         <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="text-2xl font-bold text-primary">NextMove AI</div>
-          </div>
+          {branding.logo_url && (
+            <div className="flex justify-center mb-4">
+              <img src={branding.logo_url} alt={branding.organization_name} className="h-16 w-16 object-contain" />
+            </div>
+          )}
+          <div className="text-2xl font-bold text-primary">{branding.organization_name}</div>
           <CardTitle className="text-2xl">Check your email</CardTitle>
           <CardDescription>
             If an account exists with that email, we&apos;ve sent you a password
@@ -67,9 +91,12 @@ export default function ForgotPasswordPage() {
   return (
     <Card className="w-full">
       <CardHeader className="space-y-1 text-center">
-        <div className="flex justify-center mb-4">
-          <div className="text-2xl font-bold text-primary">NextMove AI</div>
-        </div>
+        {branding.logo_url && (
+          <div className="flex justify-center mb-4">
+            <img src={branding.logo_url} alt={branding.organization_name} className="h-16 w-16 object-contain" />
+          </div>
+        )}
+        <div className="text-2xl font-bold text-primary">{branding.organization_name}</div>
         <CardTitle className="text-2xl">Forgot password</CardTitle>
         <CardDescription>
           Enter your email address and we&apos;ll send you a reset link

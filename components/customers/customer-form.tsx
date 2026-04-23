@@ -29,13 +29,20 @@ interface StaffMember {
   email: string;
 }
 
+interface CustomerContactOption {
+  id: string;
+  full_name: string;
+  email: string | null;
+}
+
 interface CustomerFormProps {
   customer?: Customer;
   staffMembers: StaffMember[];
+  customerContacts?: CustomerContactOption[];
   isAdmin?: boolean;
 }
 
-export function CustomerForm({ customer, staffMembers, isAdmin = false }: CustomerFormProps) {
+export function CustomerForm({ customer, staffMembers, customerContacts = [], isAdmin = false }: CustomerFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -55,6 +62,11 @@ export function CustomerForm({ customer, staffMembers, isAdmin = false }: Custom
       notes: customer?.notes || "",
       internal_notes: customer?.internal_notes || "",
       logo_url: customer?.logo_url || "",
+      website: customer?.website || "",
+      billing_contact_primary_id: customer?.billing_contact_primary_id || null,
+      billing_contact_secondary_id: customer?.billing_contact_secondary_id || null,
+      poc_primary_id: customer?.poc_primary_id || null,
+      poc_secondary_id: customer?.poc_secondary_id || null,
       is_demo: customer?.is_demo || false,
     },
   });
@@ -62,7 +74,17 @@ export function CustomerForm({ customer, staffMembers, isAdmin = false }: Custom
   const status = watch("status");
   const primaryContactId = watch("primary_contact_id");
   const secondaryContactId = watch("secondary_contact_id");
+  const billingPrimaryId = watch("billing_contact_primary_id");
+  const billingSecondaryId = watch("billing_contact_secondary_id");
+  const pocPrimaryId = watch("poc_primary_id");
+  const pocSecondaryId = watch("poc_secondary_id");
+  const website = watch("website");
   const isDemo = watch("is_demo");
+
+  const handleWebsiteBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const value = e.target.value.toLowerCase();
+    setValue("website", value);
+  };
 
   async function onSubmit(data: CustomerFormData) {
     setIsLoading(true);
@@ -170,6 +192,107 @@ export function CustomerForm({ customer, staffMembers, isAdmin = false }: Custom
             </Select>
           </div>
 
+          {customer && customerContacts.length > 0 && (
+            <>
+              <div className="pt-4 border-t">
+                <h3 className="text-sm font-medium mb-4">Customer Contact Roles</h3>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="billing_contact_primary_id">Primary Billing Contact</Label>
+                    <Select
+                      value={billingPrimaryId || "none"}
+                      onValueChange={(value) =>
+                        setValue("billing_contact_primary_id", value === "none" ? null : value)
+                      }
+                      disabled={isLoading}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select billing contact" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {customerContacts.map((contact) => (
+                          <SelectItem key={contact.id} value={contact.id}>
+                            {contact.full_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="billing_contact_secondary_id">Secondary Billing Contact</Label>
+                    <Select
+                      value={billingSecondaryId || "none"}
+                      onValueChange={(value) =>
+                        setValue("billing_contact_secondary_id", value === "none" ? null : value)
+                      }
+                      disabled={isLoading}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select billing contact" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {customerContacts.map((contact) => (
+                          <SelectItem key={contact.id} value={contact.id}>
+                            {contact.full_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="poc_primary_id">Primary Point of Contact</Label>
+                    <Select
+                      value={pocPrimaryId || "none"}
+                      onValueChange={(value) =>
+                        setValue("poc_primary_id", value === "none" ? null : value)
+                      }
+                      disabled={isLoading}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select point of contact" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {customerContacts.map((contact) => (
+                          <SelectItem key={contact.id} value={contact.id}>
+                            {contact.full_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="poc_secondary_id">Secondary Point of Contact</Label>
+                    <Select
+                      value={pocSecondaryId || "none"}
+                      onValueChange={(value) =>
+                        setValue("poc_secondary_id", value === "none" ? null : value)
+                      }
+                      disabled={isLoading}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select point of contact" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {customerContacts.map((contact) => (
+                          <SelectItem key={contact.id} value={contact.id}>
+                            {contact.full_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
           <div className="space-y-2">
             <Label>Logo</Label>
             <ImageUpload
@@ -178,6 +301,21 @@ export function CustomerForm({ customer, staffMembers, isAdmin = false }: Custom
               disabled={isLoading}
               aspectRatio="wide"
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="website">Website</Label>
+            <Input
+              id="website"
+              type="url"
+              {...register("website")}
+              onBlur={handleWebsiteBlur}
+              disabled={isLoading}
+              placeholder="https://example.com"
+            />
+            {errors.website && (
+              <p className="text-sm text-destructive">{errors.website.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -208,7 +346,7 @@ export function CustomerForm({ customer, staffMembers, isAdmin = false }: Custom
           )}
 
           {isAdmin && (
-            <div className="flex items-center space-x-2 pt-2 border-t">
+            <div className="flex items-center space-x-2 pt-6 pb-2 mt-6 border-t">
               <Checkbox
                 id="is_demo"
                 checked={isDemo}

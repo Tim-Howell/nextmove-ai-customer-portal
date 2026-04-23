@@ -42,11 +42,30 @@ async function getStaffMembers() {
   return data;
 }
 
+async function getCustomerContacts(customerId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("customer_contacts")
+    .select("id, full_name, email")
+    .eq("customer_id", customerId)
+    .eq("is_active", true)
+    .order("full_name");
+
+  if (error) {
+    console.error("Error fetching customer contacts:", error);
+    return [];
+  }
+
+  return data;
+}
+
 export default async function EditCustomerPage({ params }: EditCustomerPageProps) {
   const { id } = await params;
-  const [customer, staffMembers, profile] = await Promise.all([
+  const [customer, staffMembers, customerContacts, profile] = await Promise.all([
     getCustomer(id),
     getStaffMembers(),
+    getCustomerContacts(id),
     getProfile(),
   ]);
 
@@ -56,7 +75,7 @@ export default async function EditCustomerPage({ params }: EditCustomerPageProps
 
   return (
     <div className="max-w-2xl mx-auto">
-      <CustomerForm customer={customer} staffMembers={staffMembers} isAdmin={profile?.role === "admin"} />
+      <CustomerForm customer={customer} staffMembers={staffMembers} customerContacts={customerContacts} isAdmin={profile?.role === "admin"} />
     </div>
   );
 }

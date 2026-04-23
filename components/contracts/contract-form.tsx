@@ -31,6 +31,7 @@ interface ContractFormProps {
   customers: Customer[];
   contractTypes: ContractType[];
   contractStatuses: ReferenceValue[];
+  defaultCustomerId?: string;
 }
 
 export function ContractForm({
@@ -38,6 +39,7 @@ export function ContractForm({
   customers,
   contractTypes,
   contractStatuses,
+  defaultCustomerId,
 }: ContractFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +53,7 @@ export function ContractForm({
   } = useForm<ContractFormData>({
     resolver: zodResolver(contractSchema),
     defaultValues: {
-      customer_id: contract?.customer_id || "",
+      customer_id: contract?.customer_id || defaultCustomerId || "",
       name: contract?.name || "",
       contract_type_id: contract?.contract_type_id || "",
       status_id: contract?.status_id || "",

@@ -52,6 +52,24 @@ export function ContactForm({ customerId, contact }: ContactFormProps) {
   const isActive = watch("is_active");
   const portalAccessEnabled = watch("portal_access_enabled");
 
+  const handleEmailBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const value = e.target.value.toLowerCase();
+    setValue("email", value);
+  };
+
+  const formatPhoneNumber = (value: string): string => {
+    const digits = value.replace(/\D/g, "");
+    if (digits.length === 0) return "";
+    if (digits.length <= 3) return `(${digits}`;
+    if (digits.length <= 6) return `(${digits.slice(0, 3)})${digits.slice(3)}`;
+    return `(${digits.slice(0, 3)})${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value);
+    setValue("phone", formatted);
+  };
+
   async function onSubmit(data: CustomerContactFormData) {
     setIsLoading(true);
     setError(null);
@@ -114,6 +132,7 @@ export function ContactForm({ customerId, contact }: ContactFormProps) {
                 id="email"
                 type="email"
                 {...register("email")}
+                onBlur={handleEmailBlur}
                 disabled={isLoading}
                 placeholder="email@example.com"
               />
@@ -128,9 +147,10 @@ export function ContactForm({ customerId, contact }: ContactFormProps) {
               <Label htmlFor="phone">Phone</Label>
               <Input
                 id="phone"
-                {...register("phone")}
+                value={watch("phone") || ""}
+                onChange={handlePhoneChange}
                 disabled={isLoading}
-                placeholder="(555) 123-4567"
+                placeholder="(000)000-0000"
               />
             </div>
           </div>
@@ -157,7 +177,7 @@ export function ContactForm({ customerId, contact }: ContactFormProps) {
               disabled={isLoading}
             />
             <Label htmlFor="portal_access_enabled" className="font-normal">
-              Enable portal access (invitation will be sent in Phase 4)
+              Enable portal access
             </Label>
           </div>
 

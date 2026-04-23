@@ -8,6 +8,11 @@ export const customerSchema = z.object({
   notes: z.string().nullable().optional(),
   internal_notes: z.string().nullable().optional(),
   logo_url: z.string().url("Invalid URL").nullable().optional(),
+  website: z.string().url("Invalid URL").nullable().optional().or(z.literal("")),
+  billing_contact_primary_id: z.string().uuid().nullable().optional(),
+  billing_contact_secondary_id: z.string().uuid().nullable().optional(),
+  poc_primary_id: z.string().uuid().nullable().optional(),
+  poc_secondary_id: z.string().uuid().nullable().optional(),
   is_demo: z.boolean().optional(),
 });
 

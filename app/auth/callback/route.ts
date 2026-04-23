@@ -55,6 +55,13 @@ export async function GET(request: Request) {
         data.user.email,
         data.user.user_metadata
       );
+      
+      // Check if this is a password recovery flow
+      // The session will have aal1 for recovery, and we check the type param or session metadata
+      if (type === "recovery" || searchParams.get("type") === "recovery") {
+        return NextResponse.redirect(`${origin}/reset-password`);
+      }
+      
       return NextResponse.redirect(`${origin}${next}`);
     }
   }
@@ -72,6 +79,12 @@ export async function GET(request: Request) {
         data.user.email,
         data.user.user_metadata
       );
+      
+      // For password recovery, redirect to reset-password page
+      if (type === "recovery") {
+        return NextResponse.redirect(`${origin}/reset-password`);
+      }
+      
       return NextResponse.redirect(`${origin}${next}`);
     }
   }
