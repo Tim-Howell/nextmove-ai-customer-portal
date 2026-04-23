@@ -155,6 +155,31 @@ export function ProfileForm({ profile, customers }: ProfileFormProps) {
               placeholder="Job title or position"
             />
           </div>
+
+          <div className="pt-4 border-t">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">Password</p>
+                <p className="text-xs text-muted-foreground">
+                  Change your account password
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => router.push("/forgot-password")}
+              >
+                Change Password
+              </Button>
+            </div>
+          </div>
+
+          <div className="text-sm text-muted-foreground pt-2">
+            <span className="font-medium">Role:</span>{" "}
+            {profile.role === "admin" ? "Administrator" : 
+             profile.role === "staff" ? "Staff" : "Customer User"}
+          </div>
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button 

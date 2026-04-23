@@ -1,80 +1,65 @@
-import { Suspense } from "react";
+import { redirect } from "next/navigation";
 import { getProfile } from "@/lib/supabase/profile";
-import { getTimeEntriesReport, getCustomersForReport, getContractsForReport, getStaffForReport, getContractsWithOverages, type ReportFilters } from "@/app/actions/reports";
-import { getReferenceValues } from "@/app/actions/reference";
-import { ReportFilters as ReportFiltersComponent } from "@/components/reports/report-filters";
-import { ReportSummaryCards } from "@/components/reports/report-summary";
-import { ContractOverageAlerts } from "@/components/reports/contract-overage-alerts";
-import { TimeEntriesReportTable } from "./time-entries-table";
+import { LandingCard } from "@/components/ui/landing-card";
+import { BarChart3, History } from "lucide-react";
 
-interface ReportsPageProps {
-  searchParams: Promise<{
-    customerId?: string;
-    dateFrom?: string;
-    dateTo?: string;
-    categoryIds?: string;
-    contractIds?: string;
-    billable?: string;
-    staffIds?: string;
-  }>;
-}
-
-export default async function ReportsPage({ searchParams }: ReportsPageProps) {
-  const params = await searchParams;
+export default async function ReportsLandingPage() {
   const profile = await getProfile();
-  const isInternal = profile?.role === "admin" || profile?.role === "staff";
 
-  // Parse comma-separated IDs from URL params
-  const categoryIds = params.categoryIds ? params.categoryIds.split(",") : undefined;
-  const contractIds = params.contractIds ? params.contractIds.split(",") : undefined;
-  const staffIds = params.staffIds ? params.staffIds.split(",") : undefined;
+  if (!profile) {
+    redirect("/login");
+  }
 
-  const filters: ReportFilters = {
-    customerId: isInternal ? params.customerId : profile?.customer_id || undefined,
-    dateFrom: params.dateFrom,
-    dateTo: params.dateTo,
-    categoryIds,
-    contractIds,
-    billable: params.billable as "yes" | "no" | undefined,
-    staffIds,
-  };
+  const isInternal = profile.role === "admin" || profile.role === "staff";
 
-  const [{ summary, entries }, customers, categories, contracts, staff, overages] = await Promise.all([
-    getTimeEntriesReport(filters),
-    isInternal ? getCustomersForReport() : Promise.resolve([]),
-    getReferenceValues("time_category"),
-    getContractsForReport(filters.customerId),
-    isInternal ? getStaffForReport() : Promise.resolve([]),
-    getContractsWithOverages(filters.customerId),
-  ]);
+  const internalCards = [
+    {
+      title: "Time Reports",
+      description: "View and export time entries across all customers with filtering and summary statistics.",
+      href: "/reports/time",
+      icon: BarChart3,
+    },
+    {
+      title: "Change Log",
+      description: "View audit trail of all changes made to records in the system.",
+      href: "/reports/changes",
+      icon: History,
+    },
+  ];
+
+  const customerCards = [
+    {
+      title: "Time Report",
+      description: "View time entries logged for your account with detailed breakdowns.",
+      href: "/reports/time",
+      icon: BarChart3,
+    },
+  ];
+
+  const cards = isInternal ? internalCards : customerCards;
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-primary">Time Reports</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Reports</h1>
         <p className="text-muted-foreground">
-          {isInternal
-            ? "View and export time entries across all customers"
-            : "View and export your time entries"}
+          {isInternal 
+            ? "Access reports and analytics for time tracking and system activity."
+            : "View reports for your account."}
         </p>
       </div>
 
-      <Suspense fallback={<div>Loading filters...</div>}>
-        <ReportFiltersComponent
-          customers={customers}
-          categories={categories}
-          contracts={contracts}
-          staff={staff}
-          showCustomerFilter={isInternal}
-          showStaffFilter={isInternal}
-        />
-      </Suspense>
-
-      <ReportSummaryCards summary={summary} />
-
-      <ContractOverageAlerts overages={overages} />
-
-      <TimeEntriesReportTable entries={entries} showCustomer={isInternal} />
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {cards.map((card) => (
+          <LandingCard
+            key={card.href}
+            title={card.title}
+            description={card.description}
+            href={card.href}
+            icon={card.icon}
+          />
+        ))}
+      </div>
     </div>
   );
 }
