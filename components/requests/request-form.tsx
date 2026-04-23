@@ -60,7 +60,6 @@ export function RequestForm({
           title: request?.title || "",
           description: request?.description || "",
           status_id: request?.status_id || "",
-          internal_notes: request?.internal_notes || "",
         }
       : {
           title: request?.title || "",
@@ -176,19 +175,6 @@ export function RequestForm({
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="internal_notes">Internal Notes</Label>
-                <Textarea
-                  id="internal_notes"
-                  {...register("internal_notes" as keyof RequestFormData)}
-                  disabled={isLoading}
-                  placeholder="Notes visible only to internal staff"
-                  rows={4}
-                />
-                <p className="text-xs text-muted-foreground">
-                  These notes are not visible to customers.
-                </p>
-              </div>
             </>
           )}
         </CardContent>

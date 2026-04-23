@@ -317,3 +317,22 @@ export interface AuditLogWithUser extends AuditLog {
   } | null;
 }
 
+// Internal Notes
+export type InternalNoteEntityType = 'customer' | 'priority' | 'request';
+
+export interface InternalNote {
+  id: string;
+  entity_type: InternalNoteEntityType;
+  entity_id: string;
+  note_text: string;
+  created_by: string;
+  created_at: string;
+}
+
+export interface InternalNoteWithAuthor extends InternalNote {
+  author: {
+    id: string;
+    full_name: string | null;
+    email: string;
+  };
+}

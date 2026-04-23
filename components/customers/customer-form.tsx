@@ -60,7 +60,6 @@ export function CustomerForm({ customer, staffMembers, customerContacts = [], is
       primary_contact_id: customer?.primary_contact_id || null,
       secondary_contact_id: customer?.secondary_contact_id || null,
       notes: customer?.notes || "",
-      internal_notes: customer?.internal_notes || "",
       logo_url: customer?.logo_url || "",
       website: customer?.website || "",
       billing_contact_primary_id: customer?.billing_contact_primary_id || null,
@@ -328,22 +327,6 @@ export function CustomerForm({ customer, staffMembers, customerContacts = [], is
               rows={4}
             />
           </div>
-
-          {isAdmin && (
-            <div className="space-y-2">
-              <Label htmlFor="internal_notes">Internal Notes</Label>
-              <Textarea
-                id="internal_notes"
-                {...register("internal_notes")}
-                disabled={isLoading}
-                placeholder="Internal notes (visible to NextMove AI staff only)"
-                rows={3}
-              />
-              <p className="text-xs text-muted-foreground">
-                These notes are only visible to NextMove AI staff members
-              </p>
-            </div>
-          )}
 
           {isAdmin && (
             <div className="flex items-center space-x-2 pt-6 pb-2 mt-6 border-t">

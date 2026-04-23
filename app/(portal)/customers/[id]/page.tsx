@@ -19,6 +19,7 @@ import { ArchiveCustomerButton } from "@/components/customers/archive-customer-b
 import { DeleteContactButton } from "@/components/customers/delete-contact-button";
 import { ContactInvitationStatus } from "@/components/customers/contact-invitation-status";
 import { RecordHistory } from "@/components/audit/record-history";
+import { InternalNotesSection } from "@/components/internal-notes";
 import { getInvitationStatus } from "@/app/actions/invitations";
 import type { CustomerWithContacts, CustomerContact, InvitationStatus, CustomerInvitation } from "@/types/database";
 
@@ -599,6 +600,10 @@ export default async function CustomerDetailPage({
           )}
         </CardContent>
       </Card>
+
+      {isInternal && (
+        <InternalNotesSection entityType="customer" entityId={id} />
+      )}
 
       {isInternal && (
         <RecordHistory

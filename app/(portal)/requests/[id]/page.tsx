@@ -7,6 +7,7 @@ import { ArrowLeft, Edit, MessageSquare, Calendar, Lock } from "lucide-react";
 import { getRequest } from "@/app/actions/requests";
 import { DeleteRequestButton } from "@/components/requests/delete-request-button";
 import { RecordHistory } from "@/components/audit/record-history";
+import { InternalNotesSection } from "@/components/internal-notes";
 import { createClient } from "@/lib/supabase/server";
 
 interface RequestDetailPageProps {
@@ -147,18 +148,8 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
         </Card>
       )}
 
-      {isInternal && request.internal_notes && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lock className="h-5 w-5" />
-              Internal Notes
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap">{request.internal_notes}</p>
-          </CardContent>
-        </Card>
+      {isInternal && (
+        <InternalNotesSection entityType="request" entityId={id} />
       )}
 
       {isInternal && (
