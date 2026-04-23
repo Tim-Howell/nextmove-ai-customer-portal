@@ -55,7 +55,17 @@ async function getContacts(): Promise<Contact[]> {
     return [];
   }
 
-  let contacts = (data || []) as Contact[];
+  // Transform data to handle Supabase's FK relationship return format
+  let contacts: Contact[] = (data || []).map((row: any) => ({
+    id: row.id,
+    full_name: row.full_name,
+    email: row.email,
+    phone: row.phone,
+    title: row.title,
+    is_active: row.is_active,
+    portal_access_enabled: row.portal_access_enabled,
+    customer: row.customer || null,
+  }));
   
   // Filter demo data if toggle is off
   if (!showDemoData) {
