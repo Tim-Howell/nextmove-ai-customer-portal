@@ -86,7 +86,6 @@ export async function getRequests(
       title,
       description,
       status_id,
-      internal_notes,
       created_at,
       updated_at,
       customer:customers!inner(id, name, is_demo),
@@ -114,21 +113,13 @@ export async function getRequests(
     return { data: [] };
   }
 
-  // Ensure internal_notes is null for non-internal users
-  const sanitizedData = (data || []).map((request) => ({
-    ...request,
-    internal_notes: isInternal ? request.internal_notes : null,
-  }));
-
-  return { data: sanitizedData as unknown as RequestWithRelations[] };
+  return { data: (data || []) as unknown as RequestWithRelations[] };
 }
 
 export async function getRequest(
   id: string
 ): Promise<{ data: RequestWithRelations | null }> {
   const supabase = await createClient();
-  const { role } = await getCurrentUserRole();
-  const isInternal = role === "admin" || role === "staff";
 
   const { data, error } = await supabase
     .from("requests")
@@ -139,7 +130,6 @@ export async function getRequest(
       title,
       description,
       status_id,
-      internal_notes,
       created_at,
       updated_at,
       customer:customers(id, name),
@@ -154,13 +144,7 @@ export async function getRequest(
     return { data: null };
   }
 
-  // Ensure internal_notes is null for non-internal users
-  const sanitizedData = {
-    ...data,
-    internal_notes: isInternal ? data.internal_notes : null,
-  };
-
-  return { data: sanitizedData as unknown as RequestWithRelations };
+  return { data: data as unknown as RequestWithRelations };
 }
 
 export async function createRequest(

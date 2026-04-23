@@ -149,7 +149,6 @@ export async function getRecentRequests(
       title,
       description,
       status_id,
-      internal_notes,
       created_at,
       updated_at,
       customer:customers!inner(id, name, is_demo),
@@ -178,13 +177,7 @@ export async function getRecentRequests(
     return [];
   }
 
-  // Sanitize internal_notes for non-internal users
-  const sanitizedData = (data || []).map((request) => ({
-    ...request,
-    internal_notes: isInternal ? request.internal_notes : null,
-  }));
-
-  return sanitizedData as unknown as RequestWithRelations[];
+  return (data || []) as unknown as RequestWithRelations[];
 }
 
 export async function getRecentPriorities(
