@@ -14,25 +14,25 @@ export default async function CustomerInfoPage() {
 
   const internalCards = [
     {
-      title: "All Contracts",
-      description: "View and manage all customer contracts, billing arrangements, and service agreements.",
+      title: "Contracts",
+      description: "View and manage customer contracts, billing arrangements, and service agreements.",
       href: "/contracts",
       icon: FileText,
     },
     {
-      title: "All Contacts",
-      description: "Browse all customer contacts across organizations with portal access status.",
+      title: "Contacts",
+      description: "Browse customer contacts across organizations with portal access status.",
       href: "/contacts",
       icon: Users,
     },
     {
-      title: "All Priorities",
-      description: "Track customer priorities, projects, and initiatives across all accounts.",
+      title: "Priorities",
+      description: "Track customer priorities, projects, and initiatives across accounts.",
       href: "/priorities",
       icon: Flag,
     },
     {
-      title: "All Requests",
+      title: "Requests",
       description: "View and respond to customer requests and support inquiries.",
       href: "/requests",
       icon: MessageSquare,
@@ -41,19 +41,19 @@ export default async function CustomerInfoPage() {
 
   const customerCards = [
     {
-      title: "My Contracts",
+      title: "Contracts",
       description: "View your active contracts and service agreements with NextMove AI.",
       href: "/contracts",
       icon: FileText,
     },
     {
-      title: "My Priorities",
+      title: "Priorities",
       description: "Track your current priorities, projects, and initiatives.",
       href: "/priorities",
       icon: Flag,
     },
     {
-      title: "My Requests",
+      title: "Requests",
       description: "View your submitted requests and their current status.",
       href: "/requests",
       icon: MessageSquare,

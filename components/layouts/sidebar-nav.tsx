@@ -32,10 +32,10 @@ interface NavCategory {
 
 // Staff/Admin navigation structure
 const internalCustomerInfoItems: NavItem[] = [
-  { title: "All Contracts", href: "/contracts" },
-  { title: "All Contacts", href: "/contacts" },
-  { title: "All Priorities", href: "/priorities" },
-  { title: "All Requests", href: "/requests" },
+  { title: "Contracts", href: "/contracts" },
+  { title: "Contacts", href: "/contacts" },
+  { title: "Priorities", href: "/priorities" },
+  { title: "Requests", href: "/requests" },
 ];
 
 const internalReportsItems: NavItem[] = [
@@ -45,9 +45,9 @@ const internalReportsItems: NavItem[] = [
 
 // Customer navigation structure
 const customerInfoItems: NavItem[] = [
-  { title: "My Contracts", href: "/contracts" },
-  { title: "My Priorities", href: "/priorities" },
-  { title: "My Requests", href: "/requests" },
+  { title: "Contracts", href: "/contracts" },
+  { title: "Priorities", href: "/priorities" },
+  { title: "Requests", href: "/requests" },
 ];
 
 const customerReportsItems: NavItem[] = [
