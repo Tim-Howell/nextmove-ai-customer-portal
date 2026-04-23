@@ -58,14 +58,11 @@
 - [ ] 8.4 Remove internal_notes field from RequestForm
 - [ ] 8.5 Remove internal_notes from request Zod schema
 
-## 9. Data Migration
+## 9. Column Removal
 
-- [ ] 9.1 Create migration script to copy existing customer internal_notes
-- [ ] 9.2 Create migration script to copy existing priority internal_notes
-- [ ] 9.3 Create migration script to copy existing request internal_notes
-- [ ] 9.4 Set created_by to record's created_by or updated_by field
-- [ ] 9.5 Set created_at to record's updated_at or created_at field
-- [ ] 9.6 Run migration in production after deployment
+- [ ] 9.1 Create migration to drop internal_notes column from customers table
+- [ ] 9.2 Create migration to drop internal_notes column from priorities table
+- [ ] 9.3 Create migration to drop internal_notes column from requests table
 
 ## 10. Testing
 
@@ -74,4 +71,4 @@
 - [ ] 10.3 Verify customer_user cannot see notes section
 - [ ] 10.4 Verify notes display in correct order (newest first)
 - [ ] 10.5 Verify author name and timestamp display correctly
-- [ ] 10.6 Verify migrated notes appear correctly
+- [ ] 10.6 Verify new notes can be added and displayed correctly

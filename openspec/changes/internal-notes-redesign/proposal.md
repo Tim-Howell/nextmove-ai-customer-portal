@@ -9,7 +9,7 @@ Internal notes are currently stored as a single text field on customers, priorit
 - Display notes in reverse chronological order with author name and timestamp
 - Provide "Add Note" functionality with a simple form (note text only, author/date auto-populated)
 - Remove the single `internal_notes` text field from customer, priority, and request forms
-- Migrate existing internal notes to the new system as initial notes
+- Drop the `internal_notes` column from customers, priorities, and requests tables
 
 ## Capabilities
 
@@ -28,4 +28,4 @@ Internal notes are currently stored as a single text field on customers, priorit
 - **Server Actions**: New createInternalNote action
 - **Pages**: Customer detail, Priority detail, Request detail pages updated
 - **Forms**: CustomerForm, PriorityForm, RequestForm - remove internal_notes field
-- **Migration**: Data migration for existing internal_notes content
+- **Migration**: Drop internal_notes columns from existing tables

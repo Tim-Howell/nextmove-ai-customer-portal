@@ -87,24 +87,20 @@ The system SHALL NOT allow editing or deleting internal notes.
 - **WHEN** any user attempts to DELETE an internal_note via API
 - **THEN** the system SHALL reject the operation
 
-### Requirement: Existing notes are migrated
-The system SHALL migrate existing internal_notes field content to the new table.
+### Requirement: Old internal_notes columns are dropped
+The system SHALL remove the internal_notes column from customers, priorities, and requests tables.
 
-#### Scenario: Customer notes migration
-- **WHEN** migration runs on a customer with non-null internal_notes
-- **THEN** a new internal_note record SHALL be created with entity_type='customer', entity_id=customer.id, note_text=existing content
+#### Scenario: Customer table column dropped
+- **WHEN** the migration runs
+- **THEN** the internal_notes column SHALL be removed from the customers table
 
-#### Scenario: Priority notes migration
-- **WHEN** migration runs on a priority with non-null internal_notes
-- **THEN** a new internal_note record SHALL be created with entity_type='priority', entity_id=priority.id, note_text=existing content
+#### Scenario: Priority table column dropped
+- **WHEN** the migration runs
+- **THEN** the internal_notes column SHALL be removed from the priorities table
 
-#### Scenario: Request notes migration
-- **WHEN** migration runs on a request with non-null internal_notes
-- **THEN** a new internal_note record SHALL be created with entity_type='request', entity_id=request.id, note_text=existing content
-
-#### Scenario: Migration attribution
-- **WHEN** migrating an existing note
-- **THEN** created_by SHALL be set to the record's created_by field (or updated_by if available)
+#### Scenario: Request table column dropped
+- **WHEN** the migration runs
+- **THEN** the internal_notes column SHALL be removed from the requests table
 
 ### Requirement: Internal notes field removed from forms
 The system SHALL remove the internal_notes text field from customer, priority, and request create/edit forms.

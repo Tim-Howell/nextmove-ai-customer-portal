@@ -88,6 +88,16 @@ function LoginContent() {
     }
   }, [searchParams]);
 
+  // Handle auth code redirect (e.g., from password reset)
+  useEffect(() => {
+    const code = searchParams.get("code");
+    if (code) {
+      // Redirect to auth callback to process the code
+      const type = searchParams.get("type") || "recovery";
+      router.replace(`/auth/callback?code=${code}&type=${type}`);
+    }
+  }, [searchParams, router]);
+
   const {
     register,
     handleSubmit,

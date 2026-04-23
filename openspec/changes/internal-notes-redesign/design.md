@@ -95,19 +95,15 @@ CREATE POLICY "Staff can create internal notes"
 - Form has single textarea + submit button
 - Author name and timestamp displayed on each note
 
-### 6. Migration Strategy
+### 6. Column Removal
 
-**Decision**: Create migration script to copy existing `internal_notes` content to new table.
+**Decision**: Drop the `internal_notes` column from customers, priorities, and requests tables.
 
-- For each record with non-null `internal_notes`, create a note entry
-- Set `created_by` to the record's `created_by` or a system user
-- Set `created_at` to the record's `updated_at` or `created_at`
-- Keep old columns temporarily, remove in future migration after verification
+- No data migration needed - existing notes will be discarded
+- Clean break to new multi-note system
+- Single migration to drop columns after new system is in place
 
 ## Risks / Trade-offs
-
-**[Data Migration]** → Existing notes may not have clear authorship
-- Mitigation: Use record's `created_by` field or a designated "System Migration" user
 
 **[Performance]** → Many notes per entity could slow page load
 - Mitigation: Paginate notes (show last 10, "Load more" button) - can add later if needed
