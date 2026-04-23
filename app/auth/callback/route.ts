@@ -57,8 +57,8 @@ export async function GET(request: Request) {
       );
       
       // Check if this is a password recovery flow
-      // The session will have aal1 for recovery, and we check the type param or session metadata
-      if (type === "recovery" || searchParams.get("type") === "recovery") {
+      // We check the type param passed from the login page redirect
+      if (type === "recovery") {
         return NextResponse.redirect(`${origin}/reset-password`);
       }
       

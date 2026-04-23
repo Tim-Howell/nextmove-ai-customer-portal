@@ -89,14 +89,26 @@ function LoginContent() {
   }, [searchParams]);
 
   // Handle auth code redirect (e.g., from password reset)
+  const code = searchParams.get("code");
   useEffect(() => {
-    const code = searchParams.get("code");
     if (code) {
       // Redirect to auth callback to process the code
       const type = searchParams.get("type") || "recovery";
-      router.replace(`/auth/callback?code=${code}&type=${type}`);
+      window.location.href = `/auth/callback?code=${code}&type=${type}`;
     }
-  }, [searchParams, router]);
+  }, [code, searchParams]);
+
+  // Show loading state while redirecting for auth code
+  if (code) {
+    return (
+      <Card className="w-full">
+        <CardHeader className="space-y-1 text-center">
+          <CardTitle className="text-2xl">Processing...</CardTitle>
+          <CardDescription>Please wait while we verify your request.</CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
 
   const {
     register,
