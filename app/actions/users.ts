@@ -139,6 +139,7 @@ export interface CustomerUser {
   title: string | null;
   customer_id: string;
   customer_name: string | null;
+  user_id: string | null;
   is_active: boolean;
   portal_access_enabled: boolean;
   created_at: string;
@@ -191,11 +192,40 @@ export async function getCustomerUsers(): Promise<CustomerUser[]> {
       title: contact.title,
       customer_id: contact.customer_id,
       customer_name: customer?.name || null,
+      user_id: contact.user_id,
       is_active: contact.is_active,
       portal_access_enabled: contact.portal_access_enabled,
       created_at: contact.created_at,
     };
   }) as CustomerUser[];
+}
+
+export async function setUserPassword(userId: string, newPassword: string) {
+  const profile = await getProfile();
+  if (!profile || profile.role !== "admin") {
+    return { error: "Unauthorized - admin access required" };
+  }
+
+  if (!userId) {
+    return { error: "User ID is required" };
+  }
+
+  if (!newPassword || newPassword.length < 6) {
+    return { error: "Password must be at least 6 characters" };
+  }
+
+  const adminClient = createAdminClient();
+  
+  const { error } = await adminClient.auth.admin.updateUserById(userId, {
+    password: newPassword,
+  });
+
+  if (error) {
+    console.error("Error setting password:", error);
+    return { error: "Failed to set password" };
+  }
+
+  return { success: true };
 }
 
 export async function getUserById(id: string) {

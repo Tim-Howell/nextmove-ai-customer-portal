@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getCustomerUsers } from "@/app/actions/users";
+import { SetPasswordButton } from "@/components/settings/set-password-button";
 
 export default async function CustomerUsersPage() {
   const users = await getCustomerUsers();
@@ -31,12 +32,13 @@ export default async function CustomerUsersPage() {
             <TableHead>Customer</TableHead>
             <TableHead>Portal Access</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {users.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="text-center text-muted-foreground">
+              <TableCell colSpan={7} className="text-center text-muted-foreground">
                 No customer contacts found
               </TableCell>
             </TableRow>
@@ -65,6 +67,12 @@ export default async function CustomerUsersPage() {
                   <Badge variant={user.is_active ? "default" : "secondary"}>
                     {user.is_active ? "Active" : "Inactive"}
                   </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <SetPasswordButton
+                    userId={user.user_id}
+                    userName={user.full_name || user.email || "User"}
+                  />
                 </TableCell>
               </TableRow>
             ))
