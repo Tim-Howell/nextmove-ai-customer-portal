@@ -149,52 +149,53 @@ export async function getCustomerUsers(): Promise<CustomerUser[]> {
   const showDemoData = await getShowDemoData();
 
   // Query customer_contacts which are the actual customer portal users
-  const { data, error } = await supabase
+  const { data: contacts, error: contactsError } = await supabase
     .from("customer_contacts")
-    .select(`
-      id,
-      email,
-      full_name,
-      first_name,
-      last_name,
-      title,
-      customer_id,
-      is_active,
-      portal_access_enabled,
-      created_at,
-      customer:customers(name, is_demo)
-    `)
+    .select("*")
     .eq("portal_access_enabled", true)
     .order("full_name");
 
-  if (error) {
-    console.error("Error fetching customer users:", error);
+  if (contactsError) {
+    console.error("Error fetching customer users:", contactsError.code, contactsError.message);
     return [];
   }
-  
-  console.log("Customer users query result:", data?.length, "contacts found");
 
-  // Filter demo data in JS since Supabase nested filters are unreliable
-  const filtered = (data || []).filter((contact: any) => {
-    if (!showDemoData && contact.customer?.is_demo) {
+  // Get customer names separately
+  const customerIds = [...new Set((contacts || []).map((c: any) => c.customer_id))];
+  const { data: customers } = await supabase
+    .from("customers")
+    .select("id, name, is_demo")
+    .in("id", customerIds);
+
+  const customerMap = new Map((customers || []).map((c: any) => [c.id, c]));
+  
+  console.log("Customer users query result:", contacts?.length, "contacts found");
+
+  // Filter demo data in JS
+  const filtered = (contacts || []).filter((contact: any) => {
+    const customer = customerMap.get(contact.customer_id);
+    if (!showDemoData && customer?.is_demo) {
       return false;
     }
     return true;
   });
 
-  return filtered.map((contact: any) => ({
-    id: contact.id,
-    email: contact.email,
-    full_name: contact.full_name,
-    first_name: contact.first_name,
-    last_name: contact.last_name,
-    title: contact.title,
-    customer_id: contact.customer_id,
-    customer_name: contact.customer?.name || null,
-    is_active: contact.is_active,
-    portal_access_enabled: contact.portal_access_enabled,
-    created_at: contact.created_at,
-  })) as CustomerUser[];
+  return filtered.map((contact: any) => {
+    const customer = customerMap.get(contact.customer_id);
+    return {
+      id: contact.id,
+      email: contact.email,
+      full_name: contact.full_name,
+      first_name: contact.first_name,
+      last_name: contact.last_name,
+      title: contact.title,
+      customer_id: contact.customer_id,
+      customer_name: customer?.name || null,
+      is_active: contact.is_active,
+      portal_access_enabled: contact.portal_access_enabled,
+      created_at: contact.created_at,
+    };
+  }) as CustomerUser[];
 }
 
 export async function getUserById(id: string) {
