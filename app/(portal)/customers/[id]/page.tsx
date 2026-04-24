@@ -20,8 +20,7 @@ import { DeleteContactButton } from "@/components/customers/delete-contact-butto
 import { ContactInvitationStatus } from "@/components/customers/contact-invitation-status";
 import { RecordHistory } from "@/components/audit/record-history";
 import { InternalNotesSection } from "@/components/internal-notes";
-import { getInvitationStatus } from "@/app/actions/invitations";
-import type { CustomerWithContacts, CustomerContact, InvitationStatus, CustomerInvitation } from "@/types/database";
+import type { CustomerWithContacts, CustomerContact } from "@/types/database";
 
 interface CustomerDetailPageProps {
   params: Promise<{ id: string }>;
@@ -54,12 +53,7 @@ async function getCustomer(id: string): Promise<CustomerWithContacts | null> {
   return data as CustomerWithContacts;
 }
 
-interface ContactWithStatus extends CustomerContact {
-  invitation_status: InvitationStatus;
-  invitation: CustomerInvitation | null;
-}
-
-async function getCustomerContacts(customerId: string): Promise<ContactWithStatus[]> {
+async function getCustomerContacts(customerId: string): Promise<CustomerContact[]> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -73,21 +67,7 @@ async function getCustomerContacts(customerId: string): Promise<ContactWithStatu
     return [];
   }
 
-  const contactsWithStatus = await Promise.all(
-    (data as CustomerContact[]).map(async (contact) => {
-      const { status, invitation } = await getInvitationStatus(
-        contact.id,
-        contact.user_id
-      );
-      return {
-        ...contact,
-        invitation_status: status,
-        invitation,
-      };
-    })
-  );
-
-  return contactsWithStatus;
+  return data as CustomerContact[];
 }
 
 async function getActiveContracts(customerId: string) {
@@ -407,8 +387,7 @@ export default async function CustomerDetailPage({
                         contactId={contact.id}
                         email={contact.email}
                         portalAccessEnabled={contact.portal_access_enabled}
-                        status={contact.invitation_status}
-                        invitation={contact.invitation}
+                        hasUserId={!!contact.user_id}
                       />
                     </TableCell>
                     <TableCell className="text-right">

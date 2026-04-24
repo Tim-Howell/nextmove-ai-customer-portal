@@ -38,7 +38,7 @@ export async function getInvitationStatus(
   return { status: "pending", invitation: invitation as CustomerInvitation };
 }
 
-export async function sendCustomerInvitation(contactId: string) {
+export async function sendLoginLink(contactId: string) {
   const supabase = await createClient();
   const profile = await getProfile();
 
@@ -64,43 +64,32 @@ export async function sendCustomerInvitation(contactId: string) {
     return { error: "Portal access must be enabled for this contact" };
   }
 
-  if (contact.user_id) {
-    return { error: "Contact already has portal access" };
+  if (!contact.user_id) {
+    return { error: "Contact does not have a portal account yet" };
   }
 
+  // Send magic link to existing user
   const { error: authError } = await supabase.auth.signInWithOtp({
     email: contact.email,
     options: {
-      data: {
-        contact_id: contactId,
-        customer_id: contact.customer_id,
-        role: "customer_user",
-      },
       emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/auth/callback`,
     },
   });
 
   if (authError) {
-    console.error("Error sending invitation email:", authError);
+    console.error("Error sending login link:", authError);
     if (authError.message?.includes("rate") || authError.status === 429) {
-      return { error: "Please wait a minute before sending another invitation" };
+      return { error: "Please wait a minute before sending another link" };
     }
-    return { error: authError.message || "Failed to send invitation email" };
-  }
-
-  const { error: inviteError } = await supabase.from("customer_invitations").insert({
-    contact_id: contactId,
-    email: contact.email,
-    invited_by: profile.id,
-  });
-
-  if (inviteError) {
-    console.error("Error creating invitation record:", inviteError);
+    return { error: authError.message || "Failed to send login link" };
   }
 
   revalidatePath(`/customers/${contact.customer_id}`);
   return { success: true };
 }
+
+// Keep old function name as alias for backward compatibility
+export const sendCustomerInvitation = sendLoginLink;
 
 export async function resendCustomerInvitation(contactId: string) {
   const supabase = await createClient();

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { customerSchema, customerContactSchema } from "@/lib/validations/customer";
 import type { CustomerFormData, CustomerContactFormData } from "@/lib/validations/customer";
 import { ERROR_CODES, logError } from "@/lib/errors";
@@ -153,6 +153,37 @@ export async function createCustomerContact(
   const email = validated.data.email?.toLowerCase() || null;
   const phone = formatPhoneDigitsOnly(validated.data.phone);
 
+  // If portal access is enabled and email exists, create auth user first
+  let userId: string | null = null;
+  if (validated.data.portal_access_enabled && email) {
+    const adminClient = createAdminClient();
+    const { data: authUser, error: authError } = await adminClient.auth.admin.createUser({
+      email,
+      email_confirm: true,
+      user_metadata: {
+        full_name: validated.data.full_name,
+        role: "customer_user",
+        customer_id: customerId,
+      },
+    });
+
+    if (authError) {
+      // User might already exist - try to find them
+      if (authError.message?.includes("already been registered")) {
+        const { data: existingUsers } = await adminClient.auth.admin.listUsers();
+        const existingUser = existingUsers?.users?.find(u => u.email === email);
+        if (existingUser) {
+          userId = existingUser.id;
+        }
+      } else {
+        console.error("Error creating auth user:", authError);
+        return { error: "Failed to create portal account" };
+      }
+    } else if (authUser?.user) {
+      userId = authUser.user.id;
+    }
+  }
+
   const { data: newContact, error } = await supabase.from("customer_contacts").insert({
     customer_id: customerId,
     full_name: validated.data.full_name,
@@ -161,6 +192,7 @@ export async function createCustomerContact(
     phone,
     is_active: validated.data.is_active,
     portal_access_enabled: validated.data.portal_access_enabled,
+    user_id: userId,
     notes: validated.data.notes || null,
   }).select("id").single();
 
@@ -188,6 +220,44 @@ export async function updateCustomerContact(
   const email = validated.data.email?.toLowerCase() || null;
   const phone = formatPhoneDigitsOnly(validated.data.phone);
 
+  // Get current contact to check if portal access is being enabled
+  const { data: currentContact } = await supabase
+    .from("customer_contacts")
+    .select("user_id, portal_access_enabled")
+    .eq("id", contactId)
+    .single();
+
+  // If enabling portal access and no user_id exists, create auth user
+  let userId = currentContact?.user_id || null;
+  if (validated.data.portal_access_enabled && !userId && email) {
+    const adminClient = createAdminClient();
+    const { data: authUser, error: authError } = await adminClient.auth.admin.createUser({
+      email,
+      email_confirm: true,
+      user_metadata: {
+        full_name: validated.data.full_name,
+        role: "customer_user",
+        customer_id: customerId,
+      },
+    });
+
+    if (authError) {
+      // User might already exist - try to find them
+      if (authError.message?.includes("already been registered")) {
+        const { data: existingUsers } = await adminClient.auth.admin.listUsers();
+        const existingUser = existingUsers?.users?.find(u => u.email === email);
+        if (existingUser) {
+          userId = existingUser.id;
+        }
+      } else {
+        console.error("Error creating auth user:", authError);
+        return { error: "Failed to create portal account" };
+      }
+    } else if (authUser?.user) {
+      userId = authUser.user.id;
+    }
+  }
+
   const { error } = await supabase
     .from("customer_contacts")
     .update({
@@ -197,6 +267,7 @@ export async function updateCustomerContact(
       phone,
       is_active: validated.data.is_active,
       portal_access_enabled: validated.data.portal_access_enabled,
+      user_id: userId,
       notes: validated.data.notes || null,
     })
     .eq("id", contactId);
