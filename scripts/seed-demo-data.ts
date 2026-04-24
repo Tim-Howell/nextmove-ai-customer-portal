@@ -39,12 +39,14 @@ const demoCustomers = [
 
 // Demo contacts per customer (will be distributed)
 // Only the 3rd contact (Mike Williams) on first 5 customers gets portal access
+// is_active: whether contact is still employed/relevant
+// portal_access_enabled: whether contact can access the portal
 const contactTemplates = [
-  { full_name: "John Smith", title: "CEO", email: "john@", portal_access_enabled: false },
-  { full_name: "Sarah Johnson", title: "CTO", email: "sarah@", portal_access_enabled: false },
-  { full_name: "Mike Williams", title: "Project Manager", email: "mike@", portal_access_enabled: true },
-  { full_name: "Emily Davis", title: "Developer", email: "emily@", portal_access_enabled: false },
-  { full_name: "Chris Brown", title: "Designer", email: "chris@", portal_access_enabled: false },
+  { full_name: "John Smith", title: "CEO", email: "john@", is_active: true, portal_access_enabled: false },
+  { full_name: "Sarah Johnson", title: "CTO", email: "sarah@", is_active: true, portal_access_enabled: false },
+  { full_name: "Mike Williams", title: "Project Manager", email: "mike@", is_active: true, portal_access_enabled: true },
+  { full_name: "Emily Davis", title: "Developer", email: "emily@", is_active: false, portal_access_enabled: false }, // Inactive
+  { full_name: "Chris Brown", title: "Designer", email: "chris@", is_active: true, portal_access_enabled: false },
 ];
 
 // Time entry categories and descriptions
@@ -208,13 +210,16 @@ async function seedContacts(customers: any[]) {
       // Only enable portal access for Mike Williams (index 2) on first 5 non-archived customers
       const enablePortalAccess = isFirst5Customers && i === 2 && !customer.archived_at;
       
+      // Use template's is_active, but archived customers have all contacts inactive
+      const contactIsActive = customer.archived_at ? false : template.is_active;
+      
       contacts.push({
         customer_id: customer.id,
         full_name: template.full_name,
         title: template.title,
         email: template.email + domain,
         portal_access_enabled: enablePortalAccess,
-        is_active: !customer.archived_at,
+        is_active: contactIsActive,
         is_demo: true,
       });
     }
