@@ -238,8 +238,6 @@ async function seedContacts(customers: any[]) {
           email_confirm: true,
           user_metadata: {
             full_name: template.full_name,
-            role: "customer_user",
-            customer_id: customer.id,
           },
         });
         
@@ -256,6 +254,16 @@ async function seedContacts(customers: any[]) {
           }
         } else if (authUser?.user) {
           userId = authUser.user.id;
+          
+          // Update the profile to set customer_user role and customer_id
+          await supabase
+            .from("profiles")
+            .update({ 
+              role: "customer_user", 
+              customer_id: customer.id,
+              full_name: template.full_name,
+            })
+            .eq("id", userId);
         }
       }
       

@@ -162,8 +162,6 @@ export async function createCustomerContact(
       email_confirm: true,
       user_metadata: {
         full_name: validated.data.full_name,
-        role: "customer_user",
-        customer_id: customerId,
       },
     });
 
@@ -181,6 +179,17 @@ export async function createCustomerContact(
       }
     } else if (authUser?.user) {
       userId = authUser.user.id;
+      
+      // Update the profile to set customer_user role and customer_id
+      // The trigger creates with default 'staff' role, so we need to fix it
+      await supabase
+        .from("profiles")
+        .update({ 
+          role: "customer_user", 
+          customer_id: customerId,
+          full_name: validated.data.full_name,
+        })
+        .eq("id", userId);
     }
   }
 
@@ -236,8 +245,6 @@ export async function updateCustomerContact(
       email_confirm: true,
       user_metadata: {
         full_name: validated.data.full_name,
-        role: "customer_user",
-        customer_id: customerId,
       },
     });
 
@@ -255,6 +262,17 @@ export async function updateCustomerContact(
       }
     } else if (authUser?.user) {
       userId = authUser.user.id;
+      
+      // Update the profile to set customer_user role and customer_id
+      // The trigger creates with default 'staff' role, so we need to fix it
+      await supabase
+        .from("profiles")
+        .update({ 
+          role: "customer_user", 
+          customer_id: customerId,
+          full_name: validated.data.full_name,
+        })
+        .eq("id", userId);
     }
   }
 
