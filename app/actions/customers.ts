@@ -68,7 +68,6 @@ export async function createCustomer(data: CustomerFormData) {
       contract_type_id: onDemandType.id,
       status_id: activeStatus.id,
       is_default: true,
-      is_demo: validated.data.is_demo || false,
     });
 
     if (contractError) {
