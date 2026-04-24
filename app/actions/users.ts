@@ -149,7 +149,6 @@ export async function getCustomerUsers(): Promise<CustomerUser[]> {
   const showDemoData = await getShowDemoData();
 
   // Query customer_contacts which are the actual customer portal users
-  // Use inner join to filter by customer.is_demo
   const { data, error } = await supabase
     .from("customer_contacts")
     .select(`
@@ -163,7 +162,7 @@ export async function getCustomerUsers(): Promise<CustomerUser[]> {
       is_active,
       portal_access_enabled,
       created_at,
-      customer:customers!inner(name, is_demo)
+      customer:customers(name, is_demo)
     `)
     .eq("portal_access_enabled", true)
     .order("full_name");
@@ -172,6 +171,8 @@ export async function getCustomerUsers(): Promise<CustomerUser[]> {
     console.error("Error fetching customer users:", error);
     return [];
   }
+  
+  console.log("Customer users query result:", data?.length, "contacts found");
 
   // Filter demo data in JS since Supabase nested filters are unreliable
   const filtered = (data || []).filter((contact: any) => {
