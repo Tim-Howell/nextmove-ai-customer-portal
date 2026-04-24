@@ -38,9 +38,10 @@ const demoCustomers = [
 ];
 
 // Demo contacts per customer (will be distributed)
+// Only the 3rd contact (Mike Williams) on first 5 customers gets portal access
 const contactTemplates = [
-  { full_name: "John Smith", title: "CEO", email: "john@", portal_access_enabled: true },
-  { full_name: "Sarah Johnson", title: "CTO", email: "sarah@", portal_access_enabled: true },
+  { full_name: "John Smith", title: "CEO", email: "john@", portal_access_enabled: false },
+  { full_name: "Sarah Johnson", title: "CTO", email: "sarah@", portal_access_enabled: false },
   { full_name: "Mike Williams", title: "Project Manager", email: "mike@", portal_access_enabled: true },
   { full_name: "Emily Davis", title: "Developer", email: "emily@", portal_access_enabled: false },
   { full_name: "Chris Brown", title: "Designer", email: "chris@", portal_access_enabled: false },
@@ -193,20 +194,26 @@ async function seedContacts(customers: any[]) {
   const contacts: any[] = [];
   
   // Distribute contacts across customers
+  // First 5 customers get 3 contacts each, with only the 3rd (Mike Williams) having portal access
+  // Remaining customers get 2 contacts each, none with portal access
   customers.forEach((customer, customerIndex) => {
     // Each customer gets 2-3 contacts
     const numContacts = customerIndex < 5 ? 3 : 2;
+    const isFirst5Customers = customerIndex < 5;
     
     for (let i = 0; i < numContacts; i++) {
       const template = contactTemplates[i % contactTemplates.length]!;
       const domain = customer.name.toLowerCase().replace(/\s+/g, "").replace(/[^a-z]/g, "") + ".com";
+      
+      // Only enable portal access for Mike Williams (index 2) on first 5 non-archived customers
+      const enablePortalAccess = isFirst5Customers && i === 2 && !customer.archived_at;
       
       contacts.push({
         customer_id: customer.id,
         full_name: template.full_name,
         title: template.title,
         email: template.email + domain,
-        portal_access_enabled: template.portal_access_enabled && !customer.archived_at,
+        portal_access_enabled: enablePortalAccess,
         is_active: !customer.archived_at,
         is_demo: true,
       });
