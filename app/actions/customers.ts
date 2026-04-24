@@ -40,7 +40,7 @@ export async function createCustomer(data: CustomerFormData) {
   }
 
   // Auto-create base contract for ad-hoc/on-demand hours
-  const [{ data: activeStatus }, { data: onDemandType }] = await Promise.all([
+  const [{ data: activeStatus, error: statusError }, { data: onDemandType, error: typeError }] = await Promise.all([
     supabase
       .from("reference_values")
       .select("id")
@@ -53,6 +53,13 @@ export async function createCustomer(data: CustomerFormData) {
       .eq("value", "on_demand")
       .single(),
   ]);
+
+  if (statusError) {
+    console.error("Failed to fetch active status:", statusError);
+  }
+  if (typeError) {
+    console.error("Failed to fetch on_demand type:", typeError);
+  }
 
   if (activeStatus && onDemandType) {
     const { error: contractError } = await supabase.from("contracts").insert({
@@ -70,6 +77,8 @@ export async function createCustomer(data: CustomerFormData) {
       logError(contractError, "createCustomer - base contract");
       return { error: "Failed to create base contract", code: ERROR_CODES.CUS_CRE_002 };
     }
+  } else {
+    console.warn("Skipping base contract creation - missing activeStatus or onDemandType");
   }
 
   revalidatePath("/customers");
