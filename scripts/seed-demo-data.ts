@@ -154,6 +154,22 @@ async function cleanupDemoData() {
   const demoCustomerIds = demoCustomers?.map((c) => c.id) || [];
   
   if (demoCustomerIds.length > 0) {
+    // Get demo contacts with user_ids to delete auth users
+    const { data: demoContacts } = await supabase
+      .from("customer_contacts")
+      .select("user_id")
+      .eq("is_demo", true)
+      .not("user_id", "is", null);
+    
+    // Delete auth users for demo contacts
+    if (demoContacts && demoContacts.length > 0) {
+      for (const contact of demoContacts) {
+        if (contact.user_id) {
+          await supabase.auth.admin.deleteUser(contact.user_id);
+        }
+      }
+    }
+    
     // Delete in order of dependencies using customer_id
     await supabase.from("time_entries").delete().in("customer_id", demoCustomerIds);
     await supabase.from("requests").delete().in("customer_id", demoCustomerIds);
@@ -198,14 +214,15 @@ async function seedContacts(customers: any[]) {
   // Distribute contacts across customers
   // First 5 customers get 3 contacts each, with only the 3rd (Mike Williams) having portal access
   // Remaining customers get 2 contacts each, none with portal access
-  customers.forEach((customer, customerIndex) => {
-    // Each customer gets 2-3 contacts
+  for (let customerIndex = 0; customerIndex < customers.length; customerIndex++) {
+    const customer = customers[customerIndex];
     const numContacts = customerIndex < 5 ? 3 : 2;
     const isFirst5Customers = customerIndex < 5;
     
     for (let i = 0; i < numContacts; i++) {
       const template = contactTemplates[i % contactTemplates.length]!;
       const domain = customer.name.toLowerCase().replace(/\s+/g, "").replace(/[^a-z]/g, "") + ".com";
+      const email = template.email + domain;
       
       // Only enable portal access for Mike Williams (index 2) on first 5 non-archived customers
       const enablePortalAccess = isFirst5Customers && i === 2 && !customer.archived_at;
@@ -213,17 +230,47 @@ async function seedContacts(customers: any[]) {
       // Use template's is_active, but archived customers have all contacts inactive
       const contactIsActive = customer.archived_at ? false : template.is_active;
       
+      // Create auth user if portal access is enabled
+      let userId: string | null = null;
+      if (enablePortalAccess && email) {
+        const { data: authUser, error: authError } = await supabase.auth.admin.createUser({
+          email,
+          email_confirm: true,
+          user_metadata: {
+            full_name: template.full_name,
+            role: "customer_user",
+            customer_id: customer.id,
+          },
+        });
+        
+        if (authError) {
+          // User might already exist
+          if (authError.message?.includes("already been registered")) {
+            const { data: existingUsers } = await supabase.auth.admin.listUsers();
+            const existingUser = existingUsers?.users?.find(u => u.email === email);
+            if (existingUser) {
+              userId = existingUser.id;
+            }
+          } else {
+            console.warn(`Warning: Could not create auth user for ${email}:`, authError.message);
+          }
+        } else if (authUser?.user) {
+          userId = authUser.user.id;
+        }
+      }
+      
       contacts.push({
         customer_id: customer.id,
         full_name: template.full_name,
         title: template.title,
-        email: template.email + domain,
+        email,
         portal_access_enabled: enablePortalAccess,
         is_active: contactIsActive,
+        user_id: userId,
         is_demo: true,
       });
     }
-  });
+  }
 
   const { data, error } = await supabase
     .from("customer_contacts")
