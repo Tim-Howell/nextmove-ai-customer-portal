@@ -26,6 +26,7 @@ export function CustomerCard({ id, name, status, logoUrl, website }: CustomerCar
                   src={logoUrl}
                   alt={`${name} logo`}
                   fill
+                  sizes="80px"
                   className="object-cover"
                 />
               ) : (
