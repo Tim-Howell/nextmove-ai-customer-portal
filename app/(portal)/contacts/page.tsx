@@ -102,13 +102,14 @@ export default async function ContactsPage() {
             <TableHead>Title</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Phone</TableHead>
+            <TableHead>Portal Access</TableHead>
             <TableHead>Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {contacts.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="p-0">
+              <TableCell colSpan={7} className="p-0">
                 <EmptyState
                   icon={Users}
                   title="No contacts found"
@@ -145,18 +146,14 @@ export default async function ContactsPage() {
                 </TableCell>
                 <TableCell>{contact.phone || "—"}</TableCell>
                 <TableCell>
-                  <div className="flex gap-1">
-                    {contact.portal_access_enabled && (
-                      <Badge variant="default" className="text-xs">
-                        Portal
-                      </Badge>
-                    )}
-                    {!contact.is_active && (
-                      <Badge variant="secondary" className="text-xs">
-                        Inactive
-                      </Badge>
-                    )}
-                  </div>
+                  <Badge variant={contact.portal_access_enabled ? "default" : "outline"}>
+                    {contact.portal_access_enabled ? "Enabled" : "Disabled"}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={contact.is_active ? "default" : "secondary"}>
+                    {contact.is_active ? "Active" : "Inactive"}
+                  </Badge>
                 </TableCell>
               </TableRow>
             ))
