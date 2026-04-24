@@ -242,6 +242,37 @@ npx tsx scripts/seed-demo-data.ts
 npx tsx scripts/create-demo-accounts.ts
 ```
 
+### Re-seeding Demo Data
+
+To clear existing demo data and re-seed, run this SQL in Supabase SQL Editor first:
+
+```sql
+-- Delete demo data in correct order (respecting foreign keys)
+DELETE FROM time_entries WHERE contract_id IN (SELECT id FROM contracts WHERE customer_id IN (SELECT id FROM customers WHERE is_demo = true));
+DELETE FROM requests WHERE customer_id IN (SELECT id FROM customers WHERE is_demo = true);
+DELETE FROM priorities WHERE customer_id IN (SELECT id FROM customers WHERE is_demo = true);
+DELETE FROM contracts WHERE customer_id IN (SELECT id FROM customers WHERE is_demo = true);
+DELETE FROM customer_contacts WHERE is_demo = true;
+DELETE FROM customers WHERE is_demo = true;
+```
+
+Then run the seed script:
+
+```bash
+npx tsx scripts/seed-demo-data.ts
+```
+
+### Customizing Demo Data
+
+To modify the demo data (customers, contacts, contracts, etc.), edit the seed script:
+
+📄 [`scripts/seed-demo-data.ts`](scripts/seed-demo-data.ts)
+
+Key configuration in the file:
+- `demoCustomers` - Customer names and statuses
+- `contactTemplates` - Contact names, titles, and portal access settings
+- Time entries, priorities, and requests are generated based on these
+
 ### Demo Login Credentials
 
 | Email | Password | Customer |
@@ -254,11 +285,11 @@ npx tsx scripts/create-demo-accounts.ts
 ### Demo Data Summary
 
 - **10 Customers** (8 active, 2 archived)
-- **25 Contacts** (13 with portal access)
-- **15 Contracts** (retainer, project, ad-hoc types)
+- **25 Contacts** (5 with portal access - Mike Williams on first 5 customers)
+- **14 Contracts** (various billing models)
 - **100 Time Entries** (for pagination testing)
-- **65+ Priorities** (Acme: 25, TechStart: 22, others spread)
-- **75+ Requests** (Acme: 25, TechStart: 22, others spread)
+- **65 Priorities** (distributed across customers)
+- **77 Requests** (distributed across customers)
 
 All demo records have `is_demo = true` and can be filtered using the "Show Demo Data" toggle.
 
