@@ -77,7 +77,7 @@ export function SetPasswordButton({ userId, userName }: SetPasswordButtonProps) 
 
   if (!userId) {
     return (
-      <Button variant="ghost" size="sm" disabled title="User must be invited first">
+      <Button variant="ghost" size="sm" disabled title="User must be invited first" className="opacity-30">
         <Key className="h-4 w-4" />
       </Button>
     );

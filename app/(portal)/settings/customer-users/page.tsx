@@ -28,7 +28,6 @@ export default async function CustomerUsersPage() {
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
-            <TableHead>Title</TableHead>
             <TableHead>Customer</TableHead>
             <TableHead>Portal Access</TableHead>
             <TableHead>Status</TableHead>
@@ -38,7 +37,7 @@ export default async function CustomerUsersPage() {
         <TableBody>
           {users.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="text-center text-muted-foreground">
+              <TableCell colSpan={6} className="text-center text-muted-foreground">
                 No customer contacts found
               </TableCell>
             </TableRow>
@@ -48,8 +47,7 @@ export default async function CustomerUsersPage() {
                 <TableCell className="font-medium">
                   {user.full_name || user.email?.split("@")[0] || "Unknown"}
                 </TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.title || "—"}</TableCell>
+                <TableCell className="text-sm">{user.email}</TableCell>
                 <TableCell>
                   <Link
                     href={`/customers/${user.customer_id}`}
