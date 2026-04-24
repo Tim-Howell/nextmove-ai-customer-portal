@@ -66,9 +66,9 @@
 
 ## 10. Testing
 
-- [ ] 10.1 Test adding notes as admin user
-- [ ] 10.2 Test adding notes as staff user
-- [ ] 10.3 Verify customer_user cannot see notes section
-- [ ] 10.4 Verify notes display in correct order (newest first)
-- [ ] 10.5 Verify author name and timestamp display correctly
-- [ ] 10.6 Verify new notes can be added and displayed correctly
+- [x] 10.1 Test adding notes as admin user
+- [x] 10.2 Test adding notes as staff user
+- [x] 10.3 Verify customer_user cannot see notes section
+- [x] 10.4 Verify notes display in correct order (newest first)
+- [x] 10.5 Verify author name and timestamp display correctly
+- [x] 10.6 Verify new notes can be added and displayed correctly

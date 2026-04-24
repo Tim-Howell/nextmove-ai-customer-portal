@@ -16,6 +16,11 @@ Customer portal for NextMove AI to manage customers, contracts, time tracking, p
 - Demo data seeding scripts available
 - Playwright E2E tests created
 
+### Recent Changes (April 23, 2026)
+- **internal-notes-redesign**: Polymorphic `internal_notes` table replacing per-entity columns
+- **menu-layout-changes**: Sidebar navigation restructure, user menu, landing pages
+- **Password reset flow**: Simplified to magic link + in-profile password change
+
 ## Key Architecture Decisions
 
 ### Database
@@ -68,6 +73,7 @@ types/
 | `time_entries` | Time logs |
 | `priorities` | Customer priorities/projects |
 | `requests` | Customer requests |
+| `internal_notes` | Polymorphic notes for customers/priorities/requests |
 | `audit_logs` | Change tracking |
 | `portal_settings` | Branding (org name, logo) |
 | `reference_values` | Dropdown options |
