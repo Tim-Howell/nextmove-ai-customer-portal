@@ -685,7 +685,7 @@ The MVP is successful when:
 ## 15. Open Questions / Future Enhancements
 - support multiple customer organizations per user
 - approval workflow for customer-submitted priorities
-- richer request conversations or comments
+- richer request conversations or comments — **scoped & deferred**, see [`openspec/backlog/requests-module-overhaul.md`](./backlog/requests-module-overhaul.md)
 - CSV exports
 - customer-specific branding
 - email digests
