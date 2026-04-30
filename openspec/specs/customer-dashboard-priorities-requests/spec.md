@@ -1,4 +1,9 @@
-## ADDED Requirements
+# customer-dashboard-priorities-requests Specification
+
+## Purpose
+Defines the customer dashboard widgets that surface open priorities and requests counts/lists for the signed-in customer.
+
+## Requirements
 
 ### Requirement: Open priorities count widget
 The customer dashboard SHALL display a count of open priorities (non-complete status) for the customer.

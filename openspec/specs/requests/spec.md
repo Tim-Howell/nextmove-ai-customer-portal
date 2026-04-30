@@ -1,4 +1,9 @@
-## ADDED Requirements
+# requests Specification
+
+## Purpose
+Defines the request entity (customer-submitted ask) — its data model, submission flow, statuses, and notification behavior.
+
+## Requirements
 
 ### Requirement: Request data model
 The system SHALL store requests with customer association, submitter, title, description, status, internal notes, and timestamps.

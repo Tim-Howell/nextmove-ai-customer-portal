@@ -1,4 +1,9 @@
-## ADDED Requirements
+# environment-config Specification
+
+## Purpose
+Defines the required environment variables and their documentation surface for local and deployed environments.
+
+## Requirements
 
 ### Requirement: Environment variable template
 The system SHALL include a `.env.example` file documenting all required environment variables.

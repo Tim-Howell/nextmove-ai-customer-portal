@@ -1,4 +1,9 @@
-## ADDED Requirements
+# priorities Specification
+
+## Purpose
+Defines the priority entity (customer-scoped task/initiative) — its data model, list/detail views, statuses, and access rules.
+
+## Requirements
 
 ### Requirement: Priority data model
 The system SHALL store priorities with customer association, title, description, status, priority level, optional due date, and audit fields (created_by, updated_by, timestamps).

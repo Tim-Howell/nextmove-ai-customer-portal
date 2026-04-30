@@ -1,4 +1,9 @@
-## ADDED Requirements
+# deployment-pipeline Specification
+
+## Purpose
+Defines deployment configuration and build expectations for the portal (Vercel).
+
+## Requirements
 
 ### Requirement: Vercel deployment configuration
 The system SHALL include a `vercel.json` configuration file for deployment settings.

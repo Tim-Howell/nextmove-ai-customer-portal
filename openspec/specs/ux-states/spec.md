@@ -1,4 +1,9 @@
-## ADDED Requirements
+# ux-states Specification
+
+## Purpose
+Defines required UX states across pages: loading skeletons, empty states, and error states.
+
+## Requirements
 
 ### Requirement: Loading states for list pages
 The system SHALL display skeleton loading states while data is being fetched on list pages.

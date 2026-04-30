@@ -1,4 +1,9 @@
-## ADDED Requirements
+# project-scaffolding Specification
+
+## Purpose
+Defines the foundational project setup: framework, tooling, linting, formatting, and base configuration.
+
+## Requirements
 
 ### Requirement: Next.js App Router project initialization
 The system SHALL be initialized as a Next.js 14+ project using the App Router with TypeScript enabled.

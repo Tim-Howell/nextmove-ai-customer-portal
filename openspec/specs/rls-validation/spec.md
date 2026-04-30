@@ -1,4 +1,9 @@
-## ADDED Requirements
+# rls-validation Specification
+
+## Purpose
+Defines the Row Level Security policies that must hold across roles (admin, staff, customer_user) and the validation harness for them.
+
+## Requirements
 
 ### Requirement: Customer user read-only access to contracts
 The system SHALL prevent customer_user role from creating, updating, or deleting contracts.

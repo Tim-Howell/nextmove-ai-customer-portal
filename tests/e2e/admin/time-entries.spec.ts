@@ -113,7 +113,7 @@ test.describe("Time Entry Management", () => {
     test.skip("can filter by date range", async ({ page }) => {
       await navigateTo(page, "/time-logs");
       
-      const today = new Date().toISOString().split("T")[0];
+      const today = new Date().toISOString().split("T")[0]!;
       await page.locator('input[type="date"]').first().fill(today);
       
       await waitForPageLoad(page);

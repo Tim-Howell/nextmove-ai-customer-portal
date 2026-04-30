@@ -1,4 +1,9 @@
-## ADDED Requirements
+# demo-data Specification
+
+## Purpose
+Defines the seed data shape and toggles used for demo customers, contacts, contracts, time entries, priorities, and requests.
+
+## Requirements
 
 ### Requirement: Demo customer data
 The system SHALL include seed data for demo customers with realistic variety.
