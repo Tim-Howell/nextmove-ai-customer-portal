@@ -18,7 +18,6 @@ import { DeleteContractButton } from "@/components/contracts/delete-contract-but
 import { ArchiveContractButton } from "@/components/contracts/archive-contract-button";
 import { ContractDocuments } from "@/components/contracts/contract-documents";
 import { ContractHoursStats } from "@/components/contracts/contract-hours-stats";
-import { RecordHistory } from "@/components/audit/record-history";
 import { createClient } from "@/lib/supabase/server";
 
 interface ContractDetailPageProps {
@@ -43,10 +42,9 @@ function getStatusBadgeVariant(statusValue: string): "default" | "secondary" | "
   switch (statusValue) {
     case "active":
       return "default";
-    case "draft":
-      return "secondary";
     case "expired":
-    case "closed":
+      return "secondary";
+    case "archived":
       return "outline";
     default:
       return "secondary";
@@ -230,13 +228,6 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
         </CardContent>
       </Card>
 
-      {isInternal && (
-        <RecordHistory
-          tableName="contracts"
-          recordId={id}
-          title="Change History"
-        />
-      )}
     </div>
   );
 }

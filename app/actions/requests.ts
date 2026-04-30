@@ -17,6 +17,7 @@ import { getShowDemoData } from "./settings";
 interface GetRequestsOptions {
   customerId?: string;
   statusId?: string;
+  statusIds?: string[];
 }
 
 async function getCurrentUserRole(): Promise<{
@@ -73,7 +74,7 @@ export async function getRequests(
 ): Promise<{ data: RequestWithRelations[] }> {
   const supabase = await createClient();
   const showDemoData = await getShowDemoData();
-  const { customerId, statusId } = options;
+  const { customerId, statusId, statusIds } = options;
   const { role } = await getCurrentUserRole();
   const isInternal = role === "admin" || role === "staff";
 
@@ -99,6 +100,9 @@ export async function getRequests(
   }
   if (statusId) {
     query = query.eq("status_id", statusId);
+  }
+  if (statusIds && statusIds.length > 0) {
+    query = query.in("status_id", statusIds);
   }
   
   // Filter out demo data if toggle is off

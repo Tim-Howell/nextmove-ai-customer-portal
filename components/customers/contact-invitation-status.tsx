@@ -70,7 +70,7 @@ export function ContactInvitationStatus({
       <div className="flex items-center gap-2">
         <Badge variant="default" className="bg-green-600">
           <CheckCircle className="h-3 w-3 mr-1" />
-          Active
+          Enabled
         </Badge>
         <Button
           variant="ghost"

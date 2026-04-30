@@ -10,6 +10,7 @@ import { getShowDemoData } from "./settings";
 interface GetPrioritiesOptions {
   customerId?: string;
   statusId?: string;
+  statusIds?: string[];
   priorityLevelId?: string;
 }
 
@@ -18,7 +19,7 @@ export async function getPriorities(
 ): Promise<{ data: PriorityWithRelations[] }> {
   const supabase = await createClient();
   const showDemoData = await getShowDemoData();
-  const { customerId, statusId, priorityLevelId } = options;
+  const { customerId, statusId, statusIds, priorityLevelId } = options;
 
   let query = supabase
     .from("priorities")
@@ -36,6 +37,9 @@ export async function getPriorities(
   }
   if (statusId) {
     query = query.eq("status_id", statusId);
+  }
+  if (statusIds && statusIds.length > 0) {
+    query = query.in("status_id", statusIds);
   }
   if (priorityLevelId) {
     query = query.eq("priority_level_id", priorityLevelId);

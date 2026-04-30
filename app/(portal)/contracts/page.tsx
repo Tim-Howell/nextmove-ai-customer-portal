@@ -52,10 +52,9 @@ function getStatusBadgeVariant(statusValue: string): "default" | "secondary" | "
   switch (statusValue) {
     case "active":
       return "default";
-    case "draft":
-      return "secondary";
     case "expired":
-    case "closed":
+      return "secondary";
+    case "archived":
       return "outline";
     default:
       return "secondary";

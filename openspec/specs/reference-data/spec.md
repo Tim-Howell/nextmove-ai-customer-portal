@@ -37,7 +37,7 @@ The system SHALL allow admin users to create, edit, and deactivate reference val
 - **THEN** that value is pre-selected in new record forms
 
 ### Requirement: Reference data seeding
-The system SHALL seed default reference values on initial setup.
+The system SHALL seed default reference values on initial setup. Contract status seed is reduced to three values.
 
 #### Scenario: Seed contract types
 - **WHEN** system initializes
@@ -45,7 +45,8 @@ The system SHALL seed default reference values on initial setup.
 
 #### Scenario: Seed contract statuses
 - **WHEN** system initializes
-- **THEN** contract_status values include: Draft, Active, Expired, Closed
+- **THEN** contract_status values are exactly: Active (default), Expired, Archived
+- **AND** no `Draft` or `Closed` contract_status reference values exist
 
 #### Scenario: Seed time categories
 - **WHEN** system initializes

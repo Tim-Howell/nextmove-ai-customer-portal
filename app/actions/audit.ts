@@ -93,32 +93,6 @@ export async function getAuditLogs(
   };
 }
 
-export async function getAuditLogForRecord(
-  tableName: string,
-  recordId: string
-): Promise<{ data?: AuditLogWithUser[]; error?: string }> {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("audit_logs")
-    .select(
-      `
-      *,
-      user:profiles!audit_logs_user_id_fkey(id, full_name, email)
-    `
-    )
-    .eq("table_name", tableName)
-    .eq("record_id", recordId)
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error("Error fetching audit log for record:", error);
-    return { error: "Failed to fetch audit history" };
-  }
-
-  return { data: (data || []) as AuditLogWithUser[] };
-}
-
 export async function getAuditableTableNames(): Promise<string[]> {
   return [
     "customers",

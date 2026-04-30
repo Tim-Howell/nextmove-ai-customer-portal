@@ -15,8 +15,11 @@ interface PrioritiesPageProps {
     customerId?: string;
     statusId?: string;
     priorityLevelId?: string;
+    openOnly?: string;
   }>;
 }
+
+const OPEN_PRIORITY_VALUES = ["backlog", "next_up", "active"] as const;
 
 async function getCustomers(): Promise<Customer[]> {
   const supabase = await createClient();
@@ -48,18 +51,32 @@ async function getCurrentUserRole(): Promise<{ role: string; customerId: string 
 export default async function PrioritiesPage({ searchParams }: PrioritiesPageProps) {
   const params = await searchParams;
   const { customerId, statusId, priorityLevelId } = params;
+  const openOnly = params.openOnly === "true";
   const { role, customerId: userCustomerId } = await getCurrentUserRole();
   const isInternal = role === "admin" || role === "staff";
 
   // For customer users, always filter by their customer
   const effectiveCustomerId = isInternal ? customerId : userCustomerId || undefined;
 
-  const [{ data: priorities }, customers, statuses, priorityLevels] = await Promise.all([
-    getPriorities({ customerId: effectiveCustomerId, statusId, priorityLevelId }),
-    isInternal ? getCustomers() : Promise.resolve([]),
+  const [statuses, priorityLevels, customers] = await Promise.all([
     getReferenceValues("priority_status"),
     getReferenceValues("priority_level"),
+    isInternal ? getCustomers() : Promise.resolve([]),
   ]);
+
+  const openStatusIds =
+    openOnly && !statusId
+      ? statuses
+          .filter((s) => (OPEN_PRIORITY_VALUES as readonly string[]).includes(s.value))
+          .map((s) => s.id)
+      : undefined;
+
+  const { data: priorities } = await getPriorities({
+    customerId: effectiveCustomerId,
+    statusId,
+    statusIds: openStatusIds,
+    priorityLevelId,
+  });
 
   return (
     <div className="space-y-6">

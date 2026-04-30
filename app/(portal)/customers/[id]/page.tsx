@@ -18,8 +18,8 @@ import { DeleteCustomerButton } from "@/components/customers/delete-customer-but
 import { ArchiveCustomerButton } from "@/components/customers/archive-customer-button";
 import { DeleteContactButton } from "@/components/customers/delete-contact-button";
 import { ContactInvitationStatus } from "@/components/customers/contact-invitation-status";
-import { RecordHistory } from "@/components/audit/record-history";
 import { InternalNotesSection } from "@/components/internal-notes";
+import { CustomerSummaryCards } from "@/components/customers/customer-summary-cards";
 import type { CustomerWithContacts, CustomerContact } from "@/types/database";
 
 interface CustomerDetailPageProps {
@@ -335,6 +335,8 @@ export default async function CustomerDetailPage({
         )}
       </div>
 
+      {isInternal && <CustomerSummaryCards customerId={id} />}
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Customer Contacts</CardTitle>
@@ -584,13 +586,6 @@ export default async function CustomerDetailPage({
         <InternalNotesSection entityType="customer" entityId={id} />
       )}
 
-      {isInternal && (
-        <RecordHistory
-          tableName="customers"
-          recordId={id}
-          title="Change History"
-        />
-      )}
     </div>
   );
 }

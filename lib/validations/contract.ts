@@ -31,10 +31,8 @@ export const CONTRACT_TYPE_VALUES = {
 export type ContractTypeValue = typeof CONTRACT_TYPE_VALUES[keyof typeof CONTRACT_TYPE_VALUES];
 
 export const CONTRACT_STATUS_VALUES = {
-  DRAFT: "draft",
   ACTIVE: "active",
   EXPIRED: "expired",
-  CLOSED: "closed",
   ARCHIVED: "archived",
 } as const;
 

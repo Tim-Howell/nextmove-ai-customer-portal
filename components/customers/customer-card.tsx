@@ -6,6 +6,20 @@ import { Building2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
+// Hosts allowlisted in next.config.ts → can use next/image.
+// Anything else falls back to a plain <img> so arbitrary user-provided
+// URLs never crash the page.
+const NEXT_IMAGE_HOSTS = ["cgzuyvnhhbqwppvsfzrd.supabase.co"];
+
+function canUseNextImage(url: string): boolean {
+  try {
+    const { hostname } = new URL(url);
+    return NEXT_IMAGE_HOSTS.includes(hostname);
+  } catch {
+    return false;
+  }
+}
+
 interface CustomerCardProps {
   id: string;
   name: string;
@@ -22,13 +36,25 @@ export function CustomerCard({ id, name, status, logoUrl, website }: CustomerCar
           <div className="flex flex-col items-center text-center space-y-4">
             <div className="relative w-20 h-20 rounded-full bg-muted flex items-center justify-center overflow-hidden ring-2 ring-background shadow-sm group-hover:ring-primary/20 transition-all">
               {logoUrl ? (
-                <Image
-                  src={logoUrl}
-                  alt={`${name} logo`}
-                  fill
-                  sizes="80px"
-                  className="object-cover"
-                />
+                canUseNextImage(logoUrl) ? (
+                  <Image
+                    src={logoUrl}
+                    alt={`${name} logo`}
+                    fill
+                    sizes="80px"
+                    className="object-cover"
+                  />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={logoUrl}
+                    alt={`${name} logo`}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.display = "none";
+                    }}
+                  />
+                )
               ) : (
                 <Building2 className="h-10 w-10 text-muted-foreground" />
               )}

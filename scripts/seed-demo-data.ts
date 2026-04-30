@@ -298,7 +298,6 @@ async function seedContracts(customers: any[], refs: any) {
   console.log("Seeding contracts...");
   
   const activeStatus = refs.contractStatuses.find((s: any) => s.value === "active");
-  const draftStatus = refs.contractStatuses.find((s: any) => s.value === "draft");
   const expiredStatus = refs.contractStatuses.find((s: any) => s.value === "expired");
   
   // Contract types: hours_bucket, hours_subscription, fixed_cost, service_subscription, on_demand
@@ -359,7 +358,7 @@ async function seedContracts(customers: any[], refs: any) {
         customer_id: customer.id,
         name: `${customer.name} - Special Project`,
         contract_type_id: hoursBucketType?.id,
-        status_id: index === 0 ? activeStatus?.id : draftStatus?.id,
+        status_id: index === 0 ? activeStatus?.id : expiredStatus?.id,
         total_hours: 100,
         start_date: new Date(2024, 3, 1).toISOString().split("T")[0],
         end_date: new Date(2024, 8, 30).toISOString().split("T")[0],

@@ -21,8 +21,11 @@ interface RequestsPageProps {
   searchParams: Promise<{
     customerId?: string;
     statusId?: string;
+    openOnly?: string;
   }>;
 }
+
+const OPEN_REQUEST_VALUES = ["new", "in_review", "in_progress"] as const;
 
 async function getCustomers(): Promise<Customer[]> {
   const supabase = await createClient();
@@ -68,17 +71,30 @@ function getStatusBadgeVariant(statusValue: string): "default" | "secondary" | "
 export default async function RequestsPage({ searchParams }: RequestsPageProps) {
   const params = await searchParams;
   const { customerId, statusId } = params;
+  const openOnly = params.openOnly === "true";
   const { role, customerId: userCustomerId } = await getCurrentUserRole();
   const isInternal = role === "admin" || role === "staff";
 
   // For customer users, always filter by their customer
   const effectiveCustomerId = isInternal ? customerId : userCustomerId || undefined;
 
-  const [{ data: requests }, customers, statuses] = await Promise.all([
-    getRequests({ customerId: effectiveCustomerId, statusId }),
-    isInternal ? getCustomers() : Promise.resolve([]),
+  const [statuses, customers] = await Promise.all([
     getReferenceValues("request_status"),
+    isInternal ? getCustomers() : Promise.resolve([]),
   ]);
+
+  const openStatusIds =
+    openOnly && !statusId
+      ? statuses
+          .filter((s) => (OPEN_REQUEST_VALUES as readonly string[]).includes(s.value))
+          .map((s) => s.id)
+      : undefined;
+
+  const { data: requests } = await getRequests({
+    customerId: effectiveCustomerId,
+    statusId,
+    statusIds: openStatusIds,
+  });
 
   return (
     <div className="space-y-6">

@@ -68,6 +68,8 @@ A secure web application for NextMove AI staff and customer staff to manage cust
 
 ## Scripts
 
+### `package.json` scripts
+
 - `pnpm dev` - Start development server
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
@@ -77,6 +79,21 @@ A secure web application for NextMove AI staff and customer staff to manage cust
 - `pnpm test:e2e` - Run Playwright E2E tests
 - `pnpm test:e2e:ui` - Run Playwright tests with UI
 - `pnpm test:rls` - Run RLS policy validation tests
+
+### One-off scripts in `scripts/`
+
+Run any of these with `pnpm tsx scripts/<file>.ts`. All read credentials from `.env.local` and use the Supabase service role key, so they bypass RLS.
+
+| Script | Purpose |
+|--------|---------|
+| `seed-demo-customer.ts` | **Primary demo seed.** Creates one rich "Demo Customer" with 7 contracts, 7 contacts (2 portal-enabled), 10 priorities, 10 requests, 100 time entries, and ~46 internal notes. Re-runnable: cleans up the existing Demo Customer (and orphan auth users matching seeded emails) before re-seeding. |
+| `seed-demo-data.ts` | **Legacy bulk seed.** Generates 10 customers with varied data (contracts, contacts, time entries, priorities, requests). Useful for stress-testing list views and reports. Prefer `seed-demo-customer.ts` for everyday work. |
+| `create-staff-accounts.ts` | Creates the three internal NextMove AI staff/admin accounts in `auth.users` and links the corresponding `profiles` rows. Idempotent — skips users that already exist. Edit the `staffMembers` array to match your org. |
+| `create-demo-accounts.ts` | Creates portal-user logins (`demo-acme1@example.com`, `demo-techstart@example.com`) for legacy demo customers seeded by `seed-demo-data.ts`. Not needed when using `seed-demo-customer.ts` (which creates its own portal users). |
+| `fix-demo-profiles.ts` | One-shot repair script. Inserts/updates demo `profiles` rows directly to bypass an audit-trigger edge case that prevented the auth → profile sync. Only needed if `create-demo-accounts.ts` left orphaned auth users. |
+| `add-base-contracts.ts` | Adds the default "On-Demand Services - No Contract" base contract for real (non-demo) customers that pre-date the auto-creation logic in `createCustomer`. |
+| `wipe-customer-data.ts` | **Destructive.** Deletes all customer business data (customers, contacts, contracts, time entries, priorities, requests, internal notes, audit logs) plus customer-user auth users. Preserves admin/staff users, reference data, contract types, portal settings. Defaults to a dry-run that prints counts; pass `--confirm` to actually delete. |
+| `test-rls.ts` | Validates RLS policies by simulating queries as different roles (admin, staff, customer_user). Run via `pnpm test:rls`. |
 
 ## Project Structure
 
@@ -207,8 +224,14 @@ Used for secure documents with access control:
 ### Audit Logging
 - All CRUD operations logged with before/after values
 - User context captured (who, when, what changed)
-- Admin-only audit log viewer at `/settings/audit-log`
-- Record history on detail pages
+- Admin/staff Change Log viewer at `/reports/changes` (filter by entity)
+- Detail pages do not show inline change history — the Change Log is the single audit surface
+
+### Contract Statuses
+Three statuses, set manually:
+- **Active** — current, in-force contract (default for new contracts)
+- **Expired** — past end date but kept for reference
+- **Archived** — manually closed and excluded from default views
 
 ## Database Migrations
 
@@ -230,68 +253,67 @@ This project uses **OpenSpec** for structured development:
 
 ## Demo Data
 
-For testing and demonstration purposes, you can seed the database with demo data.
+The portal ships with two seed scripts. **`seed-demo-customer.ts` is the primary, idempotent script for everyday use** — start there. `seed-demo-data.ts` is a heavier multi-customer seed kept for stress-testing.
 
-### Seeding Demo Data
-
-```bash
-# Seed demo customers, contracts, time entries, priorities, requests
-npx tsx scripts/seed-demo-data.ts
-
-# Create demo user accounts (run after seeding data)
-npx tsx scripts/create-demo-accounts.ts
-```
-
-### Re-seeding Demo Data
-
-To clear existing demo data and re-seed, run this SQL in Supabase SQL Editor first:
-
-```sql
--- Delete demo data in correct order (respecting foreign keys)
-DELETE FROM time_entries WHERE contract_id IN (SELECT id FROM contracts WHERE customer_id IN (SELECT id FROM customers WHERE is_demo = true));
-DELETE FROM requests WHERE customer_id IN (SELECT id FROM customers WHERE is_demo = true);
-DELETE FROM priorities WHERE customer_id IN (SELECT id FROM customers WHERE is_demo = true);
-DELETE FROM contracts WHERE customer_id IN (SELECT id FROM customers WHERE is_demo = true);
-DELETE FROM customer_contacts WHERE is_demo = true;
-DELETE FROM customers WHERE is_demo = true;
-```
-
-Then run the seed script:
+### Primary: single comprehensive demo customer
 
 ```bash
-npx tsx scripts/seed-demo-data.ts
+pnpm tsx scripts/seed-demo-customer.ts
 ```
 
-### Customizing Demo Data
+What it creates (all flagged `is_demo = true`):
+- **1 Customer** ("Demo Customer") with branding fields populated
+- **7 Contacts** (2 portal-enabled with auth users, 2 inactive, 1 primary POC, 2 billing contacts)
+- **7 Contracts** spanning all contract types (Hours Subscription, Hours Bucket, Fixed Cost, Service Subscription, On-Demand) plus one Expired and one Archived for filter testing
+- **10 Priorities** (5 active + 5 across other states) with Lucide icons
+- **10 Requests** across all four request states; two open requests carry 5+ internal notes each
+- **100 Time Entries** across the past 4 months (~80% billable / 20% non-billable)
+- **~46 Internal Notes** spread across the customer, priorities, and requests
 
-To modify the demo data (customers, contacts, contracts, etc.), edit the seed script:
+Re-running the script first cleans up the existing Demo Customer, its dependent data, and any orphan auth users matching seeded contact emails — then recreates everything from scratch. No manual SQL required.
 
-📄 [`scripts/seed-demo-data.ts`](scripts/seed-demo-data.ts)
+### Demo portal logins
 
-Key configuration in the file:
-- `demoCustomers` - Customer names and statuses
-- `contactTemplates` - Contact names, titles, and portal access settings
-- Time entries, priorities, and requests are generated based on these
+`seed-demo-customer.ts` creates auth users for the two portal-enabled contacts:
 
-### Demo Login Credentials
+| Email | Customer | Role |
+|-------|----------|------|
+| `alice.morgan@demo-customer.example.com` | Demo Customer | Primary POC |
+| `ben.carter@demo-customer.example.com` | Demo Customer | Billing Primary |
+
+Each is created with a random password. To log in, an admin opens **Settings → Customer Users** in the portal and uses the "Set Password" action to assign a known password.
+
+> **Note:** Demo accounts only work when **Show Demo Data** is enabled in System Settings. When disabled, demo users cannot log in.
+
+### Customizing the demo customer
+
+Edit `scripts/seed-demo-customer.ts`. Key arrays:
+- `CONTACT_SPECS` — names, emails, portal-access flags, POC/billing roles
+- Contract creation in `createContracts()` — types, hours, billing day, rollover
+- Priority/request templates near the bottom of the file
+
+### Legacy bulk seed (10 customers)
+
+```bash
+pnpm tsx scripts/seed-demo-data.ts
+pnpm tsx scripts/create-demo-accounts.ts   # adds portal logins
+```
+
+Creates 10 customers (8 active, 2 archived), 25 contacts, 14 contracts, 100 time entries, 65 priorities, and 77 requests. Useful when you need many customers in list views; otherwise prefer the single-customer script above.
 
 | Email | Password | Customer |
 |-------|----------|----------|
 | `demo-acme1@example.com` | `DemoPass123!` | Acme Corporation |
 | `demo-techstart@example.com` | `DemoPass123!` | TechStart Solutions |
 
-**Note:** Demo accounts only work when the "Show Demo Data" setting is enabled in System Settings. When disabled, demo users cannot log in.
+### Wiping all customer data
 
-### Demo Data Summary
+To start completely clean (preserves admin/staff users + system settings):
 
-- **10 Customers** (8 active, 2 archived)
-- **25 Contacts** (5 with portal access - Mike Williams on first 5 customers)
-- **14 Contracts** (various billing models)
-- **100 Time Entries** (for pagination testing)
-- **65 Priorities** (distributed across customers)
-- **77 Requests** (distributed across customers)
-
-All demo records have `is_demo = true` and can be filtered using the "Show Demo Data" toggle.
+```bash
+pnpm tsx scripts/wipe-customer-data.ts            # dry run — prints counts only
+pnpm tsx scripts/wipe-customer-data.ts --confirm  # actually deletes
+```
 
 ## Documentation
 

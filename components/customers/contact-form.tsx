@@ -155,30 +155,44 @@ export function ContactForm({ customerId, contact }: ContactFormProps) {
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="is_active"
-              checked={isActive}
-              onCheckedChange={(checked: boolean | "indeterminate") => setValue("is_active", checked === true)}
-              disabled={isLoading}
-            />
-            <Label htmlFor="is_active" className="font-normal">
-              Active contact
-            </Label>
+          <div className="space-y-1">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="is_active"
+                checked={isActive}
+                onCheckedChange={(checked: boolean | "indeterminate") => setValue("is_active", checked === true)}
+                disabled={isLoading}
+              />
+              <Label htmlFor="is_active" className="font-normal">
+                Active contact
+              </Label>
+            </div>
+            {contact?.is_active && !isActive && (
+              <p className="text-xs text-amber-600 ml-6">
+                Deactivating this contact will permanently delete their portal login. Re-enabling later will require setting a new password.
+              </p>
+            )}
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="portal_access_enabled"
-              checked={portalAccessEnabled}
-              onCheckedChange={(checked: boolean | "indeterminate") =>
-                setValue("portal_access_enabled", checked === true)
-              }
-              disabled={isLoading}
-            />
-            <Label htmlFor="portal_access_enabled" className="font-normal">
-              Enable portal access
-            </Label>
+          <div className="space-y-1">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="portal_access_enabled"
+                checked={portalAccessEnabled}
+                onCheckedChange={(checked: boolean | "indeterminate") =>
+                  setValue("portal_access_enabled", checked === true)
+                }
+                disabled={isLoading}
+              />
+              <Label htmlFor="portal_access_enabled" className="font-normal">
+                Enable portal access
+              </Label>
+            </div>
+            {contact?.portal_access_enabled && !portalAccessEnabled && (
+              <p className="text-xs text-amber-600 ml-6">
+                Disabling portal access will permanently delete this contact's login. Re-enabling later will require setting a new password.
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">

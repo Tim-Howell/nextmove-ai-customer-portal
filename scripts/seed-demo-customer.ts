@@ -8,7 +8,7 @@
  *   - 10 requests (various states) with internal notes; 2 open ones have 5+ notes
  *   - 100 time entries from 2026-01-01 through today (~80% billable)
  *   - 20+ internal notes spread across customer / priorities / requests
- *   - Placeholder logo on customer, Lucide icon names on priorities
+ *   - Lucide icon names on priorities
  *
  * All records created with is_demo = true where supported.
  * Re-runnable: deletes the existing "Demo Customer" (if is_demo=true) and its
@@ -41,7 +41,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 const CUSTOMER_NAME = "Demo Customer";
-const LOGO_URL = "https://via.placeholder.com/200x200.png?text=Demo";
+const LOGO_URL: string | null = null;
 const TODAY = new Date();
 const SEED_START = new Date("2026-01-01T00:00:00Z");
 
@@ -100,6 +100,25 @@ async function getRefs() {
   };
 }
 
+// ---------- Auth helpers ----------
+async function findAuthUserByEmail(
+  email: string
+): Promise<{ id: string; email?: string } | null> {
+  const target = email.toLowerCase();
+  let page = 1;
+  while (true) {
+    const { data: list } = await supabase.auth.admin.listUsers({
+      page,
+      perPage: 1000,
+    });
+    const users = list?.users ?? [];
+    const match = users.find((u) => u.email?.toLowerCase() === target);
+    if (match) return { id: match.id, email: match.email };
+    if (users.length < 1000) return null;
+    page += 1;
+  }
+}
+
 // ---------- Cleanup existing Demo Customer ----------
 async function cleanupExisting() {
   const { data: existing } = await supabase
@@ -124,6 +143,27 @@ async function cleanupExisting() {
     if (c.user_id) {
       await supabase.auth.admin.deleteUser(c.user_id as string);
     }
+  }
+
+  // Also delete any orphan auth users matching this seed's contact emails.
+  // Earlier seed runs may have left auth users behind when the contact row's
+  // user_id was null (e.g. "already registered" → skipped). Walk all pages.
+  const demoEmails = new Set(CONTACT_SPECS.map((s) => s.email.toLowerCase()));
+  let page = 1;
+  // 1000 is the listUsers maximum perPage; loop until we get fewer than that.
+  while (true) {
+    const { data: list } = await supabase.auth.admin.listUsers({
+      page,
+      perPage: 1000,
+    });
+    const users = list?.users ?? [];
+    for (const u of users) {
+      if (u.email && demoEmails.has(u.email.toLowerCase())) {
+        await supabase.auth.admin.deleteUser(u.id);
+      }
+    }
+    if (users.length < 1000) break;
+    page += 1;
   }
 
   // Polymorphic internal_notes (no FK cascade)
@@ -301,12 +341,42 @@ async function createContacts(customerId: string) {
         user_metadata: { full_name: spec.full_name },
       });
       if (error) {
-        console.warn(
-          `  auth user skipped for ${spec.email}: ${error.message}`
-        );
+        // Recover from orphaned auth users: delete by email then retry once.
+        const isAlreadyRegistered =
+          error.message?.toLowerCase().includes("already") ?? false;
+        if (isAlreadyRegistered) {
+          const existing = await findAuthUserByEmail(spec.email);
+          if (existing) {
+            await supabase.auth.admin.deleteUser(existing.id);
+            const retry = await supabase.auth.admin.createUser({
+              email: spec.email,
+              password: randomPwd,
+              email_confirm: true,
+              user_metadata: { full_name: spec.full_name },
+            });
+            if (retry.error) {
+              console.warn(
+                `  auth user skipped for ${spec.email}: ${retry.error.message}`
+              );
+            } else if (retry.data.user) {
+              userId = retry.data.user.id;
+            }
+          } else {
+            console.warn(
+              `  auth user skipped for ${spec.email}: ${error.message} (and not found by listUsers)`
+            );
+          }
+        } else {
+          console.warn(
+            `  auth user skipped for ${spec.email}: ${error.message}`
+          );
+        }
       } else if (created.user) {
         userId = created.user.id;
-        // Set role + customer_id on profile
+      }
+
+      // Set role + customer_id on profile if we have a userId
+      if (userId) {
         await supabase
           .from("profiles")
           .update({

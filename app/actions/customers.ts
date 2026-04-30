@@ -153,6 +153,19 @@ export async function createCustomerContact(
   const email = validated.data.email?.toLowerCase() || null;
   const phone = formatPhoneDigitsOnly(validated.data.phone);
 
+  if (validated.data.portal_access_enabled && !validated.data.is_active) {
+    return {
+      error:
+        "Activate the contact before enabling portal access. Inactive contacts cannot have a portal login.",
+    };
+  }
+
+  if (validated.data.portal_access_enabled && !email) {
+    return {
+      error: "An email is required to enable portal access.",
+    };
+  }
+
   // If portal access is enabled and email exists, create auth user first
   let userId: string | null = null;
   if (validated.data.portal_access_enabled && email) {
@@ -229,15 +242,42 @@ export async function updateCustomerContact(
   const email = validated.data.email?.toLowerCase() || null;
   const phone = formatPhoneDigitsOnly(validated.data.phone);
 
-  // Get current contact to check if portal access is being enabled
+  // Get current contact to check transitions on portal access / active flag
   const { data: currentContact } = await supabase
     .from("customer_contacts")
-    .select("user_id, portal_access_enabled")
+    .select("user_id, portal_access_enabled, is_active")
     .eq("id", contactId)
     .single();
 
+  const priorUserId: string | null = currentContact?.user_id || null;
+  const priorPortalEnabled = currentContact?.portal_access_enabled === true;
+  const priorIsActive = currentContact?.is_active === true;
+
+  // Reject enabling portal access on an inactive contact — the auth user
+  // would be unusable and the silent skip is confusing.
+  if (validated.data.portal_access_enabled && !validated.data.is_active) {
+    return {
+      error:
+        "Activate the contact before enabling portal access. Inactive contacts cannot have a portal login.",
+    };
+  }
+
+  // Reject enabling portal access without an email — same reason.
+  if (validated.data.portal_access_enabled && !email) {
+    return {
+      error: "An email is required to enable portal access.",
+    };
+  }
+
+  // Detect transitions to false that require auth user removal
+  const portalDisabledNow =
+    priorPortalEnabled && !validated.data.portal_access_enabled;
+  const deactivatedNow = priorIsActive && !validated.data.is_active;
+  const shouldDeleteAuthUser =
+    priorUserId !== null && (portalDisabledNow || deactivatedNow);
+
   // If enabling portal access and no user_id exists, create auth user
-  let userId = currentContact?.user_id || null;
+  let userId = priorUserId;
   if (validated.data.portal_access_enabled && !userId && email) {
     const adminClient = createAdminClient();
     const { data: authUser, error: authError } = await adminClient.auth.admin.createUser({
@@ -276,6 +316,9 @@ export async function updateCustomerContact(
     }
   }
 
+  // If we're going to delete the auth user, null user_id on the contact at the same time
+  const finalUserId = shouldDeleteAuthUser ? null : userId;
+
   const { error } = await supabase
     .from("customer_contacts")
     .update({
@@ -285,7 +328,7 @@ export async function updateCustomerContact(
       phone,
       is_active: validated.data.is_active,
       portal_access_enabled: validated.data.portal_access_enabled,
-      user_id: userId,
+      user_id: finalUserId,
       notes: validated.data.notes || null,
     })
     .eq("id", contactId);
@@ -293,6 +336,24 @@ export async function updateCustomerContact(
   if (error) {
     console.error("Error updating contact:", error);
     return { error: "Failed to update contact" };
+  }
+
+  // After successful contact update, delete the auth user if portal access was
+  // disabled or the contact was deactivated. This is irreversible — re-enabling
+  // creates a new auth user with no history.
+  if (shouldDeleteAuthUser && priorUserId) {
+    const adminClient = createAdminClient();
+    const { error: deleteError } = await adminClient.auth.admin.deleteUser(priorUserId);
+    if (deleteError) {
+      console.error(
+        `Failed to delete auth user ${priorUserId} for contact ${contactId}:`,
+        deleteError
+      );
+      return {
+        error:
+          "Contact updated, but the linked login account could not be removed. Please try again or remove it manually.",
+      };
+    }
   }
 
   revalidatePath(`/customers/${customerId}`);

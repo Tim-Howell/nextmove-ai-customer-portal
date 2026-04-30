@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { EntityFilter } from "./entity-filter";
 
 interface ChangeLogPageProps {
   searchParams: Promise<{
@@ -55,15 +56,22 @@ async function getAuditLogs(page: number = 1, entityFilter?: string) {
 
 function getActionBadgeVariant(action: string): "default" | "secondary" | "destructive" | "outline" {
   switch (action) {
-    case "INSERT":
+    case "create":
       return "default";
-    case "UPDATE":
+    case "update":
       return "secondary";
-    case "DELETE":
+    case "delete":
       return "destructive";
+    case "archive":
+    case "restore":
+      return "outline";
     default:
       return "outline";
   }
+}
+
+function formatAction(action: string): string {
+  return action.charAt(0).toUpperCase() + action.slice(1);
 }
 
 function formatTableName(tableName: string): string {
@@ -116,27 +124,13 @@ export default async function ChangeLogPage({ searchParams }: ChangeLogPageProps
             <CardTitle>Recent Changes</CardTitle>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Filter:</span>
-              <select
-                className="text-sm border rounded px-2 py-1"
-                defaultValue={entityFilter || ""}
-                onChange={(e) => {
-                  const url = new URL(window.location.href);
-                  if (e.target.value) {
-                    url.searchParams.set("entity", e.target.value);
-                  } else {
-                    url.searchParams.delete("entity");
-                  }
-                  url.searchParams.delete("page");
-                  window.location.href = url.toString();
-                }}
-              >
-                <option value="">All Entities</option>
-                {entityTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {formatTableName(type)}
-                  </option>
-                ))}
-              </select>
+              <EntityFilter
+                value={entityFilter || ""}
+                options={entityTypes.map((type) => ({
+                  value: type,
+                  label: formatTableName(type),
+                }))}
+              />
             </div>
           </div>
         </CardHeader>
@@ -166,7 +160,7 @@ export default async function ChangeLogPage({ searchParams }: ChangeLogPageProps
                       <TableCell>{formatTableName(log.table_name)}</TableCell>
                       <TableCell>
                         <Badge variant={getActionBadgeVariant(log.action)}>
-                          {log.action}
+                          {formatAction(log.action)}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
