@@ -1,15 +1,23 @@
 /**
- * NextMove brand defaults. These are the fallback values used by the runtime
- * theme injection layer when the corresponding `portal_settings` columns are
- * NULL or fail validation.
+ * NextMove brand defaults — Apple-style soft-light theme.
  *
- * Keep these in sync with the proposal's color palette.
+ * These are the fallback values used by the runtime theme injection layer
+ * when the corresponding `portal_settings` columns are NULL or fail
+ * validation.
+ *
+ * Column semantics (theme-agnostic naming):
+ *   - `background_base`  → the dominant page background
+ *   - `foreground_base`  → the dominant page text color
+ *
+ * For the light theme, `background_base` is a cool neutral near-white
+ * (Apple's #F5F5F7) and `foreground_base` is a near-black (Apple's #1D1D1F).
+ * Keep these in sync with the schema migration.
  */
 export const BRAND_DEFAULTS = {
-  primary: "#2C3E50", // Primary Navy
-  accent: "#6FCF97", // NextMove Green
-  background_dark: "#1A1F2E", // Dark Background
-  background_light: "#F8F9FA", // Light Background (used as text-on-dark fg)
+  primary: "#2C3E50", // NextMove Navy — used for structural accents
+  accent: "#6FCF97", // NextMove Green — used for CTAs
+  background_base: "#F5F5F7", // Apple-style cool gray page bg
+  foreground_base: "#1D1D1F", // Apple-style near-black text
 } as const;
 
 export type BrandDefaults = typeof BRAND_DEFAULTS;

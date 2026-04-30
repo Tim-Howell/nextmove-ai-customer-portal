@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Soft Modernist, dark-first theme.
+ * Apple-style soft-light theme.
  *
  * Brand-token base values (--brand-bg, --brand-fg, --brand-primary,
  * --brand-accent, --brand-surface, --brand-surface-2, --brand-border,
@@ -20,64 +20,70 @@
   /* Fallback brand tokens (in sync with lib/theme/defaults.ts).
      The runtime injection from lib/theme/css-vars.ts overrides these with
      values resolved from portal_settings. */
-  --brand-bg: #1A1F2E;
-  --brand-fg: #F8F9FA;
-  --brand-fg-muted: #94A3B8;
+  --brand-bg: #F5F5F7;
+  --brand-fg: #1D1D1F;
+  --brand-fg-muted: #6E6E73;
   --brand-primary: #2C3E50;
   --brand-accent: #6FCF97;
-  --brand-surface: #232A3A;
-  --brand-surface-2: #2C3446;
-  --brand-border: #353D52;
+  --brand-surface: #FFFFFF;
+  --brand-surface-2: #FAFAFB;
+  --brand-border: #E5E5EA;
   --brand-ring: #6FCF97;
-  --brand-bg-hsl: 222 26% 14%;
-  --brand-fg-hsl: 210 17% 98%;
+  --brand-bg-hsl: 240 9% 96%;
+  --brand-fg-hsl: 240 5% 11%;
   --brand-primary-hsl: 210 29% 24%;
   --brand-accent-hsl: 142 50% 62%;
 
   /* Map the brand tokens onto the shadcn/ui variable contract so every
-     primitive in components/ui/ picks up the new theme automatically. */
+     primitive in components/ui/ picks up the new theme automatically.
+     In the light theme:
+       — `primary` is the brand navy (structural, used for headings/CTAs)
+       — `secondary` is the muted surface tone (used for quiet chips/btns)
+       — `muted` is the page bg tone (used for quiet container fills) */
   --background: var(--brand-bg);
   --foreground: var(--brand-fg);
   --card: var(--brand-surface);
   --card-foreground: var(--brand-fg);
   --popover: var(--brand-surface);
   --popover-foreground: var(--brand-fg);
-  --primary: var(--brand-accent);
-  --primary-foreground: var(--brand-bg);
-  --secondary: var(--brand-primary);
+  --primary: var(--brand-primary);
+  --primary-foreground: #FFFFFF;
+  --secondary: var(--brand-surface-2);
   --secondary-foreground: var(--brand-fg);
-  --muted: var(--brand-surface);
+  --muted: var(--brand-bg);
   --muted-foreground: var(--brand-fg-muted);
-  --accent: var(--brand-surface-2);
-  --accent-foreground: var(--brand-fg);
-  --destructive: #F87171;
-  --destructive-foreground: var(--brand-bg);
+  --accent: var(--brand-accent);
+  --accent-foreground: #0B2A1C;
+  --destructive: #D93025;
+  --destructive-foreground: #FFFFFF;
   --border: var(--brand-border);
   --input: var(--brand-border);
   --ring: var(--brand-ring);
 
   /* Charts */
-  --chart-1: var(--brand-accent);
-  --chart-2: var(--brand-primary);
+  --chart-1: var(--brand-primary);
+  --chart-2: var(--brand-accent);
   --chart-3: var(--brand-fg-muted);
-  --chart-4: var(--brand-surface-2);
-  --chart-5: var(--brand-border);
+  --chart-4: #A1A1A6;
+  --chart-5: #D1D1D6;
 
-  /* Radius — slightly larger than default to support the soft aesthetic. */
-  --radius: 0.625rem;
+  /* Radius — generous rounding supports the Apple-style friendly feel. */
+  --radius: 0.875rem;
 
-  /* Layered low-opacity shadow used by elevated surfaces. */
+  /* Layered low-opacity shadow for elevated cards. Cool, subtle, not
+     heavy — reads as a hairline border + a very soft diffuse glow. */
   --shadow-soft:
-    0 1px 2px 0 rgba(0, 0, 0, 0.25),
-    0 4px 12px -2px rgba(0, 0, 0, 0.35);
+    0 0 0 1px rgba(17, 17, 17, 0.04),
+    0 1px 2px rgba(17, 17, 17, 0.04),
+    0 8px 24px -6px rgba(17, 17, 17, 0.08);
 
   /* Sidebar */
   --sidebar: var(--brand-surface);
   --sidebar-foreground: var(--brand-fg);
-  --sidebar-primary: var(--brand-accent);
-  --sidebar-primary-foreground: var(--brand-bg);
-  --sidebar-accent: var(--brand-surface-2);
-  --sidebar-accent-foreground: var(--brand-fg);
+  --sidebar-primary: var(--brand-primary);
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: var(--brand-bg);
+  --sidebar-accent-foreground: var(--brand-primary);
   --sidebar-border: var(--brand-border);
   --sidebar-ring: var(--brand-ring);
 }
@@ -125,7 +131,7 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Dark-first: the portal is dark-only this pass. We intentionally ignore
+/* Light-first: the portal is light-only this pass. We intentionally ignore
    the user's prefers-color-scheme so the brand renders consistently. */
 
 body {
@@ -133,6 +139,8 @@ body {
   background-color: var(--brand-bg);
   color: var(--brand-fg);
   font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Display family for headings and hero numerals. */

@@ -80,7 +80,7 @@ export function ArchiveCustomerButton({
               ) : (
                 <>
                   <p>Are you sure you want to archive &quot;{customerName}&quot;?</p>
-                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-md p-3 text-amber-200 text-sm">
+                  <div className="bg-amber-50 border border-amber-200 rounded-md p-3 text-amber-800 text-sm">
                     <p className="font-medium mb-1">This will also:</p>
                     <ul className="list-disc list-inside space-y-1">
                       <li>Archive all contracts for this customer</li>

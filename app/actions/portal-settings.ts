@@ -47,8 +47,8 @@ export async function updatePortalSettings(data: PortalSettingsFormData) {
         description: validated.data.description || null,
         primary_color: validated.data.primary_color,
         accent_color: validated.data.accent_color || null,
-        background_dark: validated.data.background_dark || null,
-        background_light: validated.data.background_light || null,
+        background_base: validated.data.background_base || null,
+        foreground_base: validated.data.foreground_base || null,
       });
 
     if (insertError) {
@@ -66,8 +66,8 @@ export async function updatePortalSettings(data: PortalSettingsFormData) {
         description: validated.data.description || null,
         primary_color: validated.data.primary_color,
         accent_color: validated.data.accent_color || null,
-        background_dark: validated.data.background_dark || null,
-        background_light: validated.data.background_light || null,
+        background_base: validated.data.background_base || null,
+        foreground_base: validated.data.foreground_base || null,
       })
       .eq("id", existing.id);
 

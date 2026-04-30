@@ -30,11 +30,11 @@ export function PriorityCard({
   const getLevelColor = (level: string) => {
     switch (level) {
       case "high":
-        return "bg-rose-500/15 text-rose-300 hover:bg-rose-500/20";
+        return "bg-rose-100 text-rose-700 hover:bg-rose-100";
       case "medium":
-        return "bg-amber-500/15 text-amber-300 hover:bg-amber-500/20";
+        return "bg-amber-100 text-amber-700 hover:bg-amber-100";
       case "low":
-        return "bg-sky-500/15 text-sky-300 hover:bg-sky-500/20";
+        return "bg-sky-100 text-sky-700 hover:bg-sky-100";
       default:
         return "bg-muted text-muted-foreground hover:bg-muted";
     }
@@ -43,11 +43,11 @@ export function PriorityCard({
   const getStatusColor = (statusValue: string) => {
     switch (statusValue) {
       case "completed":
-        return "bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/20";
+        return "bg-emerald-100 text-emerald-700 hover:bg-emerald-100";
       case "in_progress":
-        return "bg-sky-500/15 text-sky-300 hover:bg-sky-500/20";
+        return "bg-sky-100 text-sky-700 hover:bg-sky-100";
       case "on_hold":
-        return "bg-amber-500/15 text-amber-300 hover:bg-amber-500/20";
+        return "bg-amber-100 text-amber-700 hover:bg-amber-100";
       default:
         return "bg-muted text-muted-foreground hover:bg-muted";
     }

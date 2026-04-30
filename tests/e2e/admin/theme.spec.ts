@@ -13,7 +13,7 @@ import { navigateTo } from "../fixtures/helpers";
 test.describe("Theme injection", () => {
   test.skip("brand tokens resolve on the dashboard", async ({ page }) => {
     await navigateTo(page, "/dashboard");
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 
     const tokens = await page.evaluate(() => {
       const styles = getComputedStyle(document.documentElement);
@@ -30,11 +30,10 @@ test.describe("Theme injection", () => {
     expect(tokens.bg).not.toBe("");
     expect(tokens.fg).not.toBe("");
 
-    // Body should use the dark background.
+    // Body should use the light background — Apple's #F5F5F7 is rgb(245, 245, 247).
     const bg = await page.evaluate(
       () => getComputedStyle(document.body).backgroundColor
     );
-    // RGB form of #1A1F2E
-    expect(bg).toMatch(/rgb\(2[5-7], 3[0-2], 4[5-7]\)/);
+    expect(bg).toMatch(/rgb\(24[0-9], 24[0-9], 24[0-9]\)/);
   });
 });

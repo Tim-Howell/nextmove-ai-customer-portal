@@ -2,7 +2,7 @@ import { BRAND_DEFAULTS } from "./defaults";
 
 /**
  * Build a `<style>`-ready CSS string defining the brand theme variables for
- * the dark Soft Modernist aesthetic. Reads optional admin-supplied values
+ * the Apple-style soft-light aesthetic. Reads optional admin-supplied values
  * from `portal_settings`, validates them, enforces a contrast floor against
  * the resolved background, and silently substitutes brand defaults for any
  * value that is missing, malformed, or low-contrast.
@@ -19,15 +19,17 @@ const MIN_CONTRAST = 3.0;
 interface ThemeInput {
   primary_color?: string | null;
   accent_color?: string | null;
-  background_dark?: string | null;
-  background_light?: string | null;
+  background_base?: string | null;
+  foreground_base?: string | null;
 }
 
 interface ResolvedTheme {
   primary: string;
   accent: string;
-  backgroundDark: string;
-  backgroundLight: string;
+  /** Page background (light neutral in the default theme). */
+  backgroundBase: string;
+  /** Page text color (near-black in the default theme). */
+  foregroundBase: string;
 }
 
 function isValidHex(value: unknown): value is string {
@@ -137,34 +139,34 @@ function resolveTheme(input: ThemeInput | null | undefined): ResolvedTheme {
     ? input!.accent_color!
     : BRAND_DEFAULTS.accent;
 
-  const backgroundDark = isValidHex(input?.background_dark)
-    ? input!.background_dark!
-    : BRAND_DEFAULTS.background_dark;
+  const backgroundBase = isValidHex(input?.background_base)
+    ? input!.background_base!
+    : BRAND_DEFAULTS.background_base;
 
-  const backgroundLight = isValidHex(input?.background_light)
-    ? input!.background_light!
-    : BRAND_DEFAULTS.background_light;
+  const foregroundBase = isValidHex(input?.foreground_base)
+    ? input!.foreground_base!
+    : BRAND_DEFAULTS.foreground_base;
 
   // Enforce contrast floor for accent against the resolved background.
   // Primary often serves as a structural color and may legitimately be
   // close in luminance to the background, so it is exempt from the floor.
   const safeAccent =
-    contrastRatio(accent, backgroundDark) >= MIN_CONTRAST
+    contrastRatio(accent, backgroundBase) >= MIN_CONTRAST
       ? accent
       : BRAND_DEFAULTS.accent;
 
-  // Foreground (text on dark) needs strong contrast — fall back to the
-  // brand default light if the admin's value would be unreadable.
+  // Body text needs AA contrast against the bg. Fall back to the brand
+  // default foreground if the admin's value would be unreadable.
   const safeFg =
-    contrastRatio(backgroundLight, backgroundDark) >= 4.5
-      ? backgroundLight
-      : BRAND_DEFAULTS.background_light;
+    contrastRatio(foregroundBase, backgroundBase) >= 4.5
+      ? foregroundBase
+      : BRAND_DEFAULTS.foreground_base;
 
   return {
     primary,
     accent: safeAccent,
-    backgroundDark,
-    backgroundLight: safeFg,
+    backgroundBase,
+    foregroundBase: safeFg,
   };
 }
 
@@ -176,17 +178,24 @@ function resolveTheme(input: ThemeInput | null | undefined): ResolvedTheme {
 export function buildThemeCss(input: ThemeInput | null | undefined): string {
   const t = resolveTheme(input);
 
-  // Derive surface tones from the background.
-  const surface = mix(t.backgroundDark, t.backgroundLight, 0.06);
-  const surface2 = mix(t.backgroundDark, t.backgroundLight, 0.1);
-  // Border at low opacity of fg.
-  const border = mix(t.backgroundDark, t.backgroundLight, 0.14);
-  // Muted foreground sits between fg and bg.
-  const fgMuted = mix(t.backgroundLight, t.backgroundDark, 0.45);
+  // Apple-style light derivations.
+  //
+  // In a light theme, elevated card surfaces sit ABOVE the page bg and are
+  // either pure white or slightly brighter than the page. We target pure
+  // white (#FFFFFF) as `surface` and a very light gray between bg and white
+  // as `surface-2` (used for hover/second-layer panels).
+  //
+  // Borders are hairline low-opacity blacks. We mix toward the foreground
+  // at a low ratio to get a neutral hairline that tracks the admin's fg.
+  const surface = "#FFFFFF";
+  const surface2 = mix(t.backgroundBase, "#FFFFFF", 0.5);
+  const border = mix(t.backgroundBase, t.foregroundBase, 0.12);
+  // Muted foreground sits ~55% between fg and bg (dark gray on light bg).
+  const fgMuted = mix(t.foregroundBase, t.backgroundBase, 0.38);
 
   return `:root{
-  --brand-bg:${t.backgroundDark};
-  --brand-fg:${t.backgroundLight};
+  --brand-bg:${t.backgroundBase};
+  --brand-fg:${t.foregroundBase};
   --brand-fg-muted:${fgMuted};
   --brand-primary:${t.primary};
   --brand-accent:${t.accent};
@@ -194,8 +203,8 @@ export function buildThemeCss(input: ThemeInput | null | undefined): string {
   --brand-surface-2:${surface2};
   --brand-border:${border};
   --brand-ring:${t.accent};
-  --brand-bg-hsl:${hslString(t.backgroundDark)};
-  --brand-fg-hsl:${hslString(t.backgroundLight)};
+  --brand-bg-hsl:${hslString(t.backgroundBase)};
+  --brand-fg-hsl:${hslString(t.foregroundBase)};
   --brand-primary-hsl:${hslString(t.primary)};
   --brand-accent-hsl:${hslString(t.accent)};
 }`;

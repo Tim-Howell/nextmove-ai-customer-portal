@@ -39,15 +39,15 @@ export function PortalBrandingForm({ settings }: PortalBrandingFormProps) {
       description: settings?.description || "",
       primary_color: settings?.primary_color || "#2C3E50",
       accent_color: settings?.accent_color || "#6FCF97",
-      background_dark: settings?.background_dark || "#1A1F2E",
-      background_light: settings?.background_light || "#F8F9FA",
+      background_base: settings?.background_base || "#F5F5F7",
+      foreground_base: settings?.foreground_base || "#1D1D1F",
     },
   });
 
   const primaryColor = watch("primary_color");
   const accentColor = watch("accent_color");
-  const backgroundDark = watch("background_dark");
-  const backgroundLight = watch("background_light");
+  const backgroundBase = watch("background_base");
+  const foregroundBase = watch("foreground_base");
 
   async function onSubmit(data: PortalSettingsFormData) {
     setIsLoading(true);
@@ -104,7 +104,7 @@ export function PortalBrandingForm({ settings }: PortalBrandingFormProps) {
           )}
 
           {success && (
-            <div className="p-3 text-sm text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 rounded-md">
+            <div className="p-3 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md">
               Portal settings updated successfully!
             </div>
           )}
@@ -189,7 +189,7 @@ export function PortalBrandingForm({ settings }: PortalBrandingFormProps) {
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
               Theme tokens applied across the portal. Leave blank to use the
-              NextMove brand defaults.
+              NextMove brand defaults (Apple-style soft-light).
             </p>
             <div className="grid grid-cols-2 gap-4">
               <ColorField
@@ -211,21 +211,21 @@ export function PortalBrandingForm({ settings }: PortalBrandingFormProps) {
                 disabled={isLoading}
               />
               <ColorField
-                id="background_dark"
-                label="Background (dark)"
-                placeholder="#1A1F2E"
-                value={backgroundDark}
-                register={register("background_dark")}
-                error={errors.background_dark?.message}
+                id="background_base"
+                label="Page background"
+                placeholder="#F5F5F7"
+                value={backgroundBase}
+                register={register("background_base")}
+                error={errors.background_base?.message}
                 disabled={isLoading}
               />
               <ColorField
-                id="background_light"
-                label="Foreground (light)"
-                placeholder="#F8F9FA"
-                value={backgroundLight}
-                register={register("background_light")}
-                error={errors.background_light?.message}
+                id="foreground_base"
+                label="Page text"
+                placeholder="#1D1D1F"
+                value={foregroundBase}
+                register={register("foreground_base")}
+                error={errors.foreground_base?.message}
                 disabled={isLoading}
               />
             </div>

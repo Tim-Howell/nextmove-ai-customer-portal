@@ -69,7 +69,7 @@ export function CustomerCard({ id, name, status, logoUrl, website }: CustomerCar
                 variant={status === "active" ? "default" : "secondary"}
                 className={
                   status === "active"
-                    ? "bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/20"
+                    ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"
                     : "bg-muted text-muted-foreground hover:bg-muted"
                 }
               >

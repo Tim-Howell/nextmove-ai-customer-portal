@@ -170,7 +170,7 @@ export default async function CustomerDetailPage({
             <span
               className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
                 customer.status === "active"
-                  ? "bg-emerald-500/15 text-emerald-300"
+                  ? "bg-emerald-100 text-emerald-700"
                   : "bg-muted text-muted-foreground"
               }`}
             >
@@ -379,7 +379,7 @@ export default async function CustomerDetailPage({
                     <TableCell>{contact.phone || "—"}</TableCell>
                     <TableCell>
                       {contact.is_active ? (
-                        <Check className="h-4 w-4 text-emerald-400" />
+                        <Check className="h-4 w-4 text-emerald-600" />
                       ) : (
                         <X className="h-4 w-4 text-muted-foreground" />
                       )}
@@ -457,7 +457,7 @@ export default async function CustomerDetailPage({
                     <span
                       className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
                         status?.value === "active"
-                          ? "bg-emerald-500/15 text-emerald-300"
+                          ? "bg-emerald-100 text-emerald-700"
                           : "bg-muted text-muted-foreground"
                       }`}
                     >
@@ -511,10 +511,10 @@ export default async function CustomerDetailPage({
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
                           level?.value === "high"
-                            ? "bg-rose-500/15 text-rose-300"
+                            ? "bg-rose-100 text-rose-700"
                             : level?.value === "medium"
-                            ? "bg-amber-500/15 text-amber-300"
-                            : "bg-sky-500/15 text-sky-300"
+                            ? "bg-amber-100 text-amber-700"
+                            : "bg-sky-100 text-sky-700"
                         }`}
                       >
                         {level?.label || "Normal"}
@@ -566,9 +566,9 @@ export default async function CustomerDetailPage({
                     <span
                       className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
                         status?.value === "completed"
-                          ? "bg-emerald-500/15 text-emerald-300"
+                          ? "bg-emerald-100 text-emerald-700"
                           : status?.value === "in_progress"
-                          ? "bg-sky-500/15 text-sky-300"
+                          ? "bg-sky-100 text-sky-700"
                           : "bg-muted text-muted-foreground"
                       }`}
                     >

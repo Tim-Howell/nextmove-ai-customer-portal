@@ -18,8 +18,10 @@ export const portalSettingsSchema = z.object({
     .string()
     .regex(/^#(?:[0-9A-Fa-f]{3}){1,2}$/, "Invalid color format"),
   accent_color: hexColor,
-  background_dark: hexColor,
-  background_light: hexColor,
+  // Theme-agnostic base colors: `background_base` is the page bg,
+  // `foreground_base` is the page text color. See `lib/theme/defaults.ts`.
+  background_base: hexColor,
+  foreground_base: hexColor,
 });
 
 export type PortalSettingsFormData = z.infer<typeof portalSettingsSchema>;
@@ -32,8 +34,8 @@ export interface PortalSettings {
   description: string | null;
   primary_color: string;
   accent_color: string | null;
-  background_dark: string | null;
-  background_light: string | null;
+  background_base: string | null;
+  foreground_base: string | null;
   created_at: string;
   updated_at: string;
 }

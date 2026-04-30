@@ -64,7 +64,7 @@ export default async function RootLayout({
         style={{ fontFamily: "var(--font-body), system-ui, sans-serif" }}
       >
         {children}
-        <Toaster position="top-right" richColors closeButton theme="dark" />
+        <Toaster position="top-right" richColors closeButton theme="light" />
       </body>
     </html>
   );

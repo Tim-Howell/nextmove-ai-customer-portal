@@ -96,7 +96,7 @@ export function ProfileForm({ profile, customers }: ProfileFormProps) {
           )}
 
           {success && (
-            <div className="p-3 text-sm text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 rounded-md">
+            <div className="p-3 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md">
               Profile updated successfully! Redirecting...
             </div>
           )}
