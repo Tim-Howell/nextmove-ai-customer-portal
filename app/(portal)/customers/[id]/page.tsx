@@ -170,8 +170,8 @@ export default async function CustomerDetailPage({
             <span
               className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
                 customer.status === "active"
-                  ? "bg-green-100 text-green-700"
-                  : "bg-gray-100 text-gray-700"
+                  ? "bg-emerald-500/15 text-emerald-300"
+                  : "bg-muted text-muted-foreground"
               }`}
             >
               {customer.status}
@@ -379,9 +379,9 @@ export default async function CustomerDetailPage({
                     <TableCell>{contact.phone || "—"}</TableCell>
                     <TableCell>
                       {contact.is_active ? (
-                        <Check className="h-4 w-4 text-green-600" />
+                        <Check className="h-4 w-4 text-emerald-400" />
                       ) : (
-                        <X className="h-4 w-4 text-gray-400" />
+                        <X className="h-4 w-4 text-muted-foreground" />
                       )}
                     </TableCell>
                     <TableCell>
@@ -457,8 +457,8 @@ export default async function CustomerDetailPage({
                     <span
                       className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
                         status?.value === "active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-gray-100 text-gray-700"
+                          ? "bg-emerald-500/15 text-emerald-300"
+                          : "bg-muted text-muted-foreground"
                       }`}
                     >
                       {status?.label || "Unknown"}
@@ -511,10 +511,10 @@ export default async function CustomerDetailPage({
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
                           level?.value === "high"
-                            ? "bg-red-100 text-red-700"
+                            ? "bg-rose-500/15 text-rose-300"
                             : level?.value === "medium"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : "bg-blue-100 text-blue-700"
+                            ? "bg-amber-500/15 text-amber-300"
+                            : "bg-sky-500/15 text-sky-300"
                         }`}
                       >
                         {level?.label || "Normal"}
@@ -566,10 +566,10 @@ export default async function CustomerDetailPage({
                     <span
                       className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
                         status?.value === "completed"
-                          ? "bg-green-100 text-green-700"
+                          ? "bg-emerald-500/15 text-emerald-300"
                           : status?.value === "in_progress"
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-gray-100 text-gray-700"
+                          ? "bg-sky-500/15 text-sky-300"
+                          : "bg-muted text-muted-foreground"
                       }`}
                     >
                       {status?.label || "Unknown"}

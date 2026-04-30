@@ -8,6 +8,7 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getPortalSettings } from "@/app/actions/portal-settings";
 import type { PortalSettings } from "@/lib/validations/portal-settings";
+import { PageReveal } from "@/components/motion/page-reveal";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -79,7 +80,9 @@ export function AppShell({ children, user, role, customerName }: AppShellProps) 
       {/* Main content */}
       <div className="flex flex-1 flex-col">
         <Header user={user} customerName={customerName} onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 p-4 lg:p-6">{children}</main>
+        <main className="flex-1 p-4 lg:p-6">
+          <PageReveal>{children}</PageReveal>
+        </main>
       </div>
     </div>
   );

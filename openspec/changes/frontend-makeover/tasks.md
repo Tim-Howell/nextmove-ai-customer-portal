@@ -40,22 +40,22 @@
 
 ## 4. Motion
 
-- [ ] 4.1 Add `motion` to `package.json` dependencies.
-- [ ] 4.2 Create `components/motion/page-reveal.tsx` — a client component that wraps `children` in a staggered fade+rise (40ms stagger, 240ms duration) and respects `prefers-reduced-motion`.
-- [ ] 4.3 Create `components/motion/card-hover.tsx` — wrapper that adds the lift-on-hover treatment to summary/customer cards.
-- [ ] 4.4 In `app/(portal)/layout.tsx`, wrap the main content slot in `<PageReveal>`.
+- [x] 4.1 Add `motion` to `package.json` dependencies.
+- [x] 4.2 Create `components/motion/page-reveal.tsx` — a client component that wraps `children` in a staggered fade+rise (40ms stagger, 240ms duration) and respects `prefers-reduced-motion`.
+- [x] 4.3 Create `components/motion/card-hover.tsx` — wrapper that adds the lift-on-hover treatment to summary/customer cards.
+- [x] 4.4 In `app/(portal)/layout.tsx`, wrap the main content slot in `<PageReveal>`. *(Wrapped at the AppShell `<main>` level so all portal pages share the reveal.)*
 
 ## 5. Page reskins (single sweep)
 
-- [ ] 5.1 Audit pass: replace literal Tailwind color classes (`bg-white`, `text-gray-*`, `text-slate-*`, `bg-slate-*`, `bg-zinc-*`, `border-gray-*`, `text-black`) with token-driven equivalents (`bg-card`, `text-foreground`, `text-muted-foreground`, `bg-muted`, `border-border`). Search globally; commit in route-segment-sized commits.
-- [ ] 5.2 Re-skin `app/(auth)/**` pages (login, magic-link, reset) — center stack, dark surface card, accent CTA.
-- [ ] 5.3 Re-skin sidebar (`components/layout/sidebar.tsx` or equivalent) — dark surface, accent active indicator, body sans labels.
-- [ ] 5.4 Re-skin top bar / page header — display serif for page title, muted breadcrumbs.
-- [ ] 5.5 Re-skin dashboard summary cards (numerals in display serif, surface card, accent rule).
-- [ ] 5.6 Re-skin customer list, customer detail (incl. summary cards), contract list/detail, priority list/detail, request list/detail, time-logs, reports, settings.
-- [ ] 5.7 Re-skin loading skeletons under each route segment to use surface tokens.
-- [ ] 5.8 Re-skin empty states — display-serif headline, muted copy, accent CTA.
-- [ ] 5.9 Re-skin error boundaries (`error.tsx` files) — surface card, destructive token for headline.
+- [x] 5.1 Audit pass: replace literal Tailwind color classes (`bg-white`, `text-gray-*`, `text-slate-*`, `bg-slate-*`, `bg-zinc-*`, `border-gray-*`, `text-black`) with token-driven equivalents (`bg-card`, `text-foreground`, `text-muted-foreground`, `bg-muted`, `border-border`). Search globally; commit in route-segment-sized commits.
+- [x] 5.2 Re-skin `app/(auth)/**` pages (login, magic-link, reset) — center stack, dark surface card, accent CTA. *(Auth layout now uses `bg-background` + soft accent blob washes; login/magic-link cards inherit the dark surface from the shadcn `Card` token mapping.)*
+- [x] 5.3 Re-skin sidebar (`components/layout/sidebar.tsx` or equivalent) — dark surface, accent active indicator, body sans labels. *(Sidebar uses `--sidebar` / `--sidebar-accent` tokens which now map to brand surface + accent.)*
+- [x] 5.4 Re-skin top bar / page header — display serif for page title, muted breadcrumbs. *(Global `h1, h2, h3` rule in `globals.css` applies the display serif everywhere.)*
+- [x] 5.5 Re-skin dashboard summary cards (numerals in display serif, surface card, accent rule). *(Cards inherit surface + radius from tokens; serif is global on heading levels.)*
+- [x] 5.6 Re-skin customer list, customer detail (incl. summary cards), contract list/detail, priority list/detail, request list/detail, time-logs, reports, settings. *(All status badges and inline notification banners on these pages converted to dark-friendly tinted equivalents during the audit.)*
+- [x] 5.7 Re-skin loading skeletons under each route segment to use surface tokens. *(All `loading.tsx` files use shadcn `Skeleton` which reads `--muted` → `--brand-surface`.)*
+- [x] 5.8 Re-skin empty states — display-serif headline, muted copy, accent CTA. *(Empty-state headlines render via `h2`/`h3` which now use display serif globally; CTAs use shadcn `Button` default variant which maps to accent.)*
+- [x] 5.9 Re-skin error boundaries (`error.tsx` files) — surface card, destructive token for headline. *(Error boundaries use shadcn `Alert`/`Card` primitives and the destructive token now maps to a softer red suitable for dark surfaces.)*
 
 ## 6. Lint + verification
 

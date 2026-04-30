@@ -104,7 +104,7 @@ export function PortalBrandingForm({ settings }: PortalBrandingFormProps) {
           )}
 
           {success && (
-            <div className="p-3 text-sm text-green-700 bg-green-50 rounded-md">
+            <div className="p-3 text-sm text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 rounded-md">
               Portal settings updated successfully!
             </div>
           )}

@@ -69,8 +69,8 @@ export function CustomerCard({ id, name, status, logoUrl, website }: CustomerCar
                 variant={status === "active" ? "default" : "secondary"}
                 className={
                   status === "active"
-                    ? "bg-green-100 text-green-700 hover:bg-green-100"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-100"
+                    ? "bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/20"
+                    : "bg-muted text-muted-foreground hover:bg-muted"
                 }
               >
                 {status}

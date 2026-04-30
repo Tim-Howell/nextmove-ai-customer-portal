@@ -30,26 +30,26 @@ export function PriorityCard({
   const getLevelColor = (level: string) => {
     switch (level) {
       case "high":
-        return "bg-red-100 text-red-700 hover:bg-red-100";
+        return "bg-rose-500/15 text-rose-300 hover:bg-rose-500/20";
       case "medium":
-        return "bg-yellow-100 text-yellow-700 hover:bg-yellow-100";
+        return "bg-amber-500/15 text-amber-300 hover:bg-amber-500/20";
       case "low":
-        return "bg-blue-100 text-blue-700 hover:bg-blue-100";
+        return "bg-sky-500/15 text-sky-300 hover:bg-sky-500/20";
       default:
-        return "bg-gray-100 text-gray-600 hover:bg-gray-100";
+        return "bg-muted text-muted-foreground hover:bg-muted";
     }
   };
 
   const getStatusColor = (statusValue: string) => {
     switch (statusValue) {
       case "completed":
-        return "bg-green-100 text-green-700 hover:bg-green-100";
+        return "bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/20";
       case "in_progress":
-        return "bg-blue-100 text-blue-700 hover:bg-blue-100";
+        return "bg-sky-500/15 text-sky-300 hover:bg-sky-500/20";
       case "on_hold":
-        return "bg-yellow-100 text-yellow-700 hover:bg-yellow-100";
+        return "bg-amber-500/15 text-amber-300 hover:bg-amber-500/20";
       default:
-        return "bg-gray-100 text-gray-600 hover:bg-gray-100";
+        return "bg-muted text-muted-foreground hover:bg-muted";
     }
   };
 

@@ -80,17 +80,17 @@ export function ContractHoursContext({ contract, pendingHours = 0 }: ContractHou
   const statusMessage = formatHoursRemaining(result, typeValue);
 
   // Determine styling based on status
-  let bgColor = "bg-blue-50 border-blue-200";
-  let textColor = "text-blue-700";
+  let bgColor = "bg-sky-500/10 border-sky-500/30";
+  let textColor = "text-sky-300";
   let Icon = Info;
 
   if (isCurrentlyOver) {
-    bgColor = "bg-red-50 border-red-200";
-    textColor = "text-red-700";
+    bgColor = "bg-rose-500/10 border-rose-500/30";
+    textColor = "text-rose-300";
     Icon = AlertTriangle;
   } else if (willBeOver && pendingHours > 0) {
-    bgColor = "bg-amber-50 border-amber-200";
-    textColor = "text-amber-700";
+    bgColor = "bg-amber-500/10 border-amber-500/30";
+    textColor = "text-amber-300";
     Icon = AlertTriangle;
   }
 
