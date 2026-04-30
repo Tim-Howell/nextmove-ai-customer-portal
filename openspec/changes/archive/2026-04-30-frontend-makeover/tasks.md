@@ -69,9 +69,9 @@
 
 ## 7. Manual verification checklist
 
-- [ ] 7.1 Set custom values in `/settings/portal-branding`; reload; confirm the sidebar active indicator and primary buttons reflect them.
-- [ ] 7.2 Clear values; confirm fall-back to brand defaults.
-- [ ] 7.3 Submit an invalid hex; confirm inline validation error.
-- [ ] 7.4 Submit a low-contrast color (e.g., `#1B2030` against background_dark `#1A1F2E`); confirm UI silently substitutes default.
-- [ ] 7.5 Toggle OS-level reduced-motion; confirm page-load animation collapses to instant.
-- [ ] 7.6 Visual sanity sweep of every authenticated route segment.
+- [x] 7.1 Set custom values in `/settings/portal-branding`; reload; confirm the sidebar active indicator and primary buttons reflect them.
+- [x] 7.2 Clear values; confirm fall-back to brand defaults.
+- [x] 7.3 Submit an invalid hex; confirm inline validation error.
+- [x] 7.4 Submit a low-contrast color (against the resolved background); confirm UI silently substitutes default. *(Example hex in the original spec referenced the dark palette; after the light-theme pivot this is tested against `background_base` — e.g. `#F5F6F7` as primary against `#F5F5F7` bg falls below the 3.0 contrast floor and is silently replaced.)*
+- [x] 7.5 Toggle OS-level reduced-motion; confirm page-load animation collapses to instant.
+- [x] 7.6 Visual sanity sweep of every authenticated route segment.

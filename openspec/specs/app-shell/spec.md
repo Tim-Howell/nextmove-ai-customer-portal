@@ -47,11 +47,36 @@ The system SHALL highlight the current page in the navigation.
 - **THEN** Dashboard item in navigation is visually highlighted
 
 ### Requirement: Navigation uses brand styling
-The system SHALL style navigation using NextMove AI brand colors.
+The system SHALL style the sidebar, top bar, and active-state indicators using the configured brand theme tokens, rendering an Apple-style soft-light aesthetic.
 
-#### Scenario: Brand colors applied
-- **WHEN** user views the navigation
-- **THEN** Primary Navy is used for structure and NextMove Green for active/accent states
+#### Scenario: Brand tokens applied to chrome
+- **WHEN** an authenticated user views any portal page
+- **THEN** the sidebar background resolves to `--brand-surface` (derived from the configured `background_base`)
+- **AND** the active navigation item uses the configured `primary_color` (or `accent_color` where used as a highlight) for its indicator
+- **AND** primary text uses `--brand-fg` (the configured `foreground_base`)
+
+#### Scenario: Admin updates accent color
+- **WHEN** an admin changes `accent_color` in portal settings and reloads
+- **THEN** the focus ring, active state highlights, and CTA buttons reflect the new color without any code deployment
+
+### Requirement: App shell page-load motion
+The system SHALL apply a subtle staggered reveal animation to the main content region on initial page load using the `motion` React library.
+
+#### Scenario: First paint of a portal page
+- **WHEN** a user navigates to any portal route
+- **THEN** the top-level page sections fade and rise into place with a 40ms stagger and approximately 240ms duration
+- **AND** the animation respects `prefers-reduced-motion: reduce` by collapsing to instant render
+
+### Requirement: Distinctive typography across the app shell
+The system SHALL render page titles in a serif display font and body/UI text in a geometric sans font, both loaded via `next/font`.
+
+#### Scenario: Page heading typography
+- **WHEN** a portal page renders an `<h1>`, `<h2>`, or `<h3>` heading
+- **THEN** the heading uses the configured display serif family (Fraunces) with a slight negative letter-spacing
+
+#### Scenario: Body text typography
+- **WHEN** a portal page renders running text, table cells, form labels, or button labels
+- **THEN** the text uses the configured body sans family (Plus Jakarta Sans)
 
 ### Requirement: Responsive navigation
 The system SHALL provide responsive navigation for different screen sizes.
