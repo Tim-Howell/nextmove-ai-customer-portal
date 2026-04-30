@@ -233,6 +233,49 @@ Three statuses, set manually:
 - **Expired** — past end date but kept for reference
 - **Archived** — manually closed and excluded from default views
 
+## Branding & Theme
+
+The portal uses an **Apple-style soft-light** theme. Four brand tokens are admin-configurable at `/settings/portal-branding` — leave any field blank to fall back to the NextMove default for that token. Tokens are emitted as CSS variables on every page by the theme layer in `lib/theme/css-vars.ts`, with a WCAG contrast floor enforced server-side (low-contrast values are silently replaced with the default).
+
+| Token | Semantic role | Default |
+| --- | --- | --- |
+| `primary_color` | Headings, structural chrome, primary buttons | `#2C3E50` (NextMove Navy) |
+| `accent_color` | Ring / focus / secondary highlights | `#6FCF97` (NextMove Green) |
+| `background_base` | Page background | `#F5F5F7` (Apple cool gray) |
+| `foreground_base` | Page text | `#1D1D1F` (Apple near-black) |
+
+### Recommended palettes
+
+Pick one of the sets below, paste the four hex values into the branding form, save, and hard-reload.
+
+**A. NextMove brand (default, already shipped)** — clean, on-brand. Leave all four fields blank.
+
+| Primary | Accent | Background | Text |
+| --- | --- | --- | --- |
+| `#2C3E50` | `#6FCF97` | `#F5F5F7` | `#1D1D1F` |
+
+**B. Apple-premium (navy CTAs, subtler accent)** — reads more like `apple.com`; buttons pop in blue. Good for an enterprise feel.
+
+| Primary | Accent | Background | Text |
+| --- | --- | --- | --- |
+| `#0071E3` | `#2C3E50` | `#F5F5F7` | `#1D1D1F` |
+
+**C. Warm editorial** — pairs well with the Fraunces display serif already loaded; feels less tech, more "publication."
+
+| Primary | Accent | Background | Text |
+| --- | --- | --- | --- |
+| `#2C3E50` | `#E07A5F` | `#FAF7F2` | `#1F1B16` |
+
+### Enforcing the token system
+
+A lint script catches literal Tailwind color classes that bypass the token layer (e.g. `bg-white`, `text-gray-500`, `bg-slate-100`):
+
+```bash
+pnpm lint:colors
+```
+
+Status-color tints (e.g. `bg-emerald-100 text-emerald-700`) are intentionally allowed — those are the idiomatic light-theme badge/notice pattern and don't need to be themeable.
+
 ## Database Migrations
 
 Migrations are in `supabase/migrations/`. Key migrations:
