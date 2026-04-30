@@ -364,7 +364,8 @@ export async function getQuickEntryFormData(): Promise<QuickEntryFormData> {
     .from("reference_values")
     .select("id, label, value")
     .eq("type", "time_category")
-    .order("display_order");
+    .eq("is_active", true)
+    .order("sort_order");
 
   // Preferences.
   const { data: profileRow } = await supabase
