@@ -6,7 +6,7 @@ The dashboard today is two divergent paths inside one `page.tsx`: an internal vi
 
 `contracts` has type metadata via `contract_types` with behavior flags including `tracks_hours` and `has_hour_limit`. Burndown only makes sense for contracts where both flags are true.
 
-Charts must work on a dark theme and be re-skinned by `frontend-makeover` without library churn.
+Charts must work on the Apple-style soft-light theme that landed via `frontend-makeover` and stay re-skinnable through the same `--brand-*` token layer without library churn.
 
 ## Goals / Non-Goals
 
@@ -81,13 +81,13 @@ Admin dashboard takes none. Hardcoded last-90-days, weekly bucket, all staff.
 
 ### Decision 6: Color sourcing
 
-Chart components do not hardcode colors. They read `var(--color-accent)` for billable, `var(--color-fg-muted)` for non-billable, `var(--color-primary)` for emphasis lines, `var(--color-border)` for axes. This means `frontend-makeover` flipping the theme automatically reskins charts.
+Chart components do not hardcode colors. They read `var(--brand-accent)` for billable, `var(--brand-fg-muted)` for non-billable, `var(--brand-primary)` for emphasis lines, `var(--brand-border)` for axes. This means an admin re-skinning the portal via `/settings/portal-branding` automatically reskins charts.
 
 Recharts accepts string colors directly; we pass them inline:
 ```tsx
-<Bar dataKey="billableHours" fill="hsl(var(--color-accent-hsl))" />
+<Bar dataKey="billableHours" fill="hsl(var(--brand-accent-hsl))" />
 ```
-For this to work cleanly we expose `--color-accent-hsl` (HSL components) in `globals.css` alongside the hex `--color-accent`. (Coordinate with `frontend-makeover` via tasks.)
+The HSL companion variables (`--brand-bg-hsl`, `--brand-fg-hsl`, `--brand-primary-hsl`, `--brand-accent-hsl`) are already emitted by the theme injection layer (`lib/theme/css-vars.ts`) so no globals.css change is needed.
 
 ### Decision 7: Filter UI placement
 

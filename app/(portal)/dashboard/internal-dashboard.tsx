@@ -1,0 +1,347 @@
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import {
+  Users,
+  FileText,
+  Clock,
+  Flag,
+  MessageSquare,
+  Plus,
+  BarChart3,
+} from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
+import { AdminStaffHoursChart } from "@/components/dashboard/admin-staff-hours-chart";
+import { getOpenPrioritiesCount } from "@/app/actions/priorities";
+import { getOpenRequestsCount } from "@/app/actions/requests";
+import { getRecentRequests } from "@/app/actions/reports";
+import { getRecentTimeEntries } from "@/app/actions/time-entries";
+import { getShowDemoData } from "@/app/actions/settings";
+import { getStaffHoursLast90Days } from "@/app/actions/dashboard-charts";
+
+/**
+ * Admin / staff dashboard. Composition order:
+ *   1. Welcome heading
+ *   2. Hours-by-staff chart (last 90 days, no filters)
+ *   3. Existing 5 summary tiles (customers, contracts, hours, priorities, requests)
+ *   4. Quick actions + recent requests + recent time entries
+ *
+ * The chart is the new top-of-page element; everything below it is the
+ * pre-existing internal dashboard content moved verbatim out of `page.tsx`.
+ */
+interface InternalDashboardProps {
+  displayName: string;
+}
+
+export async function InternalDashboard({ displayName }: InternalDashboardProps) {
+  const showDemoData = await getShowDemoData();
+  const [stats, recentRequests, recentTimeEntries, staffHours] = await Promise.all(
+    [
+      getInternalStats(showDemoData),
+      getRecentRequests(undefined, 5),
+      getRecentTimeEntries(undefined, 5),
+      getStaffHoursLast90Days(),
+    ]
+  );
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-primary">Dashboard</h1>
+        <p className="text-muted-foreground">Welcome back, {displayName}</p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl">Hours by team member</CardTitle>
+          <p className="text-xs text-muted-foreground">
+            Trailing 90 days, billable + non-billable
+          </p>
+        </CardHeader>
+        <CardContent>
+          <AdminStaffHoursChart data={staffHours} />
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <Link href="/customers">
+          <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Customers</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.customerCount}</div>
+              <p className="text-xs text-muted-foreground">Active customers</p>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/contracts">
+          <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Contracts</CardTitle>
+              <FileText className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.activeContractCount}</div>
+              <p className="text-xs text-muted-foreground">Active contracts</p>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/time-logs">
+          <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Hours This Month</CardTitle>
+              <Clock className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.hoursThisMonth.toFixed(1)}</div>
+              <p className="text-xs text-muted-foreground">Total logged</p>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/priorities">
+          <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Open Priorities</CardTitle>
+              <Flag className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.openPriorities}</div>
+              <p className="text-xs text-muted-foreground">Across all customers</p>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/requests">
+          <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Open Requests</CardTitle>
+              <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.openRequests}</div>
+              <p className="text-xs text-muted-foreground">Pending review</p>
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Link href="/time-logs/new" className="block">
+              <Button variant="outline" className="w-full justify-start">
+                <Plus className="mr-2 h-4 w-4" />
+                Log Time
+              </Button>
+            </Link>
+            <Link href="/requests/new" className="block">
+              <Button variant="outline" className="w-full justify-start">
+                <MessageSquare className="mr-2 h-4 w-4" />
+                New Request
+              </Button>
+            </Link>
+            <Link href="/priorities/new" className="block">
+              <Button variant="outline" className="w-full justify-start">
+                <Flag className="mr-2 h-4 w-4" />
+                New Priority
+              </Button>
+            </Link>
+            <Link href="/reports" className="block">
+              <Button variant="outline" className="w-full justify-start">
+                <BarChart3 className="mr-2 h-4 w-4" />
+                View Reports
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Recent Requests</CardTitle>
+            <Link href="/requests">
+              <Button variant="ghost" size="sm">
+                View All
+              </Button>
+            </Link>
+          </CardHeader>
+          <CardContent>
+            {recentRequests.length === 0 ? (
+              <EmptyState
+                icon={MessageSquare}
+                title="No recent requests"
+                description="Customer requests will appear here"
+              />
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recentRequests.map((request) => (
+                    <TableRow key={request.id}>
+                      <TableCell className="font-medium truncate max-w-[150px]">
+                        <Link
+                          href={`/requests/${request.id}`}
+                          className="hover:underline"
+                        >
+                          {request.title}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="truncate max-w-[100px]">
+                        {request.customer?.name || "—"}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">
+                          {request.status?.label || "—"}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Recent Time Entries</CardTitle>
+            <Link href="/time-logs">
+              <Button variant="ghost" size="sm">
+                View All
+              </Button>
+            </Link>
+          </CardHeader>
+          <CardContent>
+            {recentTimeEntries.length === 0 ? (
+              <EmptyState
+                icon={Clock}
+                title="No recent time entries"
+                description="Time entries will appear here"
+              />
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead className="text-right">Hours</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recentTimeEntries.map((entry) => (
+                    <TableRow key={entry.id}>
+                      <TableCell>
+                        {new Date(entry.entry_date).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell className="truncate max-w-[100px]">
+                        {entry.customer?.name || "—"}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {Number(entry.hours).toFixed(1)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+async function getInternalStats(showDemoData: boolean): Promise<{
+  customerCount: number;
+  activeContractCount: number;
+  hoursThisMonth: number;
+  openPriorities: number;
+  openRequests: number;
+}> {
+  const supabase = await createClient();
+
+  let customerQuery = supabase
+    .from("customers")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "active")
+    .is("archived_at", null);
+  if (!showDemoData) {
+    customerQuery = customerQuery.eq("is_demo", false);
+  }
+
+  let contractsQuery = supabase
+    .from("contracts")
+    .select(
+      "id, status:reference_values!contracts_status_id_fkey(value), customer:customers!inner(is_demo)"
+    );
+  if (!showDemoData) {
+    contractsQuery = contractsQuery.eq("customer.is_demo", false);
+  }
+
+  let timeEntriesQuery = supabase
+    .from("time_entries")
+    .select("hours, customer:customers!inner(is_demo)")
+    .gte(
+      "entry_date",
+      new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+        .toISOString()
+        .split("T")[0]
+    );
+  if (!showDemoData) {
+    timeEntriesQuery = timeEntriesQuery.eq("customer.is_demo", false);
+  }
+
+  const [
+    customersResult,
+    contractsResult,
+    timeEntriesResult,
+    openPriorities,
+    openRequests,
+  ] = await Promise.all([
+    customerQuery,
+    contractsQuery,
+    timeEntriesQuery,
+    getOpenPrioritiesCount(),
+    getOpenRequestsCount(),
+  ]);
+
+  const activeContracts = (contractsResult.data || []).filter((c) => {
+    const status = c.status as unknown as { value: string } | null;
+    return status?.value === "active";
+  });
+  const totalHours = (timeEntriesResult.data || []).reduce(
+    (sum: number, e: { hours: number }) => sum + Number(e.hours),
+    0
+  );
+
+  return {
+    customerCount: customersResult.count || 0,
+    activeContractCount: activeContracts.length,
+    hoursThisMonth: totalHours,
+    openPriorities,
+    openRequests,
+  };
+}
