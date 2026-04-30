@@ -2,30 +2,30 @@
 
 ## 1. Schema + branding settings
 
-- [ ] 1.1 Create migration `<timestamp>_portal_settings_brand_tokens.sql`:
+- [x] 1.1 Create migration `<timestamp>_portal_settings_brand_tokens.sql`:
   - Rename `portal_settings.secondary_color` → `accent_color`.
   - Add columns `background_dark text`, `background_light text` (nullable, no DB default).
-- [ ] 1.2 Update `lib/validations/portal-settings.ts` Zod schema: `accent_color`, `background_dark`, `background_light` as optional hex strings (`/^#(?:[0-9a-fA-F]{3}){1,2}$/`).
-- [ ] 1.3 Update `app/actions/portal-settings.ts` insert/update paths to read/write the new columns.
-- [ ] 1.4 Update `components/settings/portal-branding-form.tsx`:
+- [x] 1.2 Update `lib/validations/portal-settings.ts` Zod schema: `accent_color`, `background_dark`, `background_light` as optional hex strings (`/^#(?:[0-9a-fA-F]{3}){1,2}$/`).
+- [x] 1.3 Update `app/actions/portal-settings.ts` insert/update paths to read/write the new columns.
+- [x] 1.4 Update `components/settings/portal-branding-form.tsx`:
   - Replace `secondary_color` field with `accent_color`.
   - Add `background_dark` and `background_light` inputs with live swatches.
   - Keep `primary_color` field.
-- [ ] 1.5 Update `types/database.ts` to reflect renamed/added columns.
+- [x] 1.5 Update `types/database.ts` to reflect renamed/added columns. *(Type lives in `lib/validations/portal-settings.ts`; updated there.)*
 
 ## 2. Token system + theme provider
 
-- [ ] 2.1 Create `lib/theme/defaults.ts` exporting `BRAND_DEFAULTS = { primary: "#2C3E50", accent: "#6FCF97", background_dark: "#1A1F2E", background_light: "#F8F9FA" }`.
-- [ ] 2.2 Create `lib/theme/css-vars.ts` with `buildThemeCss(settings)` that:
+- [x] 2.1 Create `lib/theme/defaults.ts` exporting `BRAND_DEFAULTS = { primary: "#2C3E50", accent: "#6FCF97", background_dark: "#1A1F2E", background_light: "#F8F9FA" }`.
+- [x] 2.2 Create `lib/theme/css-vars.ts` with `buildThemeCss(settings)` that:
   - Merges admin values over `BRAND_DEFAULTS`.
   - Validates each color is a valid hex.
   - Computes WCAG contrast vs the resolved `background_dark`; substitutes default if a color is below 3.0 against the background.
   - Returns a `<style>`-ready CSS string defining `--color-bg`, `--color-fg`, `--color-fg-muted`, `--color-primary`, `--color-accent`, `--color-surface`, `--color-surface-2`, `--color-border`, `--color-ring`.
-- [ ] 2.3 In `app/layout.tsx`:
+- [x] 2.3 In `app/layout.tsx`:
   - Fetch portal settings server-side.
   - Render an inline `<style>` in `<head>` produced by `buildThemeCss`.
   - Set `<html data-theme="dark" lang="en">`.
-- [ ] 2.4 Rewrite `app/globals.css`:
+- [x] 2.4 Rewrite `app/globals.css`:
   - Remove ad-hoc light-theme variables.
   - Map shadcn variables (`--background`, `--foreground`, `--primary`, `--primary-foreground`, `--secondary`, `--card`, `--card-foreground`, `--muted`, `--muted-foreground`, `--accent`, `--accent-foreground`, `--destructive`, `--destructive-foreground`, `--border`, `--input`, `--ring`) onto our `--color-*` tokens.
   - Set `--radius: 0.625rem`.
@@ -34,9 +34,9 @@
 
 ## 3. Typography
 
-- [ ] 3.1 In `app/layout.tsx`, load `Fraunces` and `Plus Jakarta Sans` via `next/font/google` (variable, `display: "swap"`).
-- [ ] 3.2 Expose CSS variables `--font-display` and `--font-body` on `<html>`.
-- [ ] 3.3 In `globals.css`, set `body { font-family: var(--font-body); }` and create utility classes `.font-display` and `.tabular-nums`.
+- [x] 3.1 In `app/layout.tsx`, load `Fraunces` and `Plus Jakarta Sans` via `next/font/google` (variable, `display: "swap"`).
+- [x] 3.2 Expose CSS variables `--font-display` and `--font-body` on `<html>`.
+- [x] 3.3 In `globals.css`, set `body { font-family: var(--font-body); }` and create utility classes `.font-display` and `.tabular-nums`.
 
 ## 4. Motion
 

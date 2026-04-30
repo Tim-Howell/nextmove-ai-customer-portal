@@ -46,7 +46,9 @@ export async function updatePortalSettings(data: PortalSettingsFormData) {
         logo_url: validated.data.logo_url || null,
         description: validated.data.description || null,
         primary_color: validated.data.primary_color,
-        secondary_color: validated.data.secondary_color,
+        accent_color: validated.data.accent_color || null,
+        background_dark: validated.data.background_dark || null,
+        background_light: validated.data.background_light || null,
       });
 
     if (insertError) {
@@ -63,7 +65,9 @@ export async function updatePortalSettings(data: PortalSettingsFormData) {
         logo_url: validated.data.logo_url || null,
         description: validated.data.description || null,
         primary_color: validated.data.primary_color,
-        secondary_color: validated.data.secondary_color,
+        accent_color: validated.data.accent_color || null,
+        background_dark: validated.data.background_dark || null,
+        background_light: validated.data.background_light || null,
       })
       .eq("id", existing.id);
 
@@ -74,6 +78,9 @@ export async function updatePortalSettings(data: PortalSettingsFormData) {
   }
 
   revalidatePath("/settings/portal-branding");
+  // Theme tokens are injected at the root layout — revalidate everything so
+  // the new colors take effect immediately on the next navigation.
+  revalidatePath("/", "layout");
   return { success: true };
 }
 

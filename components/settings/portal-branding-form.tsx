@@ -37,13 +37,17 @@ export function PortalBrandingForm({ settings }: PortalBrandingFormProps) {
       website_url: settings?.website_url || "",
       logo_url: settings?.logo_url || "",
       description: settings?.description || "",
-      primary_color: settings?.primary_color || "#3b82f6",
-      secondary_color: settings?.secondary_color || "#64748b",
+      primary_color: settings?.primary_color || "#2C3E50",
+      accent_color: settings?.accent_color || "#6FCF97",
+      background_dark: settings?.background_dark || "#1A1F2E",
+      background_light: settings?.background_light || "#F8F9FA",
     },
   });
 
   const primaryColor = watch("primary_color");
-  const secondaryColor = watch("secondary_color");
+  const accentColor = watch("accent_color");
+  const backgroundDark = watch("background_dark");
+  const backgroundLight = watch("background_light");
 
   async function onSubmit(data: PortalSettingsFormData) {
     setIsLoading(true);
@@ -182,45 +186,48 @@ export function PortalBrandingForm({ settings }: PortalBrandingFormProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="primary_color">Primary Color</Label>
-              <div className="flex items-center space-x-2">
-                <Input
-                  id="primary_color"
-                  {...register("primary_color")}
-                  disabled={isLoading}
-                  placeholder="#3b82f6"
-                  className="w-32"
-                />
-                <div
-                  className="w-8 h-8 rounded border"
-                  style={{ backgroundColor: primaryColor }}
-                />
-              </div>
-              {errors.primary_color && (
-                <p className="text-sm text-destructive">{errors.primary_color.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="secondary_color">Secondary Color</Label>
-              <div className="flex items-center space-x-2">
-                <Input
-                  id="secondary_color"
-                  {...register("secondary_color")}
-                  disabled={isLoading}
-                  placeholder="#64748b"
-                  className="w-32"
-                />
-                <div
-                  className="w-8 h-8 rounded border"
-                  style={{ backgroundColor: secondaryColor }}
-                />
-              </div>
-              {errors.secondary_color && (
-                <p className="text-sm text-destructive">{errors.secondary_color.message}</p>
-              )}
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Theme tokens applied across the portal. Leave blank to use the
+              NextMove brand defaults.
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              <ColorField
+                id="primary_color"
+                label="Primary"
+                placeholder="#2C3E50"
+                value={primaryColor}
+                register={register("primary_color")}
+                error={errors.primary_color?.message}
+                disabled={isLoading}
+              />
+              <ColorField
+                id="accent_color"
+                label="Accent / CTA"
+                placeholder="#6FCF97"
+                value={accentColor}
+                register={register("accent_color")}
+                error={errors.accent_color?.message}
+                disabled={isLoading}
+              />
+              <ColorField
+                id="background_dark"
+                label="Background (dark)"
+                placeholder="#1A1F2E"
+                value={backgroundDark}
+                register={register("background_dark")}
+                error={errors.background_dark?.message}
+                disabled={isLoading}
+              />
+              <ColorField
+                id="background_light"
+                label="Foreground (light)"
+                placeholder="#F8F9FA"
+                value={backgroundLight}
+                register={register("background_light")}
+                error={errors.background_light?.message}
+                disabled={isLoading}
+              />
             </div>
           </div>
         </CardContent>
@@ -231,5 +238,46 @@ export function PortalBrandingForm({ settings }: PortalBrandingFormProps) {
         </CardFooter>
       </form>
     </Card>
+  );
+}
+
+interface ColorFieldProps {
+  id: string;
+  label: string;
+  placeholder: string;
+  value: string | undefined;
+  register: ReturnType<ReturnType<typeof useForm<PortalSettingsFormData>>["register"]>;
+  error: string | undefined;
+  disabled: boolean;
+}
+
+function ColorField({
+  id,
+  label,
+  placeholder,
+  value,
+  register,
+  error,
+  disabled,
+}: ColorFieldProps) {
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{label}</Label>
+      <div className="flex items-center space-x-2">
+        <Input
+          id={id}
+          {...register}
+          disabled={disabled}
+          placeholder={placeholder}
+          className="w-32"
+        />
+        <div
+          className="w-8 h-8 rounded border"
+          style={{ backgroundColor: value || placeholder }}
+          aria-hidden="true"
+        />
+      </div>
+      {error && <p className="text-sm text-destructive">{error}</p>}
+    </div>
   );
 }

@@ -4,51 +4,82 @@
 
 @custom-variant dark (&:is(.dark *));
 
-:root {
-  /* NextMove AI Brand Colors */
-  --primary: #2C3E50;
-  --primary-foreground: #FFFFFF;
-  --accent: #6FCF97;
-  --accent-foreground: #2C3E50;
-  --background: #FFFFFF;
-  --background-secondary: #F8F9FA;
-  --foreground: #2C3E50;
-  --secondary: #6C757D;
-  --secondary-foreground: #FFFFFF;
+/*
+ * Soft Modernist, dark-first theme.
+ *
+ * Brand-token base values (--brand-bg, --brand-fg, --brand-primary,
+ * --brand-accent, --brand-surface, --brand-surface-2, --brand-border,
+ * --brand-ring, plus -hsl variants) are injected at request time by
+ * `lib/theme/css-vars.ts` from `portal_settings`. The :root block below
+ * provides fallback values used when the inline <style> tag is missing
+ * (tests, Storybook, etc.) and maps the resolved tokens onto the
+ * shadcn variable contract.
+ */
 
-  /* Semantic colors */
-  --destructive: #DC2626;
-  --muted: #F1F5F9;
-  --muted-foreground: #6C757D;
-  --border: #E2E8F0;
-  --input: #E2E8F0;
-  --ring: #6FCF97;
-  
-  /* Card and popover */
-  --card: #FFFFFF;
-  --card-foreground: #2C3E50;
-  --popover: #FFFFFF;
-  --popover-foreground: #2C3E50;
-  
+:root {
+  /* Fallback brand tokens (in sync with lib/theme/defaults.ts).
+     The runtime injection from lib/theme/css-vars.ts overrides these with
+     values resolved from portal_settings. */
+  --brand-bg: #1A1F2E;
+  --brand-fg: #F8F9FA;
+  --brand-fg-muted: #94A3B8;
+  --brand-primary: #2C3E50;
+  --brand-accent: #6FCF97;
+  --brand-surface: #232A3A;
+  --brand-surface-2: #2C3446;
+  --brand-border: #353D52;
+  --brand-ring: #6FCF97;
+  --brand-bg-hsl: 222 26% 14%;
+  --brand-fg-hsl: 210 17% 98%;
+  --brand-primary-hsl: 210 29% 24%;
+  --brand-accent-hsl: 142 50% 62%;
+
+  /* Map the brand tokens onto the shadcn/ui variable contract so every
+     primitive in components/ui/ picks up the new theme automatically. */
+  --background: var(--brand-bg);
+  --foreground: var(--brand-fg);
+  --card: var(--brand-surface);
+  --card-foreground: var(--brand-fg);
+  --popover: var(--brand-surface);
+  --popover-foreground: var(--brand-fg);
+  --primary: var(--brand-accent);
+  --primary-foreground: var(--brand-bg);
+  --secondary: var(--brand-primary);
+  --secondary-foreground: var(--brand-fg);
+  --muted: var(--brand-surface);
+  --muted-foreground: var(--brand-fg-muted);
+  --accent: var(--brand-surface-2);
+  --accent-foreground: var(--brand-fg);
+  --destructive: #F87171;
+  --destructive-foreground: var(--brand-bg);
+  --border: var(--brand-border);
+  --input: var(--brand-border);
+  --ring: var(--brand-ring);
+
   /* Charts */
-  --chart-1: #2C3E50;
-  --chart-2: #6FCF97;
-  --chart-3: #6C757D;
-  --chart-4: #F8F9FA;
-  --chart-5: #E2E8F0;
-  
-  /* Radius */
-  --radius: 0.5rem;
-  
+  --chart-1: var(--brand-accent);
+  --chart-2: var(--brand-primary);
+  --chart-3: var(--brand-fg-muted);
+  --chart-4: var(--brand-surface-2);
+  --chart-5: var(--brand-border);
+
+  /* Radius — slightly larger than default to support the soft aesthetic. */
+  --radius: 0.625rem;
+
+  /* Layered low-opacity shadow used by elevated surfaces. */
+  --shadow-soft:
+    0 1px 2px 0 rgba(0, 0, 0, 0.25),
+    0 4px 12px -2px rgba(0, 0, 0, 0.35);
+
   /* Sidebar */
-  --sidebar: #F8F9FA;
-  --sidebar-foreground: #2C3E50;
-  --sidebar-primary: #2C3E50;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #6FCF97;
-  --sidebar-accent-foreground: #2C3E50;
-  --sidebar-border: #E2E8F0;
-  --sidebar-ring: #6FCF97;
+  --sidebar: var(--brand-surface);
+  --sidebar-foreground: var(--brand-fg);
+  --sidebar-primary: var(--brand-accent);
+  --sidebar-primary-foreground: var(--brand-bg);
+  --sidebar-accent: var(--brand-surface-2);
+  --sidebar-accent-foreground: var(--brand-fg);
+  --sidebar-border: var(--brand-border);
+  --sidebar-ring: var(--brand-ring);
 }
 
 @theme inline {
@@ -95,52 +126,36 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Dark mode colors for future support */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background-secondary: #242B3D;
-    --border: #374151;
-    --muted: #1F2937;
-  }
-}
+/* Dark-first: the portal is dark-only this pass. We intentionally ignore
+   the user's prefers-color-scheme so the brand renders consistently. */
 
 body {
-  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
+  background-color: var(--brand-bg);
+  color: var(--brand-fg);
+  font-feature-settings: "ss01", "cv11";
 }
 
-.dark {
-  --background: #1A1F2E;
-  --background-secondary: #242B3D;
-  --foreground: #EDEDED;
-  --card: #242B3D;
-  --card-foreground: #EDEDED;
-  --popover: #242B3D;
-  --popover-foreground: #EDEDED;
-  --primary: #6FCF97;
-  --primary-foreground: #1A1F2E;
-  --secondary: #374151;
-  --secondary-foreground: #EDEDED;
-  --muted: #1F2937;
-  --muted-foreground: #9CA3AF;
-  --accent: #6FCF97;
-  --accent-foreground: #1A1F2E;
-  --destructive: #EF4444;
-  --border: #374151;
-  --input: #374151;
-  --ring: #6FCF97;
-  --chart-1: #6FCF97;
-  --chart-2: #2C3E50;
-  --chart-3: #9CA3AF;
-  --chart-4: #374151;
-  --chart-5: #1F2937;
-  --sidebar: #1A1F2E;
-  --sidebar-foreground: #EDEDED;
-  --sidebar-primary: #6FCF97;
-  --sidebar-primary-foreground: #1A1F2E;
-  --sidebar-accent: #374151;
-  --sidebar-accent-foreground: #EDEDED;
-  --sidebar-border: #374151;
-  --sidebar-ring: #6FCF97;
+/* Display family for headings and hero numerals. */
+.font-display {
+  font-family: var(--font-display), Georgia, "Times New Roman", serif;
+  letter-spacing: -0.01em;
+}
+
+/* Tabular figures for tables and chart labels. */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Reduced-motion safety: collapse animations when the OS asks. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 @layer base {
@@ -152,5 +167,11 @@ body {
   }
   html {
     @apply font-sans;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display), Georgia, "Times New Roman", serif;
+    letter-spacing: -0.01em;
   }
 }
