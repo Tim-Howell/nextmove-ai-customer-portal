@@ -3,8 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { timeEntrySchema } from "@/lib/validations/time-entry";
+import {
+  quickTimeEntrySchema,
+  timeEntrySchema,
+  type QuickTimeEntryFormData,
+} from "@/lib/validations/time-entry";
 import type { TimeEntryFormData } from "@/lib/validations/time-entry";
+import {
+  parseUserPreferences,
+  type UserPreferences,
+} from "@/lib/validations/user-preferences";
 import type { TimeEntryWithRelations } from "@/types/database";
 import { getShowDemoData } from "./settings";
 
@@ -296,4 +304,202 @@ export async function getStaffMembers(): Promise<
   }
 
   return data || [];
+}
+
+export interface QuickEntryFormData {
+  customers: { id: string; name: string }[];
+  contracts: { id: string; name: string; customer_id: string; is_default: boolean }[];
+  categories: { id: string; label: string; value: string }[];
+  preferences: UserPreferences;
+}
+
+/**
+ * Bundle the data the Quick Entry modal needs into a single round-trip.
+ * Filters out archived customers/contracts so stale references aren't
+ * pre-selected. Safe to call from the client; returns empty arrays for
+ * unauthenticated users.
+ */
+export async function getQuickEntryFormData(): Promise<QuickEntryFormData> {
+  const supabase = await createClient();
+  const showDemoData = await getShowDemoData();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { customers: [], contracts: [], categories: [], preferences: {} };
+  }
+
+  // Resolve archived contract status id once.
+  const { data: archivedStatus } = await supabase
+    .from("reference_values")
+    .select("id")
+    .eq("type", "contract_status")
+    .eq("value", "archived")
+    .maybeSingle();
+
+  // Customers — non-archived, demo-aware.
+  let customersQuery = supabase
+    .from("customers")
+    .select("id, name, is_demo")
+    .neq("status", "archived")
+    .is("archived_at", null)
+    .order("name");
+  if (!showDemoData) customersQuery = customersQuery.eq("is_demo", false);
+  const { data: customers } = await customersQuery;
+
+  // Contracts — non-archived.
+  let contractsQuery = supabase
+    .from("contracts")
+    .select("id, name, customer_id, is_default")
+    .is("archived_at", null)
+    .order("name");
+  if (archivedStatus) {
+    contractsQuery = contractsQuery.neq("status_id", archivedStatus.id);
+  }
+  const { data: contracts } = await contractsQuery;
+
+  // Time categories.
+  const { data: categories } = await supabase
+    .from("reference_values")
+    .select("id, label, value")
+    .eq("type", "time_category")
+    .order("display_order");
+
+  // Preferences.
+  const { data: profileRow } = await supabase
+    .from("profiles")
+    .select("preferences")
+    .eq("id", user.id)
+    .single();
+
+  return {
+    customers: (customers || []).map((c) => ({ id: c.id, name: c.name })),
+    contracts: (contracts || []).map((c) => ({
+      id: c.id,
+      name: c.name,
+      customer_id: c.customer_id,
+      is_default: c.is_default ?? false,
+    })),
+    categories: (categories || []).map((c) => ({
+      id: c.id,
+      label: c.label,
+      value: c.value,
+    })),
+    preferences: parseUserPreferences(profileRow?.preferences),
+  };
+}
+
+/**
+ * Read the current user's `profiles.preferences` jsonb, parsed tolerantly.
+ * Returns `{}` for unauthenticated users or malformed payloads.
+ */
+export async function getUserPreferences(): Promise<UserPreferences> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return {};
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("preferences")
+    .eq("id", user.id)
+    .single();
+
+  if (error || !data) return {};
+  return parseUserPreferences(data.preferences);
+}
+
+/**
+ * Quick Time Entry creation path. Writes a `time_entries` row identical in
+ * shape to one produced by `createTimeEntry`, with `internal_notes = null`
+ * and `staff_id` forced to the current user. Persists last-used customer
+ * and contract on the user's profile preferences for next-open defaults.
+ *
+ * Authorization: rejects `customer_user` role.
+ */
+export async function createQuickTimeEntry(
+  data: QuickTimeEntryFormData
+): Promise<{ error?: string; success?: true }> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "Not authenticated" };
+  }
+
+  // Role gate — customer_user must not be able to log time.
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, preferences")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || profile.role === "customer_user") {
+    return { error: "Not authorized to log time entries" };
+  }
+
+  const validated = quickTimeEntrySchema.safeParse(data);
+  if (!validated.success) {
+    return { error: validated.error.errors[0]?.message || "Validation failed" };
+  }
+
+  // Defensive: same archive checks as the detailed createTimeEntry path.
+  const { data: contract } = await supabase
+    .from("contracts")
+    .select("archived_at")
+    .eq("id", validated.data.contract_id)
+    .single();
+  if (contract?.archived_at) {
+    return { error: "Cannot add time entries to an archived contract" };
+  }
+
+  const { data: customer } = await supabase
+    .from("customers")
+    .select("archived_at")
+    .eq("id", validated.data.customer_id)
+    .single();
+  if (customer?.archived_at) {
+    return { error: "Cannot add time entries for an archived customer" };
+  }
+
+  const { error: insertError } = await supabase.from("time_entries").insert({
+    customer_id: validated.data.customer_id,
+    contract_id: validated.data.contract_id,
+    staff_id: user.id,
+    entered_by: user.id,
+    entry_date: validated.data.entry_date,
+    hours: validated.data.hours,
+    category_id: validated.data.category_id,
+    description: validated.data.description || null,
+    is_billable: validated.data.is_billable,
+    internal_notes: null,
+  });
+
+  if (insertError) {
+    console.error("Error creating quick time entry:", insertError);
+    return { error: "Failed to create time entry" };
+  }
+
+  // Persist last-used customer/contract on the user's preferences.
+  const currentPrefs = parseUserPreferences(profile.preferences);
+  const nextPrefs: UserPreferences = {
+    ...currentPrefs,
+    time_entry: {
+      ...(currentPrefs.time_entry ?? {}),
+      last_customer_id: validated.data.customer_id,
+      last_contract_id: validated.data.contract_id,
+    },
+  };
+  await supabase
+    .from("profiles")
+    .update({ preferences: nextPrefs })
+    .eq("id", user.id);
+
+  revalidatePath("/time-logs");
+  revalidatePath("/dashboard");
+  return { success: true };
 }

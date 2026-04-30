@@ -15,7 +15,10 @@ import {
   Settings,
   FolderOpen,
   Plus,
+  Zap,
+  PenLine,
 } from "lucide-react";
+import { QuickTimeEntryDialog } from "@/components/time-logs/quick-time-entry-dialog";
 
 interface NavItem {
   title: string;
@@ -125,11 +128,28 @@ export function SidebarNav({ role }: SidebarNavProps) {
     return (
       <nav className="flex flex-col h-full px-2">
         <div className="space-y-1 flex-1">
-          {/* Enter Time Button */}
+          {/* Submit Time section */}
+          <div className="px-3 pt-1 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Submit Time
+          </div>
+          <QuickTimeEntryDialog>
+            <Button
+              type="button"
+              className="w-full justify-start gap-2"
+              size="sm"
+            >
+              <Zap className="h-4 w-4" />
+              Quick Entry
+            </Button>
+          </QuickTimeEntryDialog>
           <Link href="/time-logs/new">
-            <Button className="w-full justify-start gap-2 mb-2" size="sm">
-              <Plus className="h-4 w-4" />
-              Enter Time
+            <Button
+              variant="outline"
+              className="w-full justify-start gap-2 mt-1 mb-2"
+              size="sm"
+            >
+              <PenLine className="h-4 w-4" />
+              Detailed Entry
             </Button>
           </Link>
 

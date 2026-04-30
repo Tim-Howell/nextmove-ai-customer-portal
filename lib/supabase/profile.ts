@@ -13,6 +13,7 @@ export interface Profile {
   customer_id: string | null;
   avatar_url: string | null;
   is_active: boolean;
+  preferences: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 }
