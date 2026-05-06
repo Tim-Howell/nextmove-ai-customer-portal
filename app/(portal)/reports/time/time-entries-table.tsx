@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -11,18 +12,21 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Download } from "lucide-react";
+import { Download, Pencil } from "lucide-react";
 import { exportToCSV } from "@/lib/utils/csv-export";
 import type { TimeEntryReportRow } from "@/app/actions/reports";
 
 interface TimeEntriesReportTableProps {
   entries: TimeEntryReportRow[];
   showCustomer?: boolean;
+  /** When true, renders an Edit action column linking to /time-logs/[id]/edit. */
+  canEdit?: boolean;
 }
 
 export function TimeEntriesReportTable({
   entries,
   showCustomer = true,
+  canEdit = false,
 }: TimeEntriesReportTableProps) {
   function handleExport() {
     const columns = [
@@ -78,6 +82,7 @@ export function TimeEntriesReportTable({
                   <TableHead className="text-right">Hours</TableHead>
                   <TableHead>Billable</TableHead>
                   <TableHead className="max-w-[200px]">Description</TableHead>
+                  {canEdit && <TableHead className="w-12" />}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -113,6 +118,19 @@ export function TimeEntriesReportTable({
                     <TableCell className="truncate max-w-[200px]">
                       {entry.description || "—"}
                     </TableCell>
+                    {canEdit && (
+                      <TableCell className="w-12">
+                        <Link href={`/time-logs/${entry.id}/edit`}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            aria-label={`Edit time entry from ${entry.entry_date}`}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>

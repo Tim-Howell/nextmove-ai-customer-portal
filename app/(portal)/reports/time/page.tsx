@@ -74,7 +74,11 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
 
       <ContractOverageAlerts overages={overages} />
 
-      <TimeEntriesReportTable entries={entries} showCustomer={isInternal} />
+      <TimeEntriesReportTable
+        entries={entries}
+        showCustomer={isInternal}
+        canEdit={isInternal}
+      />
     </div>
   );
 }

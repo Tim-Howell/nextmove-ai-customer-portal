@@ -59,7 +59,7 @@ export function ReportFilters({
     if (contractIds.length > 0) params.set("contractIds", contractIds.join(","));
     if (billable && billable !== "all") params.set("billable", billable);
     if (staffIds.length > 0) params.set("staffIds", staffIds.join(","));
-    router.push(`/reports?${params.toString()}`);
+    router.push(`/reports/time?${params.toString()}`);
   }
 
   function clearFilters() {
@@ -70,7 +70,7 @@ export function ReportFilters({
     setContractIds([]);
     setBillable("all");
     setStaffIds([]);
-    router.push("/reports");
+    router.push("/reports/time");
   }
 
   const categoryOptions = categories.map((c) => ({ value: c.id, label: c.label }));
