@@ -38,7 +38,6 @@ const internalCustomerInfoItems: NavItem[] = [
   { title: "Contracts", href: "/contracts" },
   { title: "Contacts", href: "/contacts" },
   { title: "Priorities", href: "/priorities" },
-  { title: "Requests", href: "/requests" },
 ];
 
 const internalReportsItems: NavItem[] = [
@@ -158,6 +157,7 @@ export function SidebarNav({ role }: SidebarNavProps) {
 
           {/* Main Nav */}
           <NavLink item={{ title: "Dashboard", href: "/dashboard", icon: LayoutDashboard }} pathname={pathname} />
+          <NavLink item={{ title: "Requests", href: "/requests", icon: MessageSquare }} pathname={pathname} />
           <NavLink item={{ title: "Customers", href: "/customers", icon: Users }} pathname={pathname} />
 
           <Separator />
