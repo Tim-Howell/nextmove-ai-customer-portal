@@ -214,10 +214,29 @@ If you ever need to set this up by hand in the Supabase dashboard:
 An earlier migration accidentally created a third bucket called
 `contract-documents` and attached the contract-document policies to it,
 even though the application code targets `portal-documents`. The
-consolidation migration above drops the orphan bucket, removes its
-policies, and reattaches the correct policies to `portal-documents`.
-After the migration runs, the dashboard will show only the two canonical
-buckets.
+consolidation migration above drops those orphan policies and reattaches
+the correct policies to `portal-documents`, but it **cannot drop the
+bucket itself** — Supabase's `storage.protect_delete()` trigger blocks
+SQL-level deletes on storage tables.
+
+After running the migration, finish the cleanup manually:
+
+1. Supabase dashboard → **Storage** → `contract-documents`
+2. Confirm the bucket is empty (it should be — no app code ever wrote to it)
+3. Click the bucket's overflow menu (⋯) → **Delete bucket**
+
+You can verify the final state with this SQL:
+
+```sql
+SELECT id, public FROM storage.buckets ORDER BY id;
+SELECT polname, polcmd FROM pg_policy
+WHERE polrelid = 'storage.objects'::regclass
+  AND polname LIKE 'portal-%'
+ORDER BY polname;
+```
+
+You should see exactly two buckets (`portal-assets` public=true,
+`portal-documents` public=false) and 8 policies total (4 per bucket).
 
 ## Key Features
 
