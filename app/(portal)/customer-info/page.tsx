@@ -31,12 +31,6 @@ export default async function CustomerInfoPage() {
       href: "/priorities",
       icon: Flag,
     },
-    {
-      title: "Requests",
-      description: "View and respond to customer requests and support inquiries.",
-      href: "/requests",
-      icon: MessageSquare,
-    },
   ];
 
   const customerCards = [
