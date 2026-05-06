@@ -166,41 +166,58 @@ Template variables available:
 
 ## Storage Buckets
 
-This application requires two Supabase Storage buckets:
+This application uses exactly two Supabase Storage buckets. Both are
+created and configured automatically by the migration
+`supabase/migrations/20260505200000_consolidate_storage_buckets.sql`,
+so on a fresh environment you only need to run migrations — no manual
+bucket setup is required.
 
 ### `portal-assets` (Public)
-Used for publicly accessible branding assets:
+Public assets rendered by the UI, including the login page (so they must
+be readable without an active session):
 - Organization logo
 - Customer logos
 - Priority images
+- Future public images
 
-**Setup:**
-1. Create bucket named `portal-assets` in Supabase Storage
-2. Set bucket to **Public**
-3. Run the following SQL to add policies:
-   ```sql
-   -- Allow authenticated users to upload
-   create policy "Allow authenticated uploads to portal-assets"
-   on storage.objects for insert
-   to authenticated
-   with check (bucket_id = 'portal-assets');
-
-   -- Allow public read access
-   create policy "Allow public read access to portal-assets"
-   on storage.objects for select
-   to public
-   using (bucket_id = 'portal-assets');
-   ```
+Policies installed by the migration:
+- `portal-assets: public read` — anonymous SELECT for any object in the bucket
+- `portal-assets: authenticated upload` / `update` / `delete` — restricted to authenticated users
 
 ### `portal-documents` (Private)
-Used for secure documents with access control:
-- Contract PDFs
-- Request attachments
+Private files only accessible to authenticated users:
+- Contract PDFs (current usage)
+- Request attachments and any future private uploads
 
-**Setup:**
-1. Create bucket named `portal-documents` in Supabase Storage
-2. Keep bucket **Private**
-3. RLS policies control access based on user role and customer association
+Policies installed by the migration:
+- `portal-documents: authenticated read` / `upload` / `update` — any authenticated user
+- `portal-documents: internal delete` — restricted to `admin` / `staff` profiles
+
+> Customer-scoped read isolation for contract files is enforced at the
+> application layer (the `contract_documents` table is RLS-scoped by
+> customer, and the app only generates signed URLs for documents the
+> caller is allowed to see). The bucket-level policy is intentionally
+> the broader "any authenticated user" so signed-URL access keeps working.
+
+### Manual setup (only if you skip migrations)
+
+If you ever need to set this up by hand in the Supabase dashboard:
+
+1. Create bucket `portal-assets` and toggle **Public** on
+2. Create bucket `portal-documents` and leave it **Private**
+3. Run the SQL from
+   `supabase/migrations/20260505200000_consolidate_storage_buckets.sql`
+   to install the policies
+
+### Decommissioned bucket: `contract-documents`
+
+An earlier migration accidentally created a third bucket called
+`contract-documents` and attached the contract-document policies to it,
+even though the application code targets `portal-documents`. The
+consolidation migration above drops the orphan bucket, removes its
+policies, and reattaches the correct policies to `portal-documents`.
+After the migration runs, the dashboard will show only the two canonical
+buckets.
 
 ## Key Features
 

@@ -32,16 +32,85 @@ DELETE FROM storage.objects WHERE bucket_id = 'contract-documents';
 -- harmless on environments where it was already removed.
 DELETE FROM storage.buckets WHERE id = 'contract-documents';
 
--- Sanity-check that the two canonical buckets exist. We don't try to create
--- them here because their RLS policies live in the consolidated schema /
--- earlier migrations and re-creating them would conflict. If either is
--- missing on a given environment, follow the README setup steps.
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT 1 FROM storage.buckets WHERE id = 'portal-assets') THEN
-    RAISE NOTICE 'portal-assets bucket is missing — create it via the README setup steps.';
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM storage.buckets WHERE id = 'portal-documents') THEN
-    RAISE NOTICE 'portal-documents bucket is missing — create it via the README setup steps.';
-  END IF;
-END $$;
+-- ----------------------------------------------------------------------------
+-- Ensure the two canonical buckets exist with the correct public flag.
+-- ON CONFLICT (id) DO UPDATE makes this idempotent and self-healing: if the
+-- bucket already exists with the wrong `public` value (e.g. someone toggled
+-- it in the dashboard) it gets corrected on the next migration run.
+-- ----------------------------------------------------------------------------
+INSERT INTO storage.buckets (id, name, public)
+VALUES
+  ('portal-assets',    'portal-assets',    true),
+  ('portal-documents', 'portal-documents', false)
+ON CONFLICT (id) DO UPDATE SET public = EXCLUDED.public;
+
+-- ----------------------------------------------------------------------------
+-- portal-assets policies (public read, authenticated write).
+-- Drop-then-create pattern keeps re-runs safe.
+-- ----------------------------------------------------------------------------
+DROP POLICY IF EXISTS "portal-assets: public read"             ON storage.objects;
+DROP POLICY IF EXISTS "portal-assets: authenticated upload"    ON storage.objects;
+DROP POLICY IF EXISTS "portal-assets: authenticated update"    ON storage.objects;
+DROP POLICY IF EXISTS "portal-assets: authenticated delete"    ON storage.objects;
+
+CREATE POLICY "portal-assets: public read"
+ON storage.objects FOR SELECT
+TO public
+USING (bucket_id = 'portal-assets');
+
+CREATE POLICY "portal-assets: authenticated upload"
+ON storage.objects FOR INSERT
+TO authenticated
+WITH CHECK (bucket_id = 'portal-assets');
+
+CREATE POLICY "portal-assets: authenticated update"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (bucket_id = 'portal-assets')
+WITH CHECK (bucket_id = 'portal-assets');
+
+CREATE POLICY "portal-assets: authenticated delete"
+ON storage.objects FOR DELETE
+TO authenticated
+USING (bucket_id = 'portal-assets');
+
+-- ----------------------------------------------------------------------------
+-- portal-documents policies (private — authenticated read/write, internal
+-- users only for delete). These were missing entirely on environments where
+-- the consolidated schema's typo'd bucket name was never corrected, which is
+-- why the bucket showed 0 policies in the dashboard.
+-- ----------------------------------------------------------------------------
+DROP POLICY IF EXISTS "portal-documents: authenticated read"   ON storage.objects;
+DROP POLICY IF EXISTS "portal-documents: authenticated upload" ON storage.objects;
+DROP POLICY IF EXISTS "portal-documents: authenticated update" ON storage.objects;
+DROP POLICY IF EXISTS "portal-documents: internal delete"      ON storage.objects;
+
+CREATE POLICY "portal-documents: authenticated read"
+ON storage.objects FOR SELECT
+TO authenticated
+USING (bucket_id = 'portal-documents');
+
+CREATE POLICY "portal-documents: authenticated upload"
+ON storage.objects FOR INSERT
+TO authenticated
+WITH CHECK (bucket_id = 'portal-documents');
+
+CREATE POLICY "portal-documents: authenticated update"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (bucket_id = 'portal-documents')
+WITH CHECK (bucket_id = 'portal-documents');
+
+-- Delete is restricted to internal staff/admin — customer_users can read
+-- the contract files attached to their contracts but cannot remove them.
+CREATE POLICY "portal-documents: internal delete"
+ON storage.objects FOR DELETE
+TO authenticated
+USING (
+  bucket_id = 'portal-documents'
+  AND EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE profiles.id = auth.uid()
+      AND profiles.role IN ('admin', 'staff')
+  )
+);
