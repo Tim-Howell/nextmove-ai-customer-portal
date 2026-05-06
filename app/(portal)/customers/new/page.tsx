@@ -9,6 +9,7 @@ async function getStaffMembers() {
     .from("profiles")
     .select("id, full_name, email")
     .in("role", ["admin", "staff"])
+    .eq("is_active", true)
     .order("full_name");
 
   if (error) {
