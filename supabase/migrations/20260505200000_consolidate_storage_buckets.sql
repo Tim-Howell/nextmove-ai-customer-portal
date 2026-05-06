@@ -11,9 +11,12 @@
 --   portal-assets    — public  — org logo, customer logos, future public images
 --   portal-documents — private — contract files, future private attachments
 --
--- The migration is idempotent and safe to re-run. It will refuse to drop the
--- bucket row if any objects still live there; in that case, delete or move
--- the objects in the Supabase dashboard first, then re-run.
+-- The migration is idempotent and safe to re-run. Supabase's
+-- storage.protect_delete() trigger blocks SQL-level DELETE on storage
+-- tables, so this migration cannot remove the orphan `contract-documents`
+-- bucket itself — it only drops the bucket's policies (rendering it inert)
+-- and emits a NOTICE telling the operator to finish the cleanup manually
+-- via the dashboard: Storage → contract-documents → Delete bucket.
 -- ============================================================================
 
 -- Drop the three policies created for the orphan bucket. DROP POLICY IF EXISTS
@@ -23,14 +26,21 @@ DROP POLICY IF EXISTS "Authenticated users can upload contract documents" ON sto
 DROP POLICY IF EXISTS "Authenticated users can view contract documents"   ON storage.objects;
 DROP POLICY IF EXISTS "Internal users can delete contract documents"      ON storage.objects;
 
--- Remove any orphan object rows that point at the bucket. This will fail if
--- the bucket still has live files; that's intentional — surfacing the failure
--- forces a manual review rather than silently destroying user data.
-DELETE FROM storage.objects WHERE bucket_id = 'contract-documents';
-
--- Finally drop the bucket row. Wrapped in a guarded DELETE so re-runs are
--- harmless on environments where it was already removed.
-DELETE FROM storage.buckets WHERE id = 'contract-documents';
+-- Note: Supabase blocks `DELETE FROM storage.objects` and
+-- `DELETE FROM storage.buckets` via the storage.protect_delete() trigger,
+-- so the orphan `contract-documents` bucket cannot be removed from a SQL
+-- migration. After this migration runs, delete the bucket manually:
+--
+--   Supabase dashboard → Storage → contract-documents → ⋯ → Delete bucket
+--
+-- The block below emits a NOTICE if the orphan bucket still exists so the
+-- migration log makes the manual step obvious.
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM storage.buckets WHERE id = 'contract-documents') THEN
+    RAISE NOTICE 'Orphan bucket "contract-documents" still exists. Delete it via the Supabase dashboard (Storage → contract-documents → Delete bucket). Its policies have been dropped above so it is now inert.';
+  END IF;
+END $$;
 
 -- ----------------------------------------------------------------------------
 -- Ensure the two canonical buckets exist with the correct public flag.
