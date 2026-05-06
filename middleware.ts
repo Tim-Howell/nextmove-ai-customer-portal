@@ -87,7 +87,19 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(url);
       }
 
-      // Check if demo user is trying to access when show_demo_data is off
+      // Defensive: if RLS or a stale FK returns no customer row, we'd
+      // silently skip the demo block below. Surface that case in logs so
+      // we can spot it in Vercel rather than treat it as "not demo".
+      if (!customer) {
+        console.warn(
+          `[middleware] customer fetch returned null for customer_user uid=${user.id} customer_id=${profile.customer_id} — demo block skipped`
+        );
+      }
+
+      // Check if demo user is trying to access when show_demo_data is off.
+      // The is_demo flag is set on the customer row by the seed scripts;
+      // if it's somehow false on a customer we still consider "demo" by
+      // name, that's a data-drift issue surfaced via logs above.
       if (customer?.is_demo) {
         const { data: settings } = await supabase
           .from("system_settings")
@@ -95,9 +107,19 @@ export async function middleware(request: NextRequest) {
           .eq("key", "show_demo_data")
           .single();
 
-        // Value is stored as JSONB boolean, not string
-        const showDemoData = settings?.value === true;
+        // Tolerate every shape the value may have ended up as in JSONB:
+        //   - native boolean true/false  (set via setSystemSetting)
+        //   - JSONB string "true"/"false" (the original seed used 'false'::jsonb,
+        //     which Supabase JS surfaces as a JS string)
+        // Anything that is not unambiguously "true" is treated as disabled
+        // so demo accounts fail closed.
+        const raw = settings?.value;
+        const showDemoData = raw === true || raw === "true";
+
         if (!showDemoData) {
+          console.info(
+            `[middleware] blocking demo login uid=${user.id} customer=${profile.customer_id} settings.value=${JSON.stringify(raw)}`
+          );
           // Demo data is disabled - block demo user login
           await supabase.auth.signOut();
           const url = request.nextUrl.clone();
