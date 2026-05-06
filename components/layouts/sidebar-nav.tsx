@@ -43,6 +43,7 @@ const internalCustomerInfoItems: NavItem[] = [
 
 const internalReportsItems: NavItem[] = [
   { title: "Time Reports", href: "/reports/time" },
+  { title: "My Time Entries", href: "/reports/my-time" },
   { title: "Change Log", href: "/reports/changes" },
 ];
 

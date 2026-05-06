@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getProfile } from "@/lib/supabase/profile";
 import { LandingCard } from "@/components/ui/landing-card";
-import { BarChart3, History } from "lucide-react";
+import { BarChart3, History, UserCircle } from "lucide-react";
 
 export default async function ReportsLandingPage() {
   const profile = await getProfile();
@@ -18,6 +18,12 @@ export default async function ReportsLandingPage() {
       description: "View and export time entries across all customers with filtering and summary statistics.",
       href: "/reports/time",
       icon: BarChart3,
+    },
+    {
+      title: "My Time Entries",
+      description: "View just your own time entries with customer, date range, and billable filters.",
+      href: "/reports/my-time",
+      icon: UserCircle,
     },
     {
       title: "Change Log",
