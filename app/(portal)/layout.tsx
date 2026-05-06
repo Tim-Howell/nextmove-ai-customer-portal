@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getProfile, getCurrentUser } from "@/lib/supabase/profile";
 import { createClient } from "@/lib/supabase/server";
 import { AppShell } from "@/components/layouts/app-shell";
+import { ImpersonationBanner } from "@/components/layouts/impersonation-banner";
 
 async function getCustomerName(customerId: string): Promise<string | null> {
   const supabase = await createClient();
@@ -40,8 +41,11 @@ export default async function PortalLayout({
   }
 
   return (
-    <AppShell user={userInfo} role={role} customerName={customerName}>
-      {children}
-    </AppShell>
+    <>
+      <ImpersonationBanner />
+      <AppShell user={userInfo} role={role} customerName={customerName}>
+        {children}
+      </AppShell>
+    </>
   );
 }

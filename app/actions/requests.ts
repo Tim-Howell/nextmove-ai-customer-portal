@@ -13,6 +13,10 @@ import {
 import { sendRequestNotification, sendRequestStatusUpdate } from "@/lib/email/send";
 import type { RequestWithRelations } from "@/types/database";
 import { getShowDemoData } from "./settings";
+import {
+  isImpersonating,
+  IMPERSONATION_READ_ONLY_MESSAGE,
+} from "@/lib/auth/impersonation-guard";
 
 interface GetRequestsOptions {
   customerId?: string;
@@ -154,6 +158,9 @@ export async function getRequest(
 export async function createRequest(
   formData: RequestFormData | CustomerRequestFormData
 ): Promise<{ error?: string }> {
+  if (await isImpersonating()) {
+    return { error: IMPERSONATION_READ_ONLY_MESSAGE };
+  }
   const supabase = await createClient();
   const { role, customerId, userId } = await getCurrentUserRole();
   const isInternal = role === "admin" || role === "staff";
@@ -252,6 +259,9 @@ export async function updateRequest(
   id: string,
   formData: RequestFormData
 ): Promise<{ error?: string }> {
+  if (await isImpersonating()) {
+    return { error: IMPERSONATION_READ_ONLY_MESSAGE };
+  }
   const supabase = await createClient();
   const { role } = await getCurrentUserRole();
 
@@ -339,6 +349,9 @@ export async function updateRequest(
 }
 
 export async function deleteRequest(id: string): Promise<{ error?: string }> {
+  if (await isImpersonating()) {
+    return { error: IMPERSONATION_READ_ONLY_MESSAGE };
+  }
   const supabase = await createClient();
   const { role } = await getCurrentUserRole();
 

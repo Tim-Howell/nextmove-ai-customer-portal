@@ -16,6 +16,7 @@ import { Edit, Plus, User, Check, X, Users, Globe, Receipt, Phone, FileText, Fla
 import { EmptyState } from "@/components/ui/empty-state";
 import { DeleteCustomerButton } from "@/components/customers/delete-customer-button";
 import { ArchiveCustomerButton } from "@/components/customers/archive-customer-button";
+import { ViewAsCustomerButton } from "@/components/customers/view-as-customer-button";
 import { DeleteContactButton } from "@/components/customers/delete-contact-button";
 import { ContactInvitationStatus } from "@/components/customers/contact-invitation-status";
 import { InternalNotesSection } from "@/components/internal-notes";
@@ -190,6 +191,9 @@ export default async function CustomerDetailPage({
           </div>
         </div>
         <div className="flex gap-2">
+          {isAdmin && customer.status !== "archived" && (
+            <ViewAsCustomerButton customerId={id} />
+          )}
           <Link href={`/customers/${id}/edit`}>
             <Button variant="outline">
               <Edit className="mr-2 h-4 w-4" />
