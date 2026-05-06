@@ -102,12 +102,28 @@ export function CustomerForm({ customer, staffMembers, customerContacts = [], is
     }
   }
 
+  // Safety net so a schema/default mismatch can never silently break the
+  // submit button again — surfaces the first validation error in the
+  // existing top-of-form banner and logs the full error map to console.
+  function onInvalid(formErrors: typeof errors) {
+    const firstField = Object.keys(formErrors)[0];
+    const firstMessage =
+      (firstField &&
+        (formErrors as Record<string, { message?: string }>)[firstField]
+          ?.message) ||
+      "Please fix the highlighted fields and try again.";
+    setError(firstMessage);
+    if (typeof window !== "undefined") {
+      console.warn("[customer-form] validation failed:", formErrors);
+    }
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>{customer ? "Edit Customer" : "New Customer"}</CardTitle>
       </CardHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
         <CardContent className="space-y-4">
           {error && (
             <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">

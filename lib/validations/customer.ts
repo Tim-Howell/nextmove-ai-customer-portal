@@ -6,7 +6,7 @@ export const customerSchema = z.object({
   primary_contact_id: z.string().uuid().nullable().optional(),
   secondary_contact_id: z.string().uuid().nullable().optional(),
   notes: z.string().nullable().optional(),
-  logo_url: z.string().url("Invalid URL").nullable().optional(),
+  logo_url: z.string().url("Invalid URL").nullable().optional().or(z.literal("")),
   website: z.string().url("Invalid URL").nullable().optional().or(z.literal("")),
   billing_contact_primary_id: z.string().uuid().nullable().optional(),
   billing_contact_secondary_id: z.string().uuid().nullable().optional(),
