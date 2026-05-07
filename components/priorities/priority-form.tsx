@@ -102,7 +102,7 @@ export function PriorityForm({
               onValueChange={(value) => setValue("customer_id", value, { shouldValidate: true })}
               disabled={isLoading}
             >
-              <SelectTrigger>
+              <SelectTrigger id="customer_id">
                 <SelectValue placeholder="Select customer" />
               </SelectTrigger>
               <SelectContent>
@@ -145,7 +145,7 @@ export function PriorityForm({
                 onValueChange={(value) => setValue("status_id", value, { shouldValidate: true })}
                 disabled={isLoading}
               >
-                <SelectTrigger>
+                <SelectTrigger id="status_id">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -168,7 +168,7 @@ export function PriorityForm({
                 onValueChange={(value) => setValue("priority_level_id", value, { shouldValidate: true })}
                 disabled={isLoading}
               >
-                <SelectTrigger>
+                <SelectTrigger id="priority_level_id">
                   <SelectValue placeholder="Select level" />
                 </SelectTrigger>
                 <SelectContent>

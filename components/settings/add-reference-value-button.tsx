@@ -102,7 +102,7 @@ export function AddReferenceValueButton() {
               }
               disabled={isLoading}
             >
-              <SelectTrigger>
+              <SelectTrigger id="type">
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
               <SelectContent>

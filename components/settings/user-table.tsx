@@ -70,7 +70,7 @@ export function UserTable({ users }: UserTableProps) {
           value={roleFilter}
           onValueChange={(value) => setRoleFilter(value as "all" | "admin" | "staff")}
         >
-          <SelectTrigger className="w-32">
+          <SelectTrigger className="w-32" aria-label="Filter by role">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -123,7 +123,7 @@ export function UserTable({ users }: UserTableProps) {
                 }
                 disabled={loadingId === user.id}
               >
-                <SelectTrigger className="w-24">
+                <SelectTrigger className="w-24" aria-label={`Change role for ${user.full_name || user.email}`}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

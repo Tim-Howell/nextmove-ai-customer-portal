@@ -124,7 +124,7 @@ export function ContractForm({
               onValueChange={(value) => setValue("customer_id", value)}
               disabled={isLoading}
             >
-              <SelectTrigger>
+              <SelectTrigger id="customer_id">
                 <SelectValue placeholder="Select customer" />
               </SelectTrigger>
               <SelectContent>
@@ -161,7 +161,7 @@ export function ContractForm({
                 onValueChange={(value) => setValue("contract_type_id", value)}
                 disabled={isLoading}
               >
-                <SelectTrigger>
+                <SelectTrigger id="contract_type_id">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -184,7 +184,7 @@ export function ContractForm({
                 onValueChange={(value) => setValue("status_id", value)}
                 disabled={isLoading}
               >
-                <SelectTrigger>
+                <SelectTrigger id="status_id">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>

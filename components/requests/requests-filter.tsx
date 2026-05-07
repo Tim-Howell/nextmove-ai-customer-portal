@@ -45,7 +45,7 @@ export function RequestsFilter({
           value={currentCustomerId || "all"}
           onValueChange={(value) => updateFilter("customerId", value === "all" ? null : value)}
         >
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-[200px]" aria-label="Filter by customer">
             <SelectValue placeholder="All Customers" />
           </SelectTrigger>
           <SelectContent>
@@ -63,7 +63,7 @@ export function RequestsFilter({
         value={currentStatusId || "all"}
         onValueChange={(value) => updateFilter("statusId", value === "all" ? null : value)}
       >
-        <SelectTrigger className="w-[150px]">
+        <SelectTrigger className="w-[150px]" aria-label="Filter by status">
           <SelectValue placeholder="All Statuses" />
         </SelectTrigger>
         <SelectContent>

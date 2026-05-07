@@ -113,7 +113,7 @@ export function ProfileForm({ profile, customers }: ProfileFormProps) {
                 onValueChange={(value) => setValue("customer_id", value)}
                 disabled={isLoading}
               >
-                <SelectTrigger>
+                <SelectTrigger id="customer_id">
                   <SelectValue placeholder="Select organization" />
                 </SelectTrigger>
                 <SelectContent>

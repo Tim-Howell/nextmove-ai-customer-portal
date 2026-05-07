@@ -141,7 +141,7 @@ export function UserEditForm({ user, customers }: UserEditFormProps) {
               onValueChange={(value) => setValue("role", value as "admin" | "staff" | "customer_user")}
               disabled={isLoading}
             >
-              <SelectTrigger>
+              <SelectTrigger id="role">
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent>
@@ -165,7 +165,7 @@ export function UserEditForm({ user, customers }: UserEditFormProps) {
                 }
                 disabled={isLoading}
               >
-                <SelectTrigger>
+                <SelectTrigger id="customer_id">
                   <SelectValue placeholder="Select customer" />
                 </SelectTrigger>
                 <SelectContent>

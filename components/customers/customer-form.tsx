@@ -151,7 +151,7 @@ export function CustomerForm({ customer, staffMembers, customerContacts = [], is
               onValueChange={(value) => setValue("status", value as "active" | "inactive")}
               disabled={isLoading}
             >
-              <SelectTrigger>
+              <SelectTrigger id="status">
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>
@@ -170,7 +170,7 @@ export function CustomerForm({ customer, staffMembers, customerContacts = [], is
               }
               disabled={isLoading}
             >
-              <SelectTrigger>
+              <SelectTrigger id="primary_contact_id">
                 <SelectValue placeholder="Select primary contact" />
               </SelectTrigger>
               <SelectContent>
@@ -193,7 +193,7 @@ export function CustomerForm({ customer, staffMembers, customerContacts = [], is
               }
               disabled={isLoading}
             >
-              <SelectTrigger>
+              <SelectTrigger id="secondary_contact_id">
                 <SelectValue placeholder="Select secondary contact" />
               </SelectTrigger>
               <SelectContent>
@@ -221,7 +221,7 @@ export function CustomerForm({ customer, staffMembers, customerContacts = [], is
                       }
                       disabled={isLoading}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger id="billing_contact_primary_id">
                         <SelectValue placeholder="Select billing contact" />
                       </SelectTrigger>
                       <SelectContent>
@@ -244,7 +244,7 @@ export function CustomerForm({ customer, staffMembers, customerContacts = [], is
                       }
                       disabled={isLoading}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger id="billing_contact_secondary_id">
                         <SelectValue placeholder="Select billing contact" />
                       </SelectTrigger>
                       <SelectContent>
@@ -267,7 +267,7 @@ export function CustomerForm({ customer, staffMembers, customerContacts = [], is
                       }
                       disabled={isLoading}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger id="poc_primary_id">
                         <SelectValue placeholder="Select point of contact" />
                       </SelectTrigger>
                       <SelectContent>
@@ -290,7 +290,7 @@ export function CustomerForm({ customer, staffMembers, customerContacts = [], is
                       }
                       disabled={isLoading}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger id="poc_secondary_id">
                         <SelectValue placeholder="Select point of contact" />
                       </SelectTrigger>
                       <SelectContent>

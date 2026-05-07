@@ -49,7 +49,7 @@ export function PrioritiesFilter({
           value={currentCustomerId || "all"}
           onValueChange={(value) => updateFilter("customerId", value === "all" ? null : value)}
         >
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-[200px]" aria-label="Filter by customer">
             <SelectValue placeholder="All Customers" />
           </SelectTrigger>
           <SelectContent>
@@ -67,7 +67,7 @@ export function PrioritiesFilter({
         value={currentStatusId || "all"}
         onValueChange={(value) => updateFilter("statusId", value === "all" ? null : value)}
       >
-        <SelectTrigger className="w-[150px]">
+        <SelectTrigger className="w-[150px]" aria-label="Filter by status">
           <SelectValue placeholder="All Statuses" />
         </SelectTrigger>
         <SelectContent>
@@ -84,7 +84,7 @@ export function PrioritiesFilter({
         value={currentPriorityLevelId || "all"}
         onValueChange={(value) => updateFilter("priorityLevelId", value === "all" ? null : value)}
       >
-        <SelectTrigger className="w-[150px]">
+        <SelectTrigger className="w-[150px]" aria-label="Filter by priority level">
           <SelectValue placeholder="All Levels" />
         </SelectTrigger>
         <SelectContent>

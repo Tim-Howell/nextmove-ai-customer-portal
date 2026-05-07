@@ -110,7 +110,7 @@ export function RequestForm({
                 onValueChange={(value) => setValue("customer_id" as keyof RequestFormData, value)}
                 disabled={isLoading}
               >
-                <SelectTrigger>
+                <SelectTrigger id="customer_id">
                   <SelectValue placeholder="Select customer" />
                 </SelectTrigger>
                 <SelectContent>
@@ -162,7 +162,7 @@ export function RequestForm({
                   onValueChange={(value) => setValue("status_id" as keyof RequestFormData, value)}
                   disabled={isLoading}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="status_id">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>

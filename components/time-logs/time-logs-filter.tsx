@@ -68,7 +68,7 @@ export function TimeLogsFilter({
             value={currentCustomerId || "all"}
             onValueChange={(value) => updateFilter("customerId", value === "all" ? null : value)}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px]" aria-label="Filter by customer">
               <SelectValue placeholder="All Customers" />
             </SelectTrigger>
             <SelectContent>
@@ -89,7 +89,7 @@ export function TimeLogsFilter({
           value={currentContractId || "all"}
           onValueChange={(value) => updateFilter("contractId", value === "all" ? null : value)}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[180px]" aria-label="Filter by contract">
             <SelectValue placeholder="All Contracts" />
           </SelectTrigger>
           <SelectContent>
@@ -110,7 +110,7 @@ export function TimeLogsFilter({
             value={currentStaffId || "all"}
             onValueChange={(value) => updateFilter("staffId", value === "all" ? null : value)}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px]" aria-label="Filter by staff member">
               <SelectValue placeholder="All Staff" />
             </SelectTrigger>
             <SelectContent>
@@ -131,7 +131,7 @@ export function TimeLogsFilter({
           value={currentCategoryId || "all"}
           onValueChange={(value) => updateFilter("categoryId", value === "all" ? null : value)}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[180px]" aria-label="Filter by category">
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
           <SelectContent>

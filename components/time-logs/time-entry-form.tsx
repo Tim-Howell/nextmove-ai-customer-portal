@@ -144,7 +144,7 @@ export function TimeEntryForm({
               onValueChange={(value) => setValue("customer_id", value)}
               disabled={isLoading}
             >
-              <SelectTrigger>
+              <SelectTrigger id="customer_id">
                 <SelectValue placeholder="Select customer" />
               </SelectTrigger>
               <SelectContent>
@@ -167,7 +167,7 @@ export function TimeEntryForm({
               onValueChange={(value) => setValue("contract_id", value)}
               disabled={isLoading || !customerId}
             >
-              <SelectTrigger>
+              <SelectTrigger id="contract_id">
                 <SelectValue placeholder="Select contract" />
               </SelectTrigger>
               <SelectContent>
@@ -221,7 +221,7 @@ export function TimeEntryForm({
                     onValueChange={(value) => setValue("staff_id", value)}
                     disabled={isLoading}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="staff_id">
                       <SelectValue placeholder="Select staff member" />
                     </SelectTrigger>
                     <SelectContent>
@@ -276,7 +276,7 @@ export function TimeEntryForm({
               onValueChange={(value) => setValue("category_id", value)}
               disabled={isLoading}
             >
-              <SelectTrigger>
+              <SelectTrigger id="category_id">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>

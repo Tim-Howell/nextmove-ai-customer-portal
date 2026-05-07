@@ -217,10 +217,11 @@ export function IconPicker({ value, onChange, disabled }: IconPickerProps) {
 
   return (
     <div className="space-y-2">
-      <Label>Icon</Label>
+      <Label htmlFor="icon-picker">Icon</Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
+            id="icon-picker"
             variant="outline"
             role="combobox"
             aria-expanded={open}
@@ -236,6 +237,9 @@ export function IconPicker({ value, onChange, disabled }: IconPickerProps) {
         <PopoverContent className="w-80 p-0" align="start">
           <div className="p-2 border-b">
             <Input
+              type="search"
+              name="icon-search"
+              aria-label="Search icons"
               placeholder="Search icons..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
