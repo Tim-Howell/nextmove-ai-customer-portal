@@ -8,7 +8,7 @@ import { PriorityCard } from "@/components/priorities/priority-card";
 import { getPriorities } from "@/app/actions/priorities";
 import { getReferenceValues } from "@/app/actions/reference";
 import { PrioritiesFilter } from "@/components/priorities/priorities-filter";
-import type { Customer, ReferenceValue } from "@/types/database";
+import type { Customer, PriorityWithRelations, ReferenceValue } from "@/types/database";
 
 interface PrioritiesPageProps {
   searchParams: Promise<{
@@ -114,7 +114,9 @@ export default async function PrioritiesPage({ searchParams }: PrioritiesPagePro
           description={isInternal ? "Create priorities to track customer goals" : "No priorities have been set for your account"}
           action={isInternal ? { label: "New Priority", href: "/priorities/new" } : undefined}
         />
-      ) : (
+      ) : statusId ? (
+        // Flat list when a status filter is applied; grouping would be a single
+        // section anyway and visual headings just add noise.
         <CardGrid>
           {priorities.map((priority) => (
             <PriorityCard
@@ -130,7 +132,80 @@ export default async function PrioritiesPage({ searchParams }: PrioritiesPagePro
             />
           ))}
         </CardGrid>
+      ) : (
+        <PriorityGroups
+          priorities={priorities}
+          statuses={statuses}
+          isInternal={isInternal}
+        />
       )}
+    </div>
+  );
+}
+
+const STATUS_DISPLAY_ORDER = ["active", "next_up", "backlog", "complete"] as const;
+
+interface PriorityGroupsProps {
+  priorities: PriorityWithRelations[];
+  statuses: ReferenceValue[];
+  isInternal: boolean;
+}
+
+function PriorityGroups({ priorities, statuses, isInternal }: PriorityGroupsProps) {
+  const labelByValue = new Map(statuses.map((s) => [s.value, s.label]));
+
+  // Bucket by status value, then render in the configured display order so
+  // Active surfaces first regardless of how the data is ordered.
+  const buckets = new Map<string, typeof priorities>();
+  for (const p of priorities) {
+    const value = p.status?.value || "unknown";
+    const list = buckets.get(value) ?? [];
+    list.push(p);
+    buckets.set(value, list);
+  }
+
+  const orderedKeys = [
+    ...STATUS_DISPLAY_ORDER.filter((v) => buckets.has(v)),
+    ...Array.from(buckets.keys()).filter(
+      (v) => !STATUS_DISPLAY_ORDER.includes(v as (typeof STATUS_DISPLAY_ORDER)[number])
+    ),
+  ];
+
+  return (
+    <div className="space-y-8">
+      {orderedKeys.map((statusValue) => {
+        const group = buckets.get(statusValue) ?? [];
+        if (group.length === 0) return null;
+        const heading = labelByValue.get(statusValue) || statusValue;
+        return (
+          <section key={statusValue} aria-labelledby={`status-${statusValue}`} className="space-y-3">
+            <div className="flex items-baseline gap-3">
+              <h2
+                id={`status-${statusValue}`}
+                className="text-lg font-semibold text-foreground"
+              >
+                {heading}
+              </h2>
+              <span className="text-sm text-muted-foreground">{group.length}</span>
+            </div>
+            <CardGrid>
+              {group.map((priority) => (
+                <PriorityCard
+                  key={priority.id}
+                  id={priority.id}
+                  title={priority.title}
+                  icon={priority.icon}
+                  status={priority.status?.value || ""}
+                  statusLabel={priority.status?.label || "Unknown"}
+                  priorityLevel={priority.priority_level?.value || ""}
+                  priorityLevelLabel={priority.priority_level?.label || "Normal"}
+                  customerName={isInternal ? priority.customer?.name : undefined}
+                />
+              ))}
+            </CardGrid>
+          </section>
+        );
+      })}
     </div>
   );
 }

@@ -103,7 +103,7 @@ export function MyTimeTable({ entries }: MyTimeTableProps) {
                       {entry.contract?.name || "—"}
                     </TableCell>
                     <TableCell className="text-right font-medium">
-                      {Number(entry.hours).toFixed(1)}
+                      {Number(entry.hours).toFixed(2)}
                     </TableCell>
                     <TableCell className="truncate max-w-[320px]">
                       {entry.description || "—"}

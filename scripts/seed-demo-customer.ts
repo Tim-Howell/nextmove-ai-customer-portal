@@ -617,7 +617,7 @@ async function createPriorities(customerId: string, staffId: string, refs: any) 
   const levelBy = (v: string) =>
     refs.priorityLevels.find((l: any) => l.value === v)!;
 
-  // 5 active + 5 mix (2 backlog, 1 next_up, 1 complete, 1 on_hold)
+  // 5 active + 5 mix (3 backlog, 1 next_up, 1 complete)
   const plan: Array<{ status: string; level: string }> = [
     { status: "active", level: "high" },
     { status: "active", level: "high" },
@@ -626,15 +626,14 @@ async function createPriorities(customerId: string, staffId: string, refs: any) 
     { status: "active", level: "low" },
     { status: "backlog", level: "medium" },
     { status: "backlog", level: "low" },
+    { status: "backlog", level: "low" },
     { status: "next_up", level: "high" },
     { status: "complete", level: "medium" },
-    { status: "on_hold", level: "low" },
   ];
 
   const rows = plan.map((p, i) => {
     const tpl = PRIORITY_TEMPLATES[i]!;
-    // Due date: active/next_up => upcoming; backlog => further out; complete => past; on_hold => TBD null
-    let due: string | null = null;
+    // Due date: active/next_up => upcoming; backlog => further out; complete => past
     const daysOffset =
       p.status === "active"
         ? rand(3, 30)
@@ -642,14 +641,10 @@ async function createPriorities(customerId: string, staffId: string, refs: any) 
           ? rand(7, 21)
           : p.status === "backlog"
             ? rand(30, 90)
-            : p.status === "complete"
-              ? -rand(7, 60)
-              : 0;
-    if (p.status !== "on_hold") {
-      const d = new Date();
-      d.setDate(d.getDate() + daysOffset);
-      due = dateISO(d);
-    }
+            : -rand(7, 60);
+    const d = new Date();
+    d.setDate(d.getDate() + daysOffset);
+    const due: string = dateISO(d);
     return {
       customer_id: customerId,
       title: tpl.title,

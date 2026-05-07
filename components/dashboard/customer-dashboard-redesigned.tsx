@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FileText, Clock, Flag, MessageSquare, Plus, Users, Building, Mail, Phone } from "lucide-react";
+import { FileText, Clock, Flag, MessageSquare, Plus, Users, Mail, Phone } from "lucide-react";
 import { getContracts } from "@/app/actions/contracts";
 import {
   getCustomerHoursThisMonth,
@@ -19,28 +19,30 @@ import { getOpenPrioritiesCount } from "@/app/actions/priorities";
 import { getOpenRequestsCount } from "@/app/actions/requests";
 import { getRecentPriorities } from "@/app/actions/reports";
 import { CONTRACT_STATUS_VALUES } from "@/lib/validations/contract";
-import { getCustomers } from "@/app/actions/customers";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateOnly } from "@/lib/utils/date";
 
 interface CustomerDashboardProps {
-  customerName: string;
   customerId: string;
 }
 
-export async function CustomerDashboardRedesigned({ customerName, customerId }: CustomerDashboardProps) {
-  const [{ data: contracts }, hoursThisMonth, openPriorities, openRequests, recentPriorities] = await Promise.all([
+export async function CustomerDashboardRedesigned({ customerId }: CustomerDashboardProps) {
+  const [
+    { data: contracts },
+    hoursThisMonth,
+    openPriorities,
+    openRequests,
+    recentPriorities,
+    customerContacts,
+  ] = await Promise.all([
     getContracts({ customerId }),
     getCustomerHoursThisMonth(customerId),
     getOpenPrioritiesCount(customerId),
     getOpenRequestsCount(customerId),
     getRecentPriorities(customerId, 5),
+    getCustomerContacts(customerId),
   ]);
 
-  // Get customer details including logo and contacts
-  const customers = await getCustomers();
-  const customer = customers.find(c => c.id === customerId);
-  
   // Get NextMove AI contacts (staff assigned to this customer)
   const staffContacts = await getStaffContacts(customerId);
 
@@ -50,31 +52,6 @@ export async function CustomerDashboardRedesigned({ customerName, customerId }: 
 
   return (
     <div className="space-y-6">
-      {/* Customer Info Card */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-start space-x-4">
-            {customer?.logo_url ? (
-              <div className="h-16 w-16 rounded-full overflow-hidden bg-muted flex items-center justify-center">
-                <img
-                  src={customer.logo_url}
-                  alt={customerName}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-            ) : (
-              <div className="h-16 w-16 bg-muted rounded-full flex items-center justify-center">
-                <Building className="h-8 w-8 text-muted-foreground" />
-              </div>
-            )}
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold text-primary">{customerName}</h1>
-              <p className="text-muted-foreground">Welcome back! Here's your project overview.</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Summary Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -128,7 +105,61 @@ export async function CustomerDashboardRedesigned({ customerName, customerId }: 
         </Link>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Customer's own team */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Your Team
+            </CardTitle>
+            <Link href="/contacts">
+              <Button variant="ghost" size="sm">
+                View All
+              </Button>
+            </Link>
+          </CardHeader>
+          <CardContent>
+            {customerContacts.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                No contacts on file yet. Contact your account manager to add a teammate.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {customerContacts.slice(0, 5).map((contact) => {
+                  const initials = contact.full_name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .filter(Boolean)
+                    .slice(0, 2)
+                    .join("")
+                    .toUpperCase();
+                  return (
+                    <div key={contact.id} className="flex items-center space-x-3">
+                      <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                        <span className="text-sm font-medium">{initials}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">{contact.full_name}</p>
+                        <p className="text-sm text-muted-foreground truncate">
+                          {contact.title || "Team Member"}
+                        </p>
+                      </div>
+                      {contact.email && (
+                        <Button variant="ghost" size="sm" asChild>
+                          <a href={`mailto:${contact.email}`}>
+                            <Mail className="h-4 w-4" />
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* NextMove AI Contacts */}
         <Card>
           <CardHeader>
@@ -261,16 +292,16 @@ export async function CustomerDashboardRedesigned({ customerName, customerId }: 
                           priority.priority_level?.value === 'medium' ? 'default' :
                           'secondary'
                         }>
-                          {priority.priority_level?.label || "â"}
+                          {priority.priority_level?.label || "—"}
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{priority.status?.label || "â"}</Badge>
+                        <Badge variant="outline">{priority.status?.label || "—"}</Badge>
                       </TableCell>
                       <TableCell>
                         {priority.due_date
                           ? formatDateOnly(priority.due_date)
-                          : "â"}
+                          : "—"}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -344,4 +375,31 @@ async function getStaffContacts(customerId: string) {
     .eq("is_active", true);
   
   return contacts || [];
+}
+
+interface CustomerContactSummary {
+  id: string;
+  full_name: string;
+  title: string | null;
+  email: string | null;
+}
+
+async function getCustomerContacts(
+  customerId: string
+): Promise<CustomerContactSummary[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("customer_contacts")
+    .select("id, full_name, title, email")
+    .eq("customer_id", customerId)
+    .eq("is_active", true)
+    .order("full_name");
+
+  if (error) {
+    console.error("Error fetching customer contacts:", error);
+    return [];
+  }
+
+  return (data || []) as CustomerContactSummary[];
 }

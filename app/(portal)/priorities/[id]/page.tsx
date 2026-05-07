@@ -49,8 +49,6 @@ function getStatusBadgeVariant(statusValue: string): "default" | "secondary" | "
       return "secondary";
     case "complete":
       return "outline";
-    case "on_hold":
-      return "destructive";
     default:
       return "secondary";
   }

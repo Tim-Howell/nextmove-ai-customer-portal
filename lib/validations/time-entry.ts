@@ -1,5 +1,21 @@
 import { z } from "zod";
 
+/**
+ * Round a decimal-hours value UP to the next 15-minute increment.
+ *
+ * Billing policy: we always bill in 15-minute blocks and any partial
+ * block rounds up. Examples: 0.10 -> 0.25, 0.60 -> 0.75, 1.00 -> 1.00.
+ *
+ * A tiny epsilon protects against float noise so an entry that is
+ * already a clean quarter (e.g. 0.5000000001 from form coercion) does
+ * not get bumped to the next block.
+ */
+function ceilToFifteenMinutes(hours: number): number {
+  const epsilon = 1e-9;
+  const blocks = Math.ceil(hours * 4 - epsilon);
+  return blocks / 4;
+}
+
 export const timeEntrySchema = z.object({
   customer_id: z.string().uuid({ message: "Customer is required" }),
   contract_id: z.string().uuid({ message: "Contract is required" }),
@@ -7,7 +23,8 @@ export const timeEntrySchema = z.object({
   hours: z.coerce
     .number()
     .positive({ message: "Hours must be greater than 0" })
-    .max(24, { message: "Hours cannot exceed 24" }),
+    .max(24, { message: "Hours cannot exceed 24" })
+    .transform(ceilToFifteenMinutes),
   category_id: z.string().uuid({ message: "Category is required" }),
   description: z.string().nullable().optional(),
   internal_notes: z.string().nullable().optional(),
@@ -34,7 +51,8 @@ export const quickTimeEntrySchema = z.object({
   hours: z.coerce
     .number()
     .positive({ message: "Hours must be greater than 0" })
-    .max(24, { message: "Hours cannot exceed 24" }),
+    .max(24, { message: "Hours cannot exceed 24" })
+    .transform(ceilToFifteenMinutes),
   category_id: z.string().uuid({ message: "Category is required" }),
   description: z.string().nullable().optional(),
   is_billable: z.boolean(),

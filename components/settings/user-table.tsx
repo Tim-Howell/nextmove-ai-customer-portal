@@ -111,7 +111,7 @@ export function UserTable({ users }: UserTableProps) {
             </TableCell>
             <TableCell>
               <div className="text-sm text-muted-foreground">
-                {user.title || "â"}
+                {user.title || "—"}
               </div>
             </TableCell>
             <TableCell>{user.email}</TableCell>

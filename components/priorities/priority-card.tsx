@@ -46,8 +46,6 @@ export function PriorityCard({
         return "bg-emerald-100 text-emerald-700 hover:bg-emerald-100";
       case "in_progress":
         return "bg-sky-100 text-sky-700 hover:bg-sky-100";
-      case "on_hold":
-        return "bg-amber-100 text-amber-700 hover:bg-amber-100";
       default:
         return "bg-muted text-muted-foreground hover:bg-muted";
     }

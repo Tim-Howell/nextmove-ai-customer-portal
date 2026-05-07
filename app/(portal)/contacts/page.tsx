@@ -30,13 +30,16 @@ interface Contact {
   } | null;
 }
 
-async function getContacts(): Promise<Contact[]> {
+async function getContacts(opts: {
+  customerId?: string;
+}): Promise<Contact[]> {
   const supabase = await createClient();
   const showDemoData = await getShowDemoData();
 
   let query = supabase
     .from("customer_contacts")
-    .select(`
+    .select(
+      `
       id,
       full_name,
       email,
@@ -45,8 +48,13 @@ async function getContacts(): Promise<Contact[]> {
       is_active,
       portal_access_enabled,
       customer:customers!customer_contacts_customer_id_fkey(id, name, is_demo)
-    `)
+    `
+    )
     .order("full_name");
+
+  if (opts.customerId) {
+    query = query.eq("customer_id", opts.customerId);
+  }
 
   const { data, error } = await query;
 
@@ -66,10 +74,10 @@ async function getContacts(): Promise<Contact[]> {
     portal_access_enabled: row.portal_access_enabled,
     customer: row.customer || null,
   }));
-  
+
   // Filter demo data if toggle is off
   if (!showDemoData) {
-    contacts = contacts.filter(c => !c.customer?.is_demo);
+    contacts = contacts.filter((c) => !c.customer?.is_demo);
   }
 
   return contacts;
@@ -77,20 +85,32 @@ async function getContacts(): Promise<Contact[]> {
 
 export default async function ContactsPage() {
   const profile = await getProfile();
-  
-  // Only staff and admins can access this page
-  if (profile?.role !== "admin" && profile?.role !== "staff") {
+
+  if (!profile) {
+    redirect("/login");
+  }
+
+  const isInternal = profile.role === "admin" || profile.role === "staff";
+
+  // Customer users see only their own customer's contacts; internal users see all.
+  if (!isInternal && !profile.customer_id) {
     redirect("/dashboard");
   }
 
-  const contacts = await getContacts();
+  const contacts = await getContacts({
+    customerId: isInternal ? undefined : profile.customer_id ?? undefined,
+  });
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-primary">All Contacts</h1>
+        <h1 className="text-3xl font-bold text-primary">
+          {isInternal ? "All Contacts" : "Contacts"}
+        </h1>
         <p className="text-muted-foreground">
-          View all customer contacts across all customers
+          {isInternal
+            ? "View all customer contacts across all customers"
+            : "People on your team who can engage with NextMove AI"}
         </p>
       </div>
 
@@ -98,7 +118,7 @@ export default async function ContactsPage() {
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
-            <TableHead>Customer</TableHead>
+            {isInternal && <TableHead>Customer</TableHead>}
             <TableHead>Title</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Phone</TableHead>
@@ -109,11 +129,15 @@ export default async function ContactsPage() {
         <TableBody>
           {contacts.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="p-0">
+              <TableCell colSpan={isInternal ? 7 : 6} className="p-0">
                 <EmptyState
                   icon={Users}
                   title="No contacts found"
-                  description="No customer contacts have been created yet"
+                  description={
+                    isInternal
+                      ? "No customer contacts have been created yet"
+                      : "Your team has no contacts on file yet. Contact your account manager to add one."
+                  }
                 />
               </TableCell>
             </TableRow>
@@ -121,32 +145,47 @@ export default async function ContactsPage() {
             contacts.map((contact) => (
               <TableRow key={contact.id}>
                 <TableCell className="font-medium">
-                  <Link
-                    href={`/customers/${contact.customer?.id}/contacts/${contact.id}/edit`}
-                    className="hover:underline"
-                  >
-                    {contact.full_name}
-                  </Link>
+                  {isInternal ? (
+                    <Link
+                      href={`/customers/${contact.customer?.id}/contacts/${contact.id}/edit`}
+                      className="hover:underline"
+                    >
+                      {contact.full_name}
+                    </Link>
+                  ) : (
+                    contact.full_name
+                  )}
                 </TableCell>
-                <TableCell>
-                  <Link
-                    href={`/customers/${contact.customer?.id}`}
-                    className="hover:underline text-muted-foreground"
-                  >
-                    {contact.customer?.name || "—"}
-                  </Link>
-                </TableCell>
+                {isInternal && (
+                  <TableCell>
+                    <Link
+                      href={`/customers/${contact.customer?.id}`}
+                      className="hover:underline text-muted-foreground"
+                    >
+                      {contact.customer?.name || "—"}
+                    </Link>
+                  </TableCell>
+                )}
                 <TableCell>{contact.title || "—"}</TableCell>
                 <TableCell>
                   {contact.email ? (
-                    <a href={`mailto:${contact.email}`} className="hover:underline">
+                    <a
+                      href={`mailto:${contact.email}`}
+                      className="hover:underline"
+                    >
                       {contact.email}
                     </a>
-                  ) : "—"}
+                  ) : (
+                    "—"
+                  )}
                 </TableCell>
                 <TableCell>{contact.phone || "—"}</TableCell>
                 <TableCell>
-                  <Badge variant={contact.portal_access_enabled ? "default" : "outline"}>
+                  <Badge
+                    variant={
+                      contact.portal_access_enabled ? "default" : "outline"
+                    }
+                  >
                     {contact.portal_access_enabled ? "Enabled" : "Disabled"}
                   </Badge>
                 </TableCell>

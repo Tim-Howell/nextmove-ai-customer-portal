@@ -15,7 +15,7 @@ export default async function CustomerInfoPage() {
   const internalCards = [
     {
       title: "Contracts",
-      description: "View and manage customer contracts, billing arrangements, and service agreements.",
+      description: "View and manage customer contracts, billing arrangements, and services.",
       href: "/contracts",
       icon: FileText,
     },
@@ -36,9 +36,15 @@ export default async function CustomerInfoPage() {
   const customerCards = [
     {
       title: "Contracts",
-      description: "View your active contracts and service agreements with NextMove AI.",
+      description: "View your contracted services with NextMove AI.",
       href: "/contracts",
       icon: FileText,
+    },
+    {
+      title: "Contacts",
+      description: "View the people on your team who can engage with NextMove AI.",
+      href: "/contacts",
+      icon: Users,
     },
     {
       title: "Priorities",

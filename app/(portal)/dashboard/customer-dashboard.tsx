@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CustomerDashboardRedesigned } from "@/components/dashboard/customer-dashboard-redesigned";
+import { CustomerWelcomeBar } from "@/components/dashboard/customer-welcome-bar";
 import { DashboardFilterBar } from "@/components/dashboard/dashboard-filter-bar";
 import { CustomerTimeChart } from "@/components/dashboard/customer-time-chart";
 import { CustomerBurndownCard } from "@/components/dashboard/customer-burndown-card";
@@ -60,6 +61,8 @@ export async function CustomerDashboard({
 
   return (
     <div className="space-y-6">
+      <CustomerWelcomeBar customerName={customerName} customerId={customerId} />
+
       <Card>
         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle className="text-xl">Hours over time</CardTitle>
@@ -81,7 +84,7 @@ export async function CustomerDashboard({
             id="burndowns-heading"
             className="text-lg font-semibold text-foreground"
           >
-            Hours by contract
+            Hourly contracts snapshot
           </h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {burndowns.map((burndown) => (
@@ -94,10 +97,7 @@ export async function CustomerDashboard({
         </section>
       )}
 
-      <CustomerDashboardRedesigned
-        customerName={customerName}
-        customerId={customerId}
-      />
+      <CustomerDashboardRedesigned customerId={customerId} />
     </div>
   );
 }

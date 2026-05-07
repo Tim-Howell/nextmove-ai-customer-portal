@@ -147,7 +147,7 @@ function TimeEntryListContent({
                     {entry.description || "—"}
                   </TableCell>
                   <TableCell className="text-right font-medium">
-                    {Number(entry.hours).toFixed(1)}
+                    {Number(entry.hours).toFixed(2)}
                     {!entry.is_billable && (
                       <span className="ml-1 text-xs text-muted-foreground">(NB)</span>
                     )}

@@ -261,7 +261,7 @@ export async function InternalDashboard({ displayName }: InternalDashboardProps)
                         {entry.customer?.name || "—"}
                       </TableCell>
                       <TableCell className="text-right">
-                        {Number(entry.hours).toFixed(1)}
+                        {Number(entry.hours).toFixed(2)}
                       </TableCell>
                     </TableRow>
                   ))}

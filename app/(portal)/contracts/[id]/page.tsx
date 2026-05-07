@@ -219,7 +219,7 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
                       {entry.description || "—"}
                     </TableCell>
                     <TableCell className="text-right font-medium">
-                      {Number(entry.hours).toFixed(1)}
+                      {Number(entry.hours).toFixed(2)}
                     </TableCell>
                   </TableRow>
                 ))

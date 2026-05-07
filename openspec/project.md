@@ -683,12 +683,13 @@ The MVP is successful when:
 - [x] RLS for requests scoped by customer_id ✓ Phase 20 (verified in RLS tests) 
 
 ## 15. Open Questions / Future Enhancements
-- support multiple customer organizations per user
+- complete security and RLS review. 
 - approval workflow for customer-submitted priorities
 - richer request conversations or comments — **scoped & deferred**, see [`openspec/backlog/requests-module-overhaul.md`](./backlog/requests-module-overhaul.md)
 - CSV exports
 - customer-specific branding
-- email digests
-- external integrations
-- invoice visibility
-- SLA tracking
+- email notifications and digests
+- documentation improvements, uploading documents, etc.
+- external integrations (Mercury, meeting scheduling, etc.)
+- Enhance priorities to include a SOW and add a customer priority approval workflow. 
+- Meeting tracking and management with email digests. Track meetings and recaps in the system instead of via email. 

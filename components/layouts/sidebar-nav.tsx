@@ -49,6 +49,7 @@ const internalReportsItems: NavItem[] = [
 // Customer navigation structure
 const customerInfoItems: NavItem[] = [
   { title: "Contracts", href: "/contracts" },
+  { title: "Contacts", href: "/contacts" },
   { title: "Priorities", href: "/priorities" },
   { title: "Requests", href: "/requests" },
 ];

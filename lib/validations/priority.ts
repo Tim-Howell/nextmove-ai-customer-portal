@@ -18,7 +18,6 @@ export const PRIORITY_STATUS_VALUES = {
   NEXT_UP: "next_up",
   ACTIVE: "active",
   COMPLETE: "complete",
-  ON_HOLD: "on_hold",
 } as const;
 
 export const PRIORITY_LEVEL_VALUES = {

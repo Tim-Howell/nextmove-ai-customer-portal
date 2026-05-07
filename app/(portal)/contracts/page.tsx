@@ -180,8 +180,8 @@ export default async function ContractsPage({ searchParams }: ContractsPageProps
           <h1 className="text-3xl font-bold text-primary">Contracts</h1>
           <p className="text-muted-foreground">
             {isInternal
-              ? "Manage customer contracts and agreements"
-              : "View your contracts and agreements"}
+              ? "Manage customer contracts and services"
+              : "View your contracted services"}
           </p>
         </div>
         {isInternal && (
