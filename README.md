@@ -4,17 +4,10 @@ A secure web application for NextMove AI staff and customer staff to manage cust
 
 ## Project Status
 
-**MVP Progress: Phases 1-20 Complete** ✅
-
-| Phase | Status | Description |
-|-------|--------|-------------|
-| 0-12 | ✅ Complete | Core functionality (auth, customers, contracts, time, priorities, requests, dashboards, reports, files, notifications) |
-| 13 | ✅ Complete | Quality, Security, and Seed Data |
-| 14-15 | ✅ Complete | Customer UX Refinement, Portal Enhancements |
-| 16 | ✅ Complete | Archive Capabilities (cascade archive, user access control) |
-| 17 | ✅ Complete | Contract Types Enhancement (billing models, hours buckets, rollover) |
-| 18 | ✅ Complete | Audit Logging & Error Handling |
-| 20 | ✅ Complete | Validation, Cleanup, Testing, and Go-Live Prep |
+The portal is in production. New work moves through the OpenSpec workflow
+in `openspec/changes/`. The canonical product spec lives in
+[`openspec/project.md`](openspec/project.md), which also tracks the
+future-enhancements backlog.
 
 ## Tech Stack
 
@@ -314,13 +307,18 @@ Status-color tints (e.g. `bg-emerald-100 text-emerald-700`) are intentionally al
 
 ## Database Migrations
 
-Migrations are in `supabase/migrations/`. Key migrations:
-- `20240422000001_archive_capabilities.sql` - Archive fields and triggers
-- `20240422000002_audit_logging.sql` - Audit log table and triggers
+Schema migrations live in `supabase/migrations/` and are applied in
+filename order. To push outstanding migrations to the linked Supabase
+project:
 
-Run migrations:
 ```bash
 npx supabase db push
+```
+
+To regenerate the TypeScript types from the live schema after a migration:
+
+```bash
+npx supabase gen types typescript --linked > types/database.ts
 ```
 
 ## Development Workflow

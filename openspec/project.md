@@ -1,102 +1,112 @@
 # Project: NextMove AI Customer Portal
 
 ## 1. Project Summary
-Build a secure web application for NextMove AI staff and customer staff to manage customer information, contracts, time logs, priorities, requests, and reporting.
 
-This project will be built from scratch using:
-- **Windsurf + OpenSpec** for product and implementation workflow
-- **Supabase** for database, authentication, and file storage
-- **Vercel** for hosting
-- **Resend** for transactional email notifications in the initial implementation, unless a different provider is selected later
+A secure web application for NextMove AI staff and customer staff to manage
+customer information, contracts, time logs, priorities, requests, and
+reporting.
 
-This system is intended to serve as:
-1. A practical MVP for NextMove AI's side business
-2. A reusable reference architecture and learning vehicle for future organizational use
+The system is intentionally structured to also serve as a reusable reference
+architecture: a small, opinionated stack that other internal tools can be
+patterned after.
+
+Stack:
+- **Next.js (App Router) + TypeScript** for the application
+- **Supabase** for Postgres, Auth, and Storage
+- **Vercel** for hosting and preview deployments
+- **Resend** for transactional email
+- **OpenSpec** for change proposals and spec evolution (`openspec/`)
 
 ## 2. Product Goals
-The MVP should:
-- Provide a clean internal and customer-facing portal
-- Support secure login and role-based access
-- Allow internal users to manage customers, contracts, time logs, priorities, and requests
-- Allow customer users to view their own data and submit requests
-- Calculate hours used and hours remaining for time-based contracts
-- Provide useful dashboards and simple filtered reporting
-- Be structured for future production hardening and reuse in a work setting
 
-## 3. Non-Goals for MVP
-The MVP should **not** include:
-- Single Sign-On (SSO)
-- complex workflow automation
-- advanced analytics or BI
-- invoice generation
-- payment processing
-- chat or messaging
-- customer self-service contract editing
-- custom API key management UI
-- broad third-party integrations
-- mobile app
-- offline support
+- A clean internal portal and a customer-facing portal sharing one codebase
+- Secure login with role-based access; customer users scoped to a single
+  customer
+- Internal users manage customers, contracts, time logs, priorities, and
+  requests; customer users view their own data and submit requests
+- Hours-used / hours-remaining tracking on time-based contracts
+- Useful summary dashboards plus filterable tabular reports
+- Auditable, archive-aware, and safe by default (RLS at the data layer)
 
-## 4. Recommended Email Provider
-Use **Resend** for transactional email in the MVP. Its current free tier includes **3,000 emails/month** with a **100 emails/day** limit, which is comfortably above the expected volume for this project. Postmark also offers a long-running free developer plan, but it is limited to **100 emails/month**. For this project's expected volume, Resend is the better default. citeturn328241search0turn328241search15turn328241search1turn328241search7
+## 3. Out of scope
 
-MVP email use cases:
-- invite customer user
-- password reset
-- optional notification when a new request is submitted
-- optional notification when request status changes
+The portal is deliberately not trying to be:
+- a Single Sign-On / IdP integration target
+- a workflow engine or BPM tool
+- a BI / analytics platform
+- an invoicing or payments system
+- a chat or messaging product
+- a customer self-service contract editor
+- a public API surface
+- a native mobile app
 
-## 5. Primary Users and Roles
+Those concerns are handled by other tools or deferred to the future-enhancements
+list at the end of this document.
 
-### 5.1 NextMove AI Staff
+## 4. Email
+
+Transactional email is sent through **Resend**. Magic-link / invitation /
+password-reset emails are delivered via Supabase Auth using the configured
+Resend SMTP credentials. Direct application emails (e.g. notifications to
+internal users) use the Resend API via `lib/email/`.
+
+Email use cases:
+- invite a customer user (Supabase Auth → Resend)
+- magic-link sign-in (Supabase Auth → Resend)
+- password reset (Supabase Auth → Resend)
+- optional: notify internal users when a new request is submitted
+- optional: notify customers when a request status changes
+
+See `docs/RESEND_SETUP.md` for the operational setup checklist.
+
+## 5. Roles
+
+### NextMove AI Staff
+
 Can:
-- create and manage customers
-- create and manage customer contacts
+- create and manage customers and customer contacts
 - create and manage customer portal users
 - create and manage contracts
 - create and manage time entries
-- create and manage priorities
-- create and manage customer requests
+- create and manage priorities and customer requests
 - view dashboards and reports across all customers
 
-### 5.2 NextMove AI Admin
-Can do everything Staff can do, plus:
-- manage internal users
-- assign internal roles
-- manage system reference data
-- manage portal settings
-- manage feature flags or future global configuration
+### NextMove AI Admin
 
-### 5.3 Customer Staff
-Can only access data tied to their own customer account.
+Everything Staff can do, plus:
+- manage internal users and assign internal roles
+- manage system reference data (statuses, levels, categories)
+- manage portal settings (branding, etc.)
+- manage future feature flags / global configuration
 
-Can:
+### Customer Staff (`customer_user`)
+
+Scoped to exactly one customer. Can:
 - log in to the portal
-- view customer profile information
+- view their customer profile and assigned NextMove AI contacts
 - view active and past contracts
-- view hours used and remaining, where applicable
+- view hours used and remaining where applicable
 - view time logs
 - view priorities
-- submit new priorities if enabled
-- submit requests
-- view request status
-- run simple customer-specific reports
+- submit requests and view their status
+- view their own team's contacts (read-only)
 
 ## 6. Core User Stories
 
-### Internal User Stories
+### Internal
 - As internal staff, I can create a customer account and customer contacts.
 - As internal staff, I can enable portal access for selected customer contacts.
 - As internal staff, I can create one or more contracts for a customer.
-- As internal staff, I can log time against a customer and optionally a contract.
+- As internal staff, I can log time against a customer and a contract.
 - As internal staff, I can track priorities for each customer.
 - As internal staff, I can review customer-submitted requests.
 - As internal staff, I can see a portfolio dashboard across all customers.
 
-### Customer User Stories
+### Customer
 - As a customer user, I can securely log in.
-- As a customer user, I can view my customer profile and assigned NextMove AI contacts.
-- As a customer user, I can view my contracts and whether hours remain.
+- As a customer user, I can view my customer profile and assigned NextMove AI
+  contacts.
+- As a customer user, I can view my contracts and remaining hours.
 - As a customer user, I can view detailed time logs.
 - As a customer user, I can submit requests to NextMove AI.
 - As a customer user, I can see the status of priorities and requests.
@@ -104,592 +114,301 @@ Can:
 ## 7. Core Modules
 
 ### 7.1 Authentication and Access Control
-Requirements:
-- Email/password authentication using Supabase Auth
-- Role-based access control
-- Customer users scoped to exactly one customer account for MVP
-- Internal users can access all customer accounts
-- Invitation flow for customer users
-- Password reset flow
-
-Suggested roles:
-- `admin`
-- `staff`
-- `customer_user`
+- Supabase Auth with Magic Link (primary) and email/password (fallback)
+- Roles: `admin`, `staff`, `customer_user`
+- Customer users scoped to one customer via `customer_contacts`
+- Middleware enforces role-aware route protection, archive checks, and
+  `portal_access_enabled` checks
+- RLS policies enforce customer scoping at the database level
 
 ### 7.2 Customer Profiles
-Each customer profile should include:
-- customer name
-- status
-- primary customer contact
-- additional customer contacts
-- assigned NextMove AI primary contact
-- assigned NextMove AI secondary contact
-- notes
-- timestamps
-
-Nice-to-have but optional in MVP:
-- industry
-- website
-- renewal date
-- tags
+Customer fields:
+- name, status, primary contact role assignments (POC, billing primary /
+  secondary), assigned NextMove AI primary / secondary contacts
+- description / notes (internal-only)
+- demo flag (`is_demo`)
+- archive timestamp (`archived_at`)
+- branding fields (logo, etc.)
 
 ### 7.3 Customer Contacts
-Store customer-specific people records:
-- full name
-- title
-- email
-- phone
-- active/inactive flag
-- portal access enabled flag
+- full name, title, email, phone
+- active flag
+- portal access enabled flag (gates login)
 - linked customer
-- notes
+- internal notes (internal-only)
 
 ### 7.4 Contract Management
-Each contract should include:
-- customer
-- contract name
-- contract type
-- status
-- start date
-- end date
-- total hours (nullable)
-- hours used (computed)
-- hours remaining (computed)
-- description / notes
+Contracts are typed and behavior-flagged (see `contract_types`):
+- name, customer, status, type, start/end date, description
+- billing config: `hours_per_period`, `billing_day`, `total_hours`,
+  `rollover_enabled`, `rollover_expiration_days`, `max_rollover_hours`,
+  `fixed_cost`
+- archive timestamp
 
-Reference values:
-- Contract Types:
-  - Hours Subscription
-  - Hours Bucket
-  - Fixed Cost
-  - Service Subscription
-- Contract Statuses:
-  - Draft
-  - Active
-  - Expired
-  - Closed
+Contract behavior flags (driven by `contract_types`):
+- `tracks_hours`, `has_hour_limit`, `is_recurring`, `supports_rollover`
 
-Rules:
-- hour-based contracts should display used and remaining hours
-- fixed cost / service subscription contracts may omit hour accounting logic or display informational values only
+Contract types shipped:
+- Hours Subscription (recurring monthly hours, optional rollover)
+- Hours Bucket (fixed pool of hours)
+- Fixed Cost
+- Service Subscription
+- On-Demand / No Contract (auto-created default)
+
+Contract statuses (manual):
+- Active, Expired, Archived
 
 ### 7.5 Time Logging
-Time entries should include:
-- date
-- internal staff user
-- customer
-- contract (optional if needed)
-- category
-- hours
-- description
-- billable / non-billable flag (optional for MVP but useful)
-- created at / updated at
+Time entries:
+- date, internal staff user, customer, contract, category, description
+- hours (always rounded **up** to the nearest 15-minute increment on save)
+- billable / non-billable flag
+- timestamps
 
-Reference values:
-- Administrative
-- Research
-- Technical
-- Meetings / Presentations
+Categories shipped: Administrative, Research, Technical, Meetings /
+Presentations.
 
 Rules:
-- time entries roll up into contract hours used where applicable
-- customer users can view, but not edit, time entries
+- time entries roll up into contract hours used where the contract type
+  tracks hours
+- customer users can view, never edit, time entries
 
 ### 7.6 Priorities
 A priority represents planned or active customer work.
 
-Fields:
-- customer
-- title
-- description
-- status
-- priority level
-- due date (optional)
-- created by
-- updated by
-- timestamps
+Fields: customer, title, description, status, priority level, due date,
+created/updated by, timestamps, optional icon.
 
-Reference values:
-- Priority Status:
-  - Backlog
-  - Next Up
-  - Active
-  - Complete
-  - On Hold
-- Priority Level:
-  - High
-  - Medium
-  - Low
+Status reference values: Backlog, Next Up, Active, Complete.
+Level reference values: High, Medium, Low.
 
-MVP permissions:
-- internal users can create/edit/delete
-- customer users can view
-- optional: customer users can submit new priorities as suggestions
+Permissions:
+- internal users create / edit / delete
+- customer users view (read-only)
+
+The priorities list groups by status (Active → Next Up → Backlog → Complete)
+when no status filter is applied; otherwise it renders flat.
 
 ### 7.7 Requests
 A request represents a customer-submitted item needing review or action.
 
-Fields:
-- customer
-- submitter
-- title
-- description
-- status
-- created at
-- updated at
-- internal notes (internal only)
+Fields: customer, submitter, title, description, status, internal notes
+(internal-only), timestamps.
 
-Reference values:
-- New
-- In Review
-- In Progress
-- Closed
+Status reference values: New, In Review, In Progress, Closed.
 
 Permissions:
-- customer users can create and view their own customer's requests
-- internal users can manage all requests
+- customer users create and view their own customer's requests
+- internal users manage all requests
 
-### 7.8 Dashboards
+### 7.8 Internal Notes (polymorphic)
+A single `internal_notes` table stores threaded internal-only notes attached
+to customers, priorities, and requests. Customer users never see these notes.
 
-#### Internal Dashboard
-Display:
-- customer count
-- active contracts
-- total hours used and remaining
-- open requests
-- active priorities
-- recent activity
+### 7.9 Audit Logging
+All CRUD on audited tables writes to `audit_logs` via Postgres triggers,
+capturing the changing user, action, and JSON before/after values. Admins
+view changes at `/reports/changes`.
 
-#### Customer Dashboard
-Display:
-- active contracts
-- remaining hours
-- recent time logs
-- open priorities
-- open requests
-- assigned NextMove AI contacts
+### 7.10 Dashboards
 
-### 7.9 Reporting
-MVP reporting should be filterable tables, not advanced dashboards.
+**Internal dashboard:** customer count, active contracts, total hours
+used / remaining, open requests, active priorities, recent activity, and a
+trailing-90-day hours-by-staff chart.
 
-Internal filters:
-- customer
-- contract
-- date range
-- internal staff user
-- time category
+**Customer dashboard:** welcome bar, hours-over-time chart with bucket /
+billable / contract filters, hourly contracts snapshot (per-contract
+burndown), summary tiles (hours this month, open requests, active priorities,
+active contracts), Your Team (customer's own contacts), Your NextMove AI
+Team (assigned staff), active contracts list, active priorities table,
+quick actions.
 
-Customer filters:
-- contract
-- date range
-- time category
+### 7.11 Reporting
+Filterable tabular reports rather than a BI surface. Internal filters
+include customer, contract, date range, internal staff user, time category,
+billable. Customer filters are scoped to their own customer. CSV export is
+available on every report.
 
-Exports:
-- CSV export is nice-to-have, not required for MVP
-
-### 7.10 Admin Settings
-Admins can manage:
+### 7.12 Admin Settings
+Admin-only screens manage:
 - contract types
-- contract statuses
-- time entry categories
-- priority statuses
-- priority levels
-- request statuses
+- reference values (statuses, levels, categories)
 - internal users and roles
+- portal branding (org name, logo, theme tokens)
+- feature flags / future global configuration
 
-Keep admin settings simple and table-driven.
+### 7.13 Impersonation ("View as Customer")
+Admins can enter a read-only view of a customer's portal from the customer
+detail page. While impersonating, all mutating server actions short-circuit
+with a friendly error and a sticky banner is shown across the portal.
 
 ## 8. Functional Requirements
 
 ### 8.1 General
 - Responsive web app
-- Clean modern UI
+- Clean modern UI built on shadcn/ui + Tailwind
 - Audit-friendly timestamps on key records
-- Soft delete or archive where practical for core records
+- Soft-delete / archive for customers, contracts, contacts; cascade archive
+  from customer
 - Confirmation before destructive actions
 
 ### 8.2 Security
-- Role-based route protection
-- Row-level security in Supabase
-- Customer scoping enforced at database and app layers
-- Files stored securely with access controls
-- Sensitive internal notes hidden from customer users
+- Role-based route protection in middleware
+- Row-level security in Supabase, validated by `pnpm test:rls`
+- Customer scoping enforced at both the database and application layers
+- Files stored with explicit storage policies (see Storage section)
+- Internal notes are only readable by internal users
+- Impersonation is read-only and audit-logged on entry/exit
 
 ### 8.3 File Storage
-Use Supabase Storage for MVP file handling.
+Two Supabase Storage buckets, both provisioned by migration:
+- `portal-assets` (public): organization logo, customer logos, priority
+  images, future public images
+- `portal-documents` (private): contract PDFs, request attachments, future
+  private uploads
 
-**Storage Buckets:**
-- `portal-assets` - **Public bucket** for branding assets (organization logo, customer logos, priority images). These files are publicly accessible and displayed in the UI.
-- `portal-documents` - **Private bucket** for secure documents (contract PDFs, request attachments). Access controlled via RLS policies, only accessible to authorized users.
+Customer-scoped read isolation for contract files is enforced at the app
+layer via the RLS-scoped `contract_documents` table; the bucket policy is
+intentionally broader so signed-URL access keeps working.
 
-MVP file use cases:
-- optionally upload contract PDFs
-- optionally upload supporting files for requests
-- upload organization logo for portal branding
-- upload customer logos
-- upload priority images
+## 9. Data Model
 
-Initial file metadata:
-- file name
-- description
-- related customer
-- related contract or request
-- uploaded by
-- uploaded at
-
-## 9. Suggested Data Model
-
-### Core Tables
-- `profiles` - application user profile and role metadata
+### Core tables
+- `profiles` — application user profile and role
 - `customers`
 - `customer_contacts`
-- `customer_user_access` (optional if not folded into contacts/profiles)
-- `internal_staff_assignments`
 - `contracts`
+- `contract_types`
 - `time_entries`
 - `priorities`
 - `requests`
-- `request_comments` (optional for MVP)
-- `attachments`
-- `reference_contract_types`
-- `reference_contract_statuses`
-- `reference_time_categories`
-- `reference_priority_statuses`
-- `reference_priority_levels`
-- `reference_request_statuses`
+- `internal_notes` (polymorphic)
+- `contract_documents`
+- `audit_logs`
+- `portal_settings`
+- `reference_values`
 
-### Important Relationships
-- one customer has many contacts
-- one customer has many contracts
-- one customer has many priorities
-- one customer has many requests
-- one customer has many time entries
+### Important relationships
+- one customer has many contacts, contracts, priorities, requests, time entries
 - one contract has many time entries
 - one internal user can be assigned to many customers
-- one customer can have many customer portal users
+- one customer can have many customer portal users (via `customer_contacts`
+  with `portal_access_enabled = true`)
 
 ## 10. Technical Architecture
 
 ### Frontend
-- Next.js App Router
-- TypeScript
-- Tailwind CSS
-- shadcn/ui or equivalent component system
-- TanStack Query if needed
+- Next.js App Router, Server Components by default; Client Components only
+  when needed
+- TypeScript everywhere
+- Tailwind CSS + shadcn/ui
 - React Hook Form + Zod for forms
+- Server actions in `app/actions/*.ts` for mutations
+- Validation schemas in `lib/validations/`
+- Error code system in `lib/errors/` using `DOMAIN-OPERATION-NUMBER`
+  (e.g. `CUS-CRE-001`)
 
 ### Backend
-- Supabase Postgres
-- Supabase Auth
-- Supabase Storage
-- Row Level Security policies
-- Supabase Edge Functions only if required
+- Supabase Postgres with RLS
+- Supabase Auth (Magic Link + email/password)
+- Supabase Storage (`portal-assets`, `portal-documents`)
+- Postgres triggers for audit logging
 
-### Hosting
+### Hosting and email
 - Vercel for frontend hosting and preview deployments
+- Resend for transactional email via Supabase Auth SMTP and the API client in
+  `lib/email/`
 
-### Email
-- Resend transactional email integration for low-volume notifications
+### File structure
+```
+app/
+  (auth)/           # login, password reset
+  (portal)/         # main app (dashboard, customers, contracts, …)
+  actions/          # server actions
+components/
+  ui/               # shadcn/ui components
+  customers/, contracts/, audit/, dashboard/, …
+lib/
+  supabase/         # supabase clients (server / browser / route)
+  errors/           # error code system
+  validations/      # zod schemas
+  utils/            # date helpers, csv export, etc.
+types/
+  database.ts       # database row interfaces
+supabase/
+  migrations/       # ordered schema migrations
+scripts/            # one-off dev / seed / maintenance scripts
+tests/e2e/          # Playwright E2E tests
+```
 
+## 11. UX and Visual Design
 
-## 11. UX and Visual Design (Updated with Branding)
+The portal uses an Apple-style soft-light theme with four admin-configurable
+brand tokens at `/settings/portal-branding`. Token resolution and
+WCAG-aware fallbacks live in `lib/theme/css-vars.ts`.
 
-Follow the NextMove AI branding guide strictly:
-- Primary Color: #2C3E50 (Primary Navy)
-- Accent Color: #6FCF97 (NextMove Green)
-- Backgrounds: #FFFFFF and #F8F9FA
-- Dark Mode Background: #1A1F2E
-- Secondary Text: #6C757D
+Default tokens:
+| Token | Role | Default |
+| --- | --- | --- |
+| `primary_color` | Headings, structural chrome, primary buttons | `#2C3E50` |
+| `accent_color` | Ring / focus / secondary highlights | `#6FCF97` |
+| `background_base` | Page background | `#F5F5F7` |
+| `foreground_base` | Page text | `#1D1D1F` |
 
 Typography:
-- Font: Montserrat (all UI)
-- H1: Bold
-- H2/H3: Semibold
-- Body: Regular
+- Font: Montserrat (UI), Fraunces (display)
+- H1 bold, H2/H3 semibold, body regular
 
-Design Principles:
+Design principles:
 - Clean, modern, professional
-- Data-first layouts (tables, dashboards)
-- Minimal clutter
-- Strong contrast and readability
-- Use green for actions (buttons, highlights)
-- Navy for structure and hierarchy
+- Data-first layouts
+- Minimal clutter, strong contrast
+- Green for actions, navy for structure and hierarchy
 
-Brand Voice in UI:
-- Strategic
-- Clear and action-oriented
-- Professional and confident
+A color-token lint catches Tailwind color literals that bypass the token
+layer:
 
-Use logo appropriately with spacing rules per branding guide.
+```bash
+pnpm lint:colors
+```
 
 ## 12. Navigation Structure
 
-### Internal Navigation
+### Internal
+- Submit Time (Quick Entry, Detailed Entry)
 - Dashboard
+- Requests
 - Customers
-- Contracts
-- Time Logs
-- Priorities
-- Requests
-- Reports
-- Admin
+- Customer Info → Contracts, Contacts, Priorities
+- Reports → Time Reports, My Time Entries, Change Log
+- Settings (admin)
 
-### Customer Navigation
+### Customer
 - Dashboard
-- Profile
-- Contracts
-- Time Logs
-- Priorities
-- Requests
-- Reports
+- Customer Info → Contracts, Contacts, Priorities, Requests
+- Reports → Time Report
+- Submit Request (footer CTA)
 
-## 13. Acceptance Criteria for MVP
-The MVP is successful when:
-- internal users can authenticate and manage all core records
-- customer users can authenticate and only see their own customer data
-- contracts can track hours where applicable
-- time entries roll up correctly into contract usage
-- dashboards display useful summaries
-- requests can be submitted and tracked
-- reporting works with basic filters
-- the application is deployable to Vercel and connected to Supabase
+## 13. Future Enhancements
 
-## 14. MVP Task List
+Not on the immediate roadmap. Listed roughly in order of expected value.
 
-### Phase 0 - Project Setup
-- [x] initialize repository
-- [x] configure OpenSpec structure
-- [x] create project scaffolding with Next.js and TypeScript
-- [x] configure Tailwind CSS
-- [x] configure component library
-- [x] configure ESLint, Prettier, and TypeScript settings
-- [x] create environment variable strategy
-- [x] connect Supabase project
-- [x] configure Vercel project
-- [x] define deployment environments
-- [x] load brand tokens from branding kit
-
-### Phase 1 - Auth and App Foundations
-- [x] implement Supabase Auth
-- [x] create login page
-- [x] create forgot password / reset password flow
-- [x] build profile and role model
-- [x] implement route protection
-- [x] implement role-based layouts
-- [x] implement row-level security policies
-- [x] seed initial admin user
-- [x] create app shell and navigation
-
-
-### Phase 2 - Reference Data and Admin Foundations
-- [x] create reference tables
-- [x] seed default dropdown values
-- [x] build admin screens for managing reference data
-- [x] build internal user management screens
-- [x] implement role assignment flows
-- [x] add demo data flag to records and admin toggle for demo data visibility
-- [x] implement Magic Links as default login method with email/password fallback option
-
-### Phase 3 - Customer and Contact Management
-- [x] create customers table and migrations
-- [x] create customer contacts table and migrations
-- [x] build customer list screen
-- [x] build customer detail screen
-- [x] build create/edit customer forms
-- [x] build create/edit customer contact forms
-- [x] build customer assignments UI for internal contacts
-
-### Phase 4 - Customer User Access
-- [x] model customer portal access
-- [x] build invite customer user flow
-- [x] build enable/disable portal access controls
-- [x] validate customer scoping in UI and database
-- [x] test customer role permissions
-
-### Phase 5 - Contract Management
-- [x] create contracts schema
-- [x] build contract list and detail screens
-- [x] build create/edit contract forms
-- [x] implement contract status logic
-- [x] implement hour-based contract calculations
-- [x] expose contracts on customer dashboard
-- [x] integrate Supabase storage bucket "portal-documents" for contract documents
-
-### Phase 6 - Time Logging
-- [x] create time entries schema
-- [x] build internal time entry list and form
-- [x] support filtering by customer, contract, date range, category, and staff
-- [x] calculate hours used per contract
-- [x] calculate hours remaining per contract
-- [x] build customer-facing time log view
-
-### Phase 7 - Priorities
-- [x] create priorities schema
-- [x] build internal priorities list and form
-- [x] build customer-facing priorities view
-- [x] optionally allow customer submission of new priorities
-- [x] implement status and priority level filtering
-
-### Phase 8 - Requests
-- [x] create requests schema
-- [x] build customer request submission form
-- [x] build internal request management view
-- [x] build customer request status view
-- [x] add internal notes field with visibility restrictions
-
-### Phase 9 - Dashboards
-- [x] build internal dashboard summary queries
-- [x] build customer dashboard summary queries
-- [x] create summary cards and recent activity views
-- [x] link dashboard widgets to detail pages
-
-### Phase 10 - Reporting
-- [x] build internal reporting screen
-- [x] build customer reporting screen
-- [x] implement table filtering
-- [x] implement date range filters
-- [x] implement export if time allows
-
-### Phase 11 - Files
-- [x] configure Supabase Storage buckets
-- [x] implement contract attachment upload
-- [x] secure file access with storage policies
-
-### Phase 12 - Notifications
-- [x] integrate Resend
-- [x] send invite emails (handled by Supabase OTP magic link)
-- [x] send password reset support flow if needed (handled by Supabase Auth)
-- [x] optionally notify internal users of new requests
-- [x] optionally notify customers of request status changes
-
-### Phase 13 - Quality, Security, and Seed Data ✓
-- [~] validate RLS policies (deferred to Phase 20)
-- [~] test role boundaries (deferred to Phase 20)
-- [x] add loading and error states
-- [x] add empty states
-- [x] add success notifications (toast system)
-- [~] review accessibility basics (deferred to Phase 20)
-- [~] review responsive layouts (deferred to Phase 20)
-- [x] seed demo data (scripts created)
-- [x] customer search and filtering implemented
-- [x] customer pagination implemented
-
-
-### Phase 14 - Customer UX Refinement
-- [x] hide customer dropdown filters from customer_user views (time logs, reports)
-- [x] simplify time logs view for customers (remove Staff column, auto-filter to their customer)
-- [x] simplify reports view for customers (remove customer filter, cleaner layout)
-- [x] review all pages for customer-appropriate content
-- [x] ensure customers cannot see internal-only data
-- [x] add customer-friendly empty states and messaging
-
-### Phase 15 - Portal Enhancements
-- [x] remove Time Logs from customer navigation (redundant with Reports)
-- [x] rename Reports to Time Reports
-- [x] enhance report filters (multi-select category, contract, billable, staff)
-- [x] create default "On-Demand / Off Contract" contract for customers
-- [x] make contract required on time entry
-- [x] allow staff to enter time for other staff
-- [x] add internal notes to customers, priorities, time logs
-- [x] make user profiles editable (first name, last name, title)
-- [x] show all users in settings for admin/staff
-- [x] create portal branding settings (org name, logo, description)
-- [x] add images to customers and priorities
-- [x] redesign customer dashboard with company info and contacts
-
-### Phase 16 - Archive Capabilities ✓
-- [x] add archived_at timestamps to customers, contracts, contacts
-- [x] implement customer archive with cascade (contracts, contacts, priorities, requests)
-- [x] implement contract archive functionality
-- [x] exclude archived items from dropdowns (time entry, priority, request forms)
-- [x] include archived items in reports (historical data preserved)
-- [x] add "Show Archived" toggle to customer and contract list views
-- [x] prevent login for users of archived customers
-- [x] prevent login for contacts with portal_access_enabled = false
-- [x] mark priorities/requests as read-only when customer archived
-- [x] enforce read-only on archived entities (prevent edits)
-
-### Phase 17 - Contract Types Enhancement ✓
-- [x] create contract_types table with behavior flags (tracks_hours, has_hour_limit, is_recurring, supports_rollover)
-- [x] add billing fields to contracts (billing_day, hours_per_period, rollover_enabled, rollover_expiration_days, max_rollover_hours, fixed_cost)
-- [x] migrate existing contracts from reference_values to contract_types table
-- [x] implement hours bucket calculation (total - used, overage warning)
-- [x] implement subscription period calculation (based on billing_day 1-28)
-- [x] implement rollover logic (use rollover first, expiration tracking, max cap)
-- [x] update contract form with conditional fields per contract type
-- [x] update contract detail page with type-specific stats (ContractHoursStats component)
-- [x] show hours context in time entry form (ContractHoursContext component)
-- [x] add overage alerts to reports page (ContractOverageAlerts component)
-- [x] add billing model filter to reports (deferred to Phase 20)
-- [x] period history display on contract detail (deferred to Phase 20)
-
-### Phase 18 - Audit Logging & Error Handling ✓
-- [x] create audit_logs table with change tracking fields
-- [x] create database triggers for audited tables
-- [x] capture user context in audit records
-- [x] create audit log viewer page (admin only)
-- [x] add record history component to detail pages
-- [x] implement error code system (domain-operation-number format)
-- [x] create error handling utilities
-- [x] update all server actions with standardized error codes
-- [x] create consistent error display components
-- [x] add error logging for debugging
-
-### Phase 20 - Validation, Cleanup, Test, and Go-Live Prep
-- [ ] Review all deferred items and validate completion
-- [ ] Do comprehensive testing of all features. Create automated tests for future testing
-- [ ] validate all past changes are 100% complete including any deferred items
-- [ ] consolidate all database migrations before go-live (after feature complete, before customer data)
-- [ ] prepare staging deployment
-- [ ] prepare production deployment checklist
-- [ ] configure custom SMTP in Supabase for production email (Magic Link invitations)
-- [ ] Configure email templates for invitations and magic links.
-
-**Deferred from Phase 13 - RLS Policy Validation:**
-- [x] Create RLS test scripts for customer_user role restrictions ✓ Phase 20
-- [x] Validate customer_user cannot modify contracts, time entries, contacts ✓ Phase 20
-- [x] Validate customer_user can only view own profile and customer data ✓ Phase 20
-- [x] Fix any RLS policy gaps found during testing ✓ Phase 20
-
-**Deferred from Phase 13 - Accessibility and Responsive Review:**
-- [x] Review color contrast on all pages ✓ Phase 20 (shadcn/ui provides good defaults)
-- [x] Add focus management to modals and dialogs ✓ Phase 20 (shadcn/ui built-in)
-- [x] Verify ARIA labels on interactive elements ✓ Phase 20 (shadcn/ui built-in)
-- [x] Test keyboard navigation on forms ✓ Phase 20 (shadcn/ui built-in)
-- [x] Test responsive layout on mobile (375px), tablet (768px), desktop (1280px) ✓ Phase 20
-
-**Deferred from Phase 13 - Final Validation:**
-- [x] Test customer search, filtering, pagination with demo data ✓ Phase 20
-- [x] Verify all loading, error, and empty states display correctly ✓ Phase 20
-- [x] Verify all toast notifications work ✓ Phase 20
-- [x] Test demo user login behavior with show_demo_data toggle ✓ Phase 20 
-
-### Deferred Items (to address in relevant phases or Phase 13)
-**From Phase 2:**
-- [x] Role filter dropdown on user management page ✓ Phase 20
-- [x] Demo data filtering for customer_contacts ✓ Contacts inherit from parent customer - works correctly
-
-**From Phase 3:**
-- [x] Customer search and filtering ✓ Phase 20
-- [x] Customer pagination ✓ Phase 20
-- [ ] Industry, website, renewal date fields on customers (nice-to-have, post-MVP)
-
-**From Phase 4:**
-- [x] Portal access disable → user deactivation ✓ Phase 20
-- [x] RLS for contracts scoped by customer_id ✓ Phase 5
-- [x] RLS for time_entries scoped by customer_id ✓ Phase 6
-- [x] RLS for priorities scoped by customer_id ✓ Phase 20 (verified in RLS tests)
-- [x] RLS for requests scoped by customer_id ✓ Phase 20 (verified in RLS tests) 
-
-## 15. Open Questions / Future Enhancements
-- complete security and RLS review. 
-- approval workflow for customer-submitted priorities
-- richer request conversations or comments — **scoped & deferred**, see [`openspec/backlog/requests-module-overhaul.md`](./backlog/requests-module-overhaul.md)
-- CSV exports
-- customer-specific branding
-- email notifications and digests
-- documentation improvements, uploading documents, etc.
-- external integrations (Mercury, meeting scheduling, etc.)
-- Enhance priorities to include a SOW and add a customer priority approval workflow. 
-- Meeting tracking and management with email digests. Track meetings and recaps in the system instead of via email. 
+- complete a fresh end-to-end security and RLS review prior to onboarding new
+  customers
+- approval workflow for customer-submitted priorities, including a SOW field
+  on priorities
+- richer request conversations / threaded comments — scoped & deferred, see
+  [`openspec/backlog/requests-module-overhaul.md`](./backlog/requests-module-overhaul.md)
+- customer-specific branding (per-customer accent / logo overrides)
+- email notifications and digests (status-change emails, weekly digests)
+- meeting tracking and management with email digests — track meetings and
+  recaps in the system instead of via email
+- documentation improvements: user-facing in-app help, inline tooltips,
+  document upload UX polish
+- external integrations (Mercury for billing, meeting scheduling, etc.)
+- CSV / Excel export polish and saved report views
+- support a single user belonging to multiple customer organizations
+- industry / website / renewal-date fields on customers
+- billing-model filter on reports
+- period-history display on contract detail
+- migration consolidation pass before any future schema-heavy effort

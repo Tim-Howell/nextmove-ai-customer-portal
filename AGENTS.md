@@ -9,17 +9,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## Project Overview
 Customer portal for NextMove AI to manage customers, contracts, time tracking, priorities, and requests. Built with Next.js 15, Supabase, and TypeScript.
 
-## Current Status (April 2026)
-- **All Phases Complete (1-21)** ✅
-- Phase 21: Portal improvements based on admin/customer testing
-- MVP ready for production deployment
-- Demo data seeding scripts available
-- Playwright E2E tests created
+## Project Status
 
-### Recent Changes (April 23, 2026)
-- **internal-notes-redesign**: Polymorphic `internal_notes` table replacing per-entity columns
-- **menu-layout-changes**: Sidebar navigation restructure, user menu, landing pages
-- **Password reset flow**: Simplified to magic link + in-profile password change
+The portal is in production. New work moves through the OpenSpec workflow
+(`/opsx-propose`, `/opsx-apply`, `/opsx-archive`) — there is no MVP phase
+tracking here anymore. For the canonical product spec see
+`openspec/project.md`. For the running list of what's deferred / next, see
+the **Future Enhancements** section at the bottom of `openspec/project.md`.
 
 ## Key Architecture Decisions
 
@@ -110,13 +106,10 @@ types/
 - Script in `scripts/test-rls.ts`
 
 ## Documentation
-- `docs/TESTING-ADMIN.md` - Admin testing script
-- `docs/TESTING-CUSTOMER.md` - Customer testing script
-- `docs/PRODUCTION-DEPLOYMENT-CHECKLIST.md` - Go-live checklist
-- `docs/DEFERRED-ITEMS-TRIAGE.md` - Deferred items categorization
-
-## Deferred Items (Post-MVP Backlog)
-- Migration consolidation (do before production data)
-- Billing model filter on reports
-- Period history display on contract detail
-- Industry/website/renewal fields on customers
+- `openspec/project.md` - Canonical product spec and future-enhancements list
+- `README.md` - Setup, scripts, deployment, storage, branding, demo data
+- `docs/TESTING-ADMIN.md` - Admin smoke-test script
+- `docs/TESTING-CUSTOMER.md` - Customer smoke-test script
+- `docs/PRODUCTION-DEPLOYMENT-CHECKLIST.md` - Go-live runbook
+- `docs/RESEND_SETUP.md` - Email setup
+- `docs/archive/` - Archived pre-launch test reports
