@@ -157,17 +157,26 @@ export async function updatePriority(
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Convert empty strings to null for optional fields (matches createPriority).
+  // Without this, an empty due_date is sent as "" which Postgres rejects with
+  // `invalid input syntax for type date: ""`, surfacing as "Failed to update
+  // priority" in the UI.
+  const updateData = {
+    ...parsed.data,
+    due_date: parsed.data.due_date || null,
+    image_url: parsed.data.image_url || null,
+    description: parsed.data.description || null,
+    updated_by: user?.id,
+  };
+
   const { error } = await supabase
     .from("priorities")
-    .update({
-      ...parsed.data,
-      updated_by: user?.id,
-    })
+    .update(updateData)
     .eq("id", id);
 
   if (error) {
     console.error("Error updating priority:", error);
-    return { error: "Failed to update priority" };
+    return { error: `Failed to update priority: ${error.message}` };
   }
 
   revalidatePath("/priorities");
