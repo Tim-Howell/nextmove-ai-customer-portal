@@ -20,6 +20,7 @@ import { getOpenPrioritiesCount } from "@/app/actions/priorities";
 import { getOpenRequestsCount } from "@/app/actions/requests";
 import { getRecentRequests, getRecentPriorities } from "@/app/actions/reports";
 import { CONTRACT_STATUS_VALUES } from "@/lib/validations/contract";
+import { formatDateOnly } from "@/lib/utils/date";
 
 interface CustomerDashboardProps {
   customerName: string;
@@ -160,7 +161,7 @@ export async function CustomerDashboard({ customerName, customerId }: CustomerDa
                   {recentTimeEntries.map((entry) => (
                     <TableRow key={entry.id}>
                       <TableCell>
-                        {new Date(entry.entry_date).toLocaleDateString()}
+                        {formatDateOnly(entry.entry_date)}
                       </TableCell>
                       <TableCell>{entry.category?.label || "—"}</TableCell>
                       <TableCell className="text-right">

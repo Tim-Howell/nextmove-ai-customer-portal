@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Download, Pencil } from "lucide-react";
 import { exportToCSV } from "@/lib/utils/csv-export";
+import { formatDateOnly } from "@/lib/utils/date";
 import type { TimeEntryReportRow } from "@/app/actions/reports";
 
 interface TimeEntriesReportTableProps {
@@ -89,7 +90,7 @@ export function TimeEntriesReportTable({
                 {entries.map((entry) => (
                   <TableRow key={entry.id}>
                     <TableCell>
-                      {new Date(entry.entry_date).toLocaleDateString()}
+                      {formatDateOnly(entry.entry_date)}
                     </TableCell>
                     {showCustomer && (
                       <TableCell className="truncate max-w-[150px]">

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { formatDateOnly } from "@/lib/utils/date";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -254,7 +255,7 @@ export async function InternalDashboard({ displayName }: InternalDashboardProps)
                   {recentTimeEntries.map((entry) => (
                     <TableRow key={entry.id}>
                       <TableCell>
-                        {new Date(entry.entry_date).toLocaleDateString()}
+                        {formatDateOnly(entry.entry_date)}
                       </TableCell>
                       <TableCell className="truncate max-w-[100px]">
                         {entry.customer?.name || "—"}

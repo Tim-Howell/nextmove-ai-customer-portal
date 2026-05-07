@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/table";
 import { Download, Pencil } from "lucide-react";
 import { exportToCSV } from "@/lib/utils/csv-export";
+import { formatDateOnly } from "@/lib/utils/date";
 import type { TimeEntryReportRow } from "@/app/actions/reports";
 
 interface MyTimeTableProps {
@@ -93,7 +94,7 @@ export function MyTimeTable({ entries }: MyTimeTableProps) {
                 {entries.map((entry) => (
                   <TableRow key={entry.id}>
                     <TableCell>
-                      {new Date(entry.entry_date).toLocaleDateString()}
+                      {formatDateOnly(entry.entry_date)}
                     </TableCell>
                     <TableCell className="truncate max-w-[180px]">
                       {entry.customer?.name || "—"}

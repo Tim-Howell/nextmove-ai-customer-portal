@@ -19,6 +19,7 @@ import { ArchiveContractButton } from "@/components/contracts/archive-contract-b
 import { ContractDocuments } from "@/components/contracts/contract-documents";
 import { ContractHoursStats } from "@/components/contracts/contract-hours-stats";
 import { createClient } from "@/lib/supabase/server";
+import { formatDateOnly } from "@/lib/utils/date";
 
 interface ContractDetailPageProps {
   params: Promise<{ id: string }>;
@@ -133,7 +134,7 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
                 <p className="text-sm text-muted-foreground">Start Date</p>
                 <p className="font-medium">
                   {contract.start_date
-                    ? new Date(contract.start_date).toLocaleDateString()
+                    ? formatDateOnly(contract.start_date)
                     : "—"}
                 </p>
               </div>
@@ -141,7 +142,7 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
                 <p className="text-sm text-muted-foreground">End Date</p>
                 <p className="font-medium">
                   {contract.end_date
-                    ? new Date(contract.end_date).toLocaleDateString()
+                    ? formatDateOnly(contract.end_date)
                     : "—"}
                 </p>
               </div>
@@ -210,7 +211,7 @@ export default async function ContractDetailPage({ params }: ContractDetailPageP
                 timeEntries.map((entry) => (
                   <TableRow key={entry.id}>
                     <TableCell>
-                      {new Date(entry.entry_date).toLocaleDateString()}
+                      {formatDateOnly(entry.entry_date)}
                     </TableCell>
                     <TableCell>{entry.staff?.full_name || "Unknown"}</TableCell>
                     <TableCell>{entry.category?.label || "—"}</TableCell>

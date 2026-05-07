@@ -18,6 +18,7 @@ import { getReferenceValues } from "@/app/actions/reference";
 import { TimeLogsFilter } from "@/components/time-logs/time-logs-filter";
 import { DeleteTimeEntryButton } from "@/components/time-logs/delete-time-entry-button";
 import type { TimeEntryWithRelations, Customer, ReferenceValue } from "@/types/database";
+import { formatDateOnly } from "@/lib/utils/date";
 
 interface TimeLogsPageProps {
   searchParams: Promise<{
@@ -104,7 +105,7 @@ function TimeEntryListContent({
               {timeEntries.map((entry) => (
                 <TableRow key={entry.id}>
                   <TableCell>
-                    {new Date(entry.entry_date).toLocaleDateString()}
+                    {formatDateOnly(entry.entry_date)}
                   </TableCell>
                   {isInternal && (
                     <TableCell>

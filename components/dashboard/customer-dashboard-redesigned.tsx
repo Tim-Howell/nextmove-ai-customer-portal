@@ -21,6 +21,7 @@ import { getRecentPriorities } from "@/app/actions/reports";
 import { CONTRACT_STATUS_VALUES } from "@/lib/validations/contract";
 import { getCustomers } from "@/app/actions/customers";
 import { createClient } from "@/lib/supabase/server";
+import { formatDateOnly } from "@/lib/utils/date";
 
 interface CustomerDashboardProps {
   customerName: string;
@@ -268,7 +269,7 @@ export async function CustomerDashboardRedesigned({ customerName, customerId }: 
                       </TableCell>
                       <TableCell>
                         {priority.due_date
-                          ? new Date(priority.due_date).toLocaleDateString()
+                          ? formatDateOnly(priority.due_date)
                           : "â"}
                       </TableCell>
                     </TableRow>

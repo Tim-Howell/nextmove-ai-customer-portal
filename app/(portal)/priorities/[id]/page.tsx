@@ -8,6 +8,7 @@ import { getPriority } from "@/app/actions/priorities";
 import { DeletePriorityButton } from "@/components/priorities/delete-priority-button";
 import { InternalNotesSection } from "@/components/internal-notes";
 import { createClient } from "@/lib/supabase/server";
+import { formatDateOnly } from "@/lib/utils/date";
 
 interface PriorityDetailPageProps {
   params: Promise<{ id: string }>;
@@ -125,7 +126,7 @@ export default async function PriorityDetailPage({ params }: PriorityDetailPageP
                 <p className="text-sm text-muted-foreground">Due Date</p>
                 <p className="font-medium">
                   {priority.due_date
-                    ? new Date(priority.due_date).toLocaleDateString()
+                    ? formatDateOnly(priority.due_date)
                     : "—"}
                 </p>
               </div>
