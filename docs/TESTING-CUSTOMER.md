@@ -66,17 +66,30 @@ Manual testing checklist for customer portal users. Complete each section and ma
   - [ ] Open Requests count
   - [ ] Active Priorities count
 
-### 2.2 Active Contracts Section
+### 2.2 Hourly Contracts Snapshot
+- [ ] Per-contract burndown cards display for Hours Bucket / Hours Subscription contracts
+- [ ] Usage shows hours used vs. period/contract hours
+- [ ] For rollover-enabled subscriptions, a "carryover available" line displays
+- [ ] Carryover decreases only after usage exceeds the period allocation
+
+### 2.3 Projects and Subscriptions Snapshot
+- [ ] Section displays for Fixed Cost / Service Subscription contracts
+- [ ] Each card shows contract name and type
+- [ ] Total hours billed (all time) displays (no progress bar)
+- [ ] Start date displays
+- [ ] Description displays, truncated with "..." when long
+
+### 2.4 Active Contracts Section
 - [ ] Active contracts list displays
 - [ ] Contract names are visible
 - [ ] Contract types are shown
 - [ ] Clicking a contract navigates to contract detail
 
-### 2.3 Recent Activity
+### 2.5 Recent Activity
 - [ ] Recent time entries display (if any)
 - [ ] Recent requests display (if any)
 
-### 2.4 Quick Actions
+### 2.6 Quick Actions
 - [ ] "New Request" button visible and works
 - [ ] "View Reports" button visible and works
 
@@ -90,6 +103,9 @@ Manual testing checklist for customer portal users. Complete each section and ma
 - [ ] Cannot see other customers' contracts
 - [ ] Contract status badges display correctly
 - [ ] Contract type labels display correctly
+- [ ] Usage column shows real usage (e.g. `10.0 / 15.0 hrs`), not `0`
+- [ ] Carryover column shows remaining carryover for rollover subscriptions (`—` otherwise)
+- [ ] Service Subscription contracts show "Fixed rate" in the Usage column (not `—`)
 
 ### 3.2 Contract Detail - Hours Bucket
 - [ ] Click on an Hours Bucket contract

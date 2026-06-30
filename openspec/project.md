@@ -218,10 +218,13 @@ trailing-90-day hours-by-staff chart.
 
 **Customer dashboard:** welcome bar, hours-over-time chart with bucket /
 billable / contract filters, hourly contracts snapshot (per-contract
-burndown), summary tiles (hours this month, open requests, active priorities,
-active contracts), Your Team (customer's own contacts), Your NextMove AI
-Team (assigned staff), active contracts list, active priorities table,
-quick actions.
+burndown, including remaining carryover for rollover-enabled subscriptions),
+projects and subscriptions snapshot (per-contract cards for Fixed Cost and
+Service Subscription contracts showing total hours billed, start date, and a
+truncated description), summary tiles (hours this month, open requests,
+active priorities, active contracts), Your Team (customer's own contacts),
+Your NextMove AI Team (assigned staff), active contracts list, active
+priorities table, quick actions.
 
 ### 7.11 Reporting
 Filterable tabular reports rather than a BI surface. Internal filters

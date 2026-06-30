@@ -134,6 +134,9 @@ Manual testing checklist for admin users. Complete each section and mark items a
 ### 5.1 Contract List
 - [ ] Navigate to Contracts page
 - [ ] Contract list displays correctly
+- [ ] Usage column shows real usage for hour-based contracts (not `0`)
+- [ ] Carryover column shows remaining carryover for rollover subscriptions (`—` otherwise)
+- [ ] Service Subscription contracts show "Fixed rate" in the Usage column
 - [ ] Filter by customer works
 - [ ] Filter by status works
 - [ ] Filter by contract type works
