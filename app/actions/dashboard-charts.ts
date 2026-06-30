@@ -142,6 +142,11 @@ export interface ContractBurndown {
   isOverBudget: boolean;
   /** Hours rolled over from prior periods (Hours Subscription only). */
   rolloverHours: number;
+  /**
+   * Carryover still available after this period's usage (running total).
+   * Hours Subscription only; 0 for other types.
+   */
+  rolloverRemainingHours: number;
 }
 
 /**
@@ -239,7 +244,10 @@ export async function getContractBurndowns(
       const period =
         result.currentPeriod ||
         calculateBillingPeriod(contract.billing_day || 1, now);
-      const allotment = result.totalAvailableThisPeriod ?? 0;
+      // Usage bar is measured against the period allocation (e.g. 15 hrs),
+      // not the allocation + carryover. Carryover is surfaced separately so
+      // the bar matches the "used / contract hours" the customer expects.
+      const allotment = contract.hours_per_period ?? 0;
       const used = result.periodHoursUsed ?? 0;
       burndowns.push({
         contractId: contract.id,
@@ -247,11 +255,14 @@ export async function getContractBurndowns(
         contractTypeLabel: type.label,
         usedHours: used,
         allotmentHours: allotment,
-        remainingHours: allotment - used,
+        // Remaining includes carryover so a customer dipping into carryover
+        // is not shown as over budget.
+        remainingHours: result.periodHoursRemaining ?? allotment - used,
         periodStart: period.start.toISOString(),
         periodEnd: period.end.toISOString(),
         isOverBudget: !!result.isOverLimit,
         rolloverHours: result.rolloverHoursAvailable ?? 0,
+        rolloverRemainingHours: result.rolloverHoursRemaining ?? 0,
       });
     } else {
       // hours_bucket: allotment = total_hours, period = whole contract.
@@ -270,11 +281,92 @@ export async function getContractBurndowns(
           new Date(now.getFullYear() + 1, 0, 1).toISOString(),
         isOverBudget: !!result.isBucketExceeded,
         rolloverHours: 0,
+        rolloverRemainingHours: 0,
       });
     }
   }
 
   return burndowns;
+}
+
+// ----------------------------------------------------------------------------
+// Project & subscription contracts snapshot (non hour-limited contracts)
+// ----------------------------------------------------------------------------
+
+export interface ProjectContractSnapshot {
+  contractId: string;
+  contractName: string;
+  contractTypeLabel: string;
+  /** Total billable hours logged against the contract, all time. */
+  totalHoursBilled: number;
+  startDate: string | null;
+  description: string | null;
+}
+
+/**
+ * Snapshot rows for a customer's project-based (Fixed Cost) and subscription
+ * (Service Subscription) contracts. These are fixed-rate contracts with no
+ * hour limit, so we surface a total-hours-billed figure rather than a
+ * burndown bar.
+ */
+export async function getProjectSubscriptionContracts(
+  customerId: string
+): Promise<ProjectContractSnapshot[]> {
+  const supabase = await createClient();
+
+  const { data: contracts, error } = await supabase
+    .from("contracts")
+    .select(
+      `
+      id,
+      name,
+      start_date,
+      description,
+      contract_type:contract_types!inner(value, label)
+      `
+    )
+    .eq("customer_id", customerId)
+    .is("archived_at", null)
+    .in("contract_type.value", ["fixed_cost", "service_subscription"]);
+
+  if (error) {
+    console.error("[dashboard-charts] getProjectSubscriptionContracts:", error);
+    return [];
+  }
+
+  if (!contracts || contracts.length === 0) return [];
+
+  const contractIds = contracts.map((c) => c.id);
+  const { data: timeRows } = await supabase
+    .from("time_entries")
+    .select("contract_id, hours")
+    .eq("customer_id", customerId)
+    .eq("is_billable", true)
+    .in("contract_id", contractIds);
+
+  const hoursByContract = new Map<string, number>();
+  for (const row of timeRows || []) {
+    if (!row.contract_id) continue;
+    hoursByContract.set(
+      row.contract_id,
+      (hoursByContract.get(row.contract_id) || 0) + (Number(row.hours) || 0)
+    );
+  }
+
+  return contracts.map((contract) => {
+    const type = contract.contract_type as unknown as {
+      value: string;
+      label: string;
+    };
+    return {
+      contractId: contract.id,
+      contractName: contract.name,
+      contractTypeLabel: type?.label || "Contract",
+      totalHoursBilled: hoursByContract.get(contract.id) || 0,
+      startDate: contract.start_date,
+      description: contract.description,
+    };
+  });
 }
 
 // ----------------------------------------------------------------------------

@@ -77,13 +77,14 @@ function ContractListContent({
           <TableHead>Type</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Usage</TableHead>
+          <TableHead>Carryover</TableHead>
           {isInternal && <TableHead className="text-right">Actions</TableHead>}
         </TableRow>
       </TableHeader>
       <TableBody>
         {contracts.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={isInternal ? 6 : 4} className="p-0">
+            <TableCell colSpan={isInternal ? 7 : 5} className="p-0">
               <EmptyState
                 icon={FileText}
                 title="No contracts found"
@@ -131,6 +132,16 @@ function ContractListContent({
                 </TableCell>
                 <TableCell>
                   <ContractUsageSummary contract={contract} compact />
+                </TableCell>
+                <TableCell>
+                  {contract.contract_type?.value === "hours_subscription" &&
+                  contract.rollover_enabled ? (
+                    <span className="text-sm">
+                      {(contract.rollover_hours_remaining ?? 0).toFixed(1)} hrs
+                    </span>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">—</span>
+                  )}
                 </TableCell>
                 {isInternal && (
                   <TableCell className="text-right">

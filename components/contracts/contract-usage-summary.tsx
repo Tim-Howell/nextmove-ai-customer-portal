@@ -24,9 +24,12 @@ export function ContractUsageSummary({ contract, compact = false }: ContractUsag
   if (contractType === "hours_subscription") {
     const hoursPerPeriod = contract.hours_per_period || 0;
     const periodHoursUsed = contract.period_hours_used || 0;
-    const remaining = hoursPerPeriod - periodHoursUsed;
+    // Remaining and over-status account for carryover (rollover) hours, so a
+    // customer dipping into carryover is not flagged "Over".
+    const remaining =
+      contract.period_hours_remaining ?? hoursPerPeriod - periodHoursUsed;
     const percentUsed = hoursPerPeriod > 0 ? (periodHoursUsed / hoursPerPeriod) * 100 : 0;
-    const isOverLimit = remaining < 0;
+    const isOverLimit = contract.is_over_limit ?? remaining < 0;
     const isNearLimit = percentUsed >= 80 && !isOverLimit;
     const variant = isOverLimit ? "danger" : isNearLimit ? "warning" : "default";
 
@@ -35,7 +38,7 @@ export function ContractUsageSummary({ contract, compact = false }: ContractUsag
         <div className="space-y-1 min-w-[120px]">
           <div className="flex items-center gap-2">
             <span className="text-sm">
-              {periodHoursUsed.toFixed(1)} / {hoursPerPeriod} hrs
+              {periodHoursUsed.toFixed(1)} / {hoursPerPeriod.toFixed(1)} hrs
             </span>
             {isOverLimit && <Badge variant="destructive" className="text-xs">Over</Badge>}
             {isNearLimit && <Badge variant="outline" className="text-xs border-amber-500 text-amber-600">Near</Badge>}
@@ -49,7 +52,7 @@ export function ContractUsageSummary({ contract, compact = false }: ContractUsag
       <div className="space-y-2">
         <div className="flex justify-between text-sm">
           <span>Period Usage</span>
-          <span className="font-medium">{periodHoursUsed.toFixed(1)} / {hoursPerPeriod} hrs</span>
+          <span className="font-medium">{periodHoursUsed.toFixed(1)} / {hoursPerPeriod.toFixed(1)} hrs</span>
         </div>
         <ProgressBar percent={percentUsed} variant={variant} />
         <div className="text-xs text-muted-foreground">
@@ -74,7 +77,7 @@ export function ContractUsageSummary({ contract, compact = false }: ContractUsag
         <div className="space-y-1 min-w-[120px]">
           <div className="flex items-center gap-2">
             <span className="text-sm">
-              {hoursUsed.toFixed(1)} / {totalHours} hrs
+              {hoursUsed.toFixed(1)} / {totalHours.toFixed(1)} hrs
             </span>
             {isOverLimit && <Badge variant="destructive" className="text-xs">Over</Badge>}
             {isNearLimit && <Badge variant="outline" className="text-xs border-amber-500 text-amber-600">Near</Badge>}
@@ -88,7 +91,7 @@ export function ContractUsageSummary({ contract, compact = false }: ContractUsag
       <div className="space-y-2">
         <div className="flex justify-between text-sm">
           <span>Total Usage</span>
-          <span className="font-medium">{hoursUsed.toFixed(1)} / {totalHours} hrs</span>
+          <span className="font-medium">{hoursUsed.toFixed(1)} / {totalHours.toFixed(1)} hrs</span>
         </div>
         <ProgressBar percent={percentUsed} variant={variant} />
         <div className="text-xs text-muted-foreground">
@@ -124,8 +127,8 @@ export function ContractUsageSummary({ contract, compact = false }: ContractUsag
     );
   }
 
-  // Fixed Cost / Service - show status only
-  if (contractType === "fixed_cost" || contractType === "service") {
+  // Fixed Cost (project) / Service Subscription - fixed rate, no hours usage
+  if (contractType === "fixed_cost" || contractType === "service_subscription") {
     return (
       <span className="text-sm text-muted-foreground">Fixed rate</span>
     );

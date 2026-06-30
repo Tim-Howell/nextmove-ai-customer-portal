@@ -37,6 +37,12 @@ export interface HoursCalculationResult {
   periodHoursUsed?: number;
   periodHoursRemaining?: number;
   rolloverHoursAvailable?: number;
+  /**
+   * Carryover hours still available after this period's usage has consumed
+   * any overage beyond the period allocation. Floored at 0. This is the
+   * "running total" of carryover shown to customers.
+   */
+  rolloverHoursRemaining?: number;
   totalAvailableThisPeriod?: number;
   isOverLimit?: boolean;
 }
@@ -206,6 +212,11 @@ export function calculateSubscriptionHours(
   // Hours remaining = total available - period used
   // Note: Rollover is used FIRST, so we track it separately
   const periodHoursRemaining = totalAvailableThisPeriod - periodHoursUsed;
+
+  // Carryover remaining: the period allocation is consumed first, and any
+  // usage beyond it eats into the carried-over hours. Floored at 0.
+  const rolloverConsumed = Math.max(0, periodHoursUsed - hoursPerPeriod);
+  const rolloverHoursRemaining = Math.max(0, rolloverHoursAvailable - rolloverConsumed);
   
   return {
     totalHoursUsed,
@@ -213,6 +224,7 @@ export function calculateSubscriptionHours(
     periodHoursUsed,
     periodHoursRemaining,
     rolloverHoursAvailable,
+    rolloverHoursRemaining,
     totalAvailableThisPeriod,
     isOverLimit: periodHoursRemaining < 0,
   };

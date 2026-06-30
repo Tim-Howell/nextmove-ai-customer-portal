@@ -4,10 +4,12 @@ import { CustomerWelcomeBar } from "@/components/dashboard/customer-welcome-bar"
 import { DashboardFilterBar } from "@/components/dashboard/dashboard-filter-bar";
 import { CustomerTimeChart } from "@/components/dashboard/customer-time-chart";
 import { CustomerBurndownCard } from "@/components/dashboard/customer-burndown-card";
+import { CustomerProjectSnapshotCard } from "@/components/dashboard/customer-project-snapshot-card";
 import { getContracts } from "@/app/actions/contracts";
 import {
   getCustomerHoursSeries,
   getContractBurndowns,
+  getProjectSubscriptionContracts,
   type HoursBucket,
   type BillableMode,
 } from "@/app/actions/dashboard-charts";
@@ -40,19 +42,21 @@ export async function CustomerDashboard({
   const from = new Date();
   from.setDate(from.getDate() - filters.days + 1);
 
-  const [series, burndowns, contractsResult] = await Promise.all([
-    getCustomerHoursSeries({
-      customerId,
-      bucket: filters.bucket,
-      from,
-      to,
-      contractIds:
-        filters.contractIds.length > 0 ? filters.contractIds : undefined,
-      billableMode: filters.billableMode,
-    }),
-    getContractBurndowns(customerId),
-    getContracts({ customerId }),
-  ]);
+  const [series, burndowns, projectContracts, contractsResult] =
+    await Promise.all([
+      getCustomerHoursSeries({
+        customerId,
+        bucket: filters.bucket,
+        from,
+        to,
+        contractIds:
+          filters.contractIds.length > 0 ? filters.contractIds : undefined,
+        billableMode: filters.billableMode,
+      }),
+      getContractBurndowns(customerId),
+      getProjectSubscriptionContracts(customerId),
+      getContracts({ customerId }),
+    ]);
 
   const allContracts = (contractsResult.data || []).map((c) => ({
     id: c.id,
@@ -91,6 +95,28 @@ export async function CustomerDashboard({
               <CustomerBurndownCard
                 key={burndown.contractId}
                 burndown={burndown}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {projectContracts.length > 0 && (
+        <section
+          aria-labelledby="project-snapshot-heading"
+          className="space-y-3"
+        >
+          <h2
+            id="project-snapshot-heading"
+            className="text-lg font-semibold text-foreground"
+          >
+            Projects and subscriptions snapshot
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {projectContracts.map((contract) => (
+              <CustomerProjectSnapshotCard
+                key={contract.contractId}
+                contract={contract}
               />
             ))}
           </div>

@@ -7,6 +7,84 @@ import { contractSchema } from "@/lib/validations/contract";
 import type { ContractFormData } from "@/lib/validations/contract";
 import type { ContractWithRelations, ContractDocument } from "@/types/database";
 import { getShowDemoData } from "./settings";
+import {
+  calculateContractHours,
+  type ContractForCalculation,
+  type TimeEntryForCalculation,
+} from "@/lib/contracts/hours-calculator";
+
+/**
+ * Run the hours calculator for a contract and project the result onto the
+ * calculated fields of `ContractWithRelations`. Centralizes the mapping so
+ * the contracts list, customer dashboard, and detail views all agree.
+ */
+function applyCalculatedHours(
+  contract: ContractWithRelations,
+  timeEntries: TimeEntryForCalculation[]
+): ContractWithRelations {
+  const calcInput: ContractForCalculation = {
+    id: contract.id,
+    contract_type_value: contract.contract_type?.value || "",
+    total_hours: contract.total_hours,
+    hours_per_period: contract.hours_per_period,
+    billing_day: contract.billing_day,
+    start_date: contract.start_date,
+    end_date: contract.end_date,
+    rollover_enabled: contract.rollover_enabled || false,
+    rollover_expiration_days: contract.rollover_expiration_days,
+    max_rollover_hours: contract.max_rollover_hours,
+  };
+
+  const result = calculateContractHours(calcInput, timeEntries);
+
+  return {
+    ...contract,
+    hours_used: result.totalHoursUsed,
+    hours_remaining:
+      contract.total_hours !== null
+        ? contract.total_hours - result.totalHoursUsed
+        : null,
+    current_period_start: result.currentPeriod?.start.toISOString(),
+    current_period_end: result.currentPeriod?.end.toISOString(),
+    period_hours_used: result.periodHoursUsed,
+    period_hours_remaining: result.periodHoursRemaining ?? null,
+    rollover_hours_available: result.rolloverHoursAvailable,
+    rollover_hours_remaining: result.rolloverHoursRemaining,
+    is_over_limit: result.isOverLimit ?? result.isBucketExceeded,
+  };
+}
+
+/**
+ * Fetch all time entries (hours + date) for the given contract IDs in a
+ * single round trip, grouped by contract. Mirrors the detail page, which
+ * uses all entries (not just billable) for its hours stats.
+ */
+async function getTimeEntriesByContract(
+  contractIds: string[]
+): Promise<Map<string, TimeEntryForCalculation[]>> {
+  const byContract = new Map<string, TimeEntryForCalculation[]>();
+  if (contractIds.length === 0) return byContract;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("time_entries")
+    .select("contract_id, hours, entry_date")
+    .in("contract_id", contractIds);
+
+  if (error) {
+    console.error("Error fetching time entries for contracts:", error);
+    return byContract;
+  }
+
+  for (const row of data || []) {
+    if (!row.contract_id) continue;
+    const list = byContract.get(row.contract_id) || [];
+    list.push({ hours: Number(row.hours) || 0, entry_date: row.entry_date });
+    byContract.set(row.contract_id, list);
+  }
+
+  return byContract;
+}
 
 export interface ContractsFilter {
   customerId?: string;
@@ -54,17 +132,13 @@ export async function getContracts(
     return { data: [], error: "Failed to fetch contracts" };
   }
 
-  const contractsWithHours = await Promise.all(
-    (data || []).map(async (contract) => {
-      const hoursUsed = await getHoursUsed(contract.id);
-      const hoursRemaining =
-        contract.total_hours !== null ? contract.total_hours - hoursUsed : null;
-      return {
-        ...contract,
-        hours_used: hoursUsed,
-        hours_remaining: hoursRemaining,
-      } as ContractWithRelations;
-    })
+  const contracts = (data || []) as ContractWithRelations[];
+  const entriesByContract = await getTimeEntriesByContract(
+    contracts.map((c) => c.id)
+  );
+
+  const contractsWithHours = contracts.map((contract) =>
+    applyCalculatedHours(contract, entriesByContract.get(contract.id) || [])
   );
 
   return { data: contractsWithHours };
@@ -93,16 +167,13 @@ export async function getContract(
     return { data: null, error: "Failed to fetch contract" };
   }
 
-  const hoursUsed = await getHoursUsed(id);
-  const hoursRemaining =
-    data.total_hours !== null ? data.total_hours - hoursUsed : null;
+  const entriesByContract = await getTimeEntriesByContract([id]);
 
   return {
-    data: {
-      ...data,
-      hours_used: hoursUsed,
-      hours_remaining: hoursRemaining,
-    } as ContractWithRelations,
+    data: applyCalculatedHours(
+      data as ContractWithRelations,
+      entriesByContract.get(id) || []
+    ),
   };
 }
 

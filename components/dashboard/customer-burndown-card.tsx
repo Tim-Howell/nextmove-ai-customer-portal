@@ -26,6 +26,7 @@ export function CustomerBurndownCard({ burndown }: CustomerBurndownCardProps) {
     periodEnd,
     isOverBudget,
     rolloverHours,
+    rolloverRemainingHours,
   } = burndown;
 
   // Cap the visible fill at 100% so an over-budget contract still renders
@@ -86,13 +87,13 @@ export function CustomerBurndownCard({ burndown }: CustomerBurndownCardProps) {
             {isOverBudget
               ? `${Math.abs(remainingHours).toFixed(1)} hrs over`
               : `${remainingHours.toFixed(1)} hrs remaining`}
-            {rolloverHours > 0 && !isOverBudget && (
-              <span className="text-muted-foreground">
-                {" "}
-                · incl. {rolloverHours.toFixed(1)} rollover
-              </span>
-            )}
           </p>
+
+          {rolloverHours > 0 && (
+            <p className="text-sm tabular-nums text-muted-foreground border-t pt-2">
+              {rolloverRemainingHours.toFixed(1)} hrs carryover available
+            </p>
+          )}
 
           <p className="text-xs text-muted-foreground">
             {formatPeriodRange(periodStart, periodEnd)}

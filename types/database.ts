@@ -174,6 +174,7 @@ export interface ContractWithRelations extends Contract {
   period_hours_used?: number;
   period_hours_remaining?: number | null;
   rollover_hours_available?: number;
+  rollover_hours_remaining?: number;
   is_over_limit?: boolean;
 }
 
