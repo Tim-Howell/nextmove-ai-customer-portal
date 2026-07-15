@@ -24,3 +24,8 @@
 -- ============================================================================
 
 DROP POLICY IF EXISTS "portal-assets: public read" ON storage.objects;
+
+-- Production also had a dashboard-created duplicate of the same policy that
+-- never existed in migration history. Dropped here so the migration is the
+-- single source of truth and re-provisioned environments stay clean.
+DROP POLICY IF EXISTS "Allow public read access to portal-assets" ON storage.objects;
