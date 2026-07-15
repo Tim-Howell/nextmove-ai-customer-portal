@@ -403,10 +403,11 @@ Not on the immediate roadmap. Listed roughly in order of expected value.
   `20260715090000_tighten_rls_and_storage.sql` +
   `20260715092000_portal_assets_block_listing.sql`; remaining accepted
   risks: priority images / customer logos live in the public
-  `portal-assets` bucket behind unguessable, non-listable URLs — moving
-  them behind an authenticated image proxy is the proper fix — and
-  `time_entries.internal_notes` is row-readable by that customer's users
-  via the REST API)
+  `portal-assets` bucket behind unguessable, non-listable URLs — the full
+  fix (authenticated image proxy + private bucket) is scoped in
+  [`openspec/backlog/private-customer-images.md`](./backlog/private-customer-images.md)
+  — and `time_entries.internal_notes` is row-readable by that customer's
+  users via the REST API)
 - approval workflow for customer-submitted priorities, including a SOW field
   on priorities
 - richer request conversations / threaded comments — scoped & deferred, see
