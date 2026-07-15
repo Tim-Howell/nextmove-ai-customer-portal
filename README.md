@@ -174,8 +174,11 @@ be readable without an active session):
 - Future public images
 
 Policies installed by the migrations (tightened by
-`20260715090000_tighten_rls_and_storage.sql`):
-- `portal-assets: public read` — anonymous SELECT for any object in the bucket
+`20260715090000_tighten_rls_and_storage.sql` and
+`20260715092000_portal_assets_block_listing.sql`):
+- Public downloads work via the bucket's **Public** flag (direct
+  `/object/public/...` URLs bypass RLS) — there is intentionally **no**
+  SELECT policy, so clients cannot `list()`/enumerate the bucket's files
 - `portal-assets: internal upload` / `update` / `delete` — restricted to `admin` / `staff` profiles
 
 ### `portal-documents` (Private)

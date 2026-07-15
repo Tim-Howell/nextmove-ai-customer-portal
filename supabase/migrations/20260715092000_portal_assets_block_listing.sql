@@ -1,0 +1,26 @@
+-- ============================================================================
+-- portal-assets: block anonymous file listing (enumeration)
+-- ============================================================================
+--
+-- The "portal-assets: public read" SELECT policy on storage.objects let ANY
+-- client (including anonymous) call the storage list()/search API and
+-- enumerate every filename in the bucket — customer logos and priority
+-- images included. That defeats the unguessable-URL posture: an attacker
+-- doesn't need to guess filenames if they can list them.
+--
+-- Dropping the policy is safe because the bucket is flagged public
+-- (storage.buckets.public = true): direct object downloads via
+-- /storage/v1/object/public/portal-assets/... bypass RLS entirely, so every
+-- existing logo/image URL keeps working. RLS SELECT policies on
+-- storage.objects only gate the list()/search/download-via-API paths, which
+-- the application never uses for this bucket (it only calls getPublicUrl()).
+--
+-- After this migration:
+--   - Public URL downloads: still work (bucket-level public flag)
+--   - list() / search:      denied for anon and authenticated clients
+--                            (service role is unaffected)
+--
+-- Idempotent and safe to re-run.
+-- ============================================================================
+
+DROP POLICY IF EXISTS "portal-assets: public read" ON storage.objects;
