@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { getProfile } from "@/lib/supabase/profile";
 import type { CustomerInvitation, InvitationStatus } from "@/types/database";
 
@@ -160,7 +160,10 @@ export async function acceptCustomerInvitation(
   contactId: string,
   customerId: string
 ) {
-  const supabase = await createClient();
+  // Invitation acceptance runs as the accepting customer user, but
+  // customer_contacts writes are internal-only under RLS. This is a system
+  // operation, so perform it with the service role.
+  const supabase = createAdminClient();
 
   const { error: contactError } = await supabase
     .from("customer_contacts")

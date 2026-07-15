@@ -69,7 +69,7 @@ export default async function PriorityDetailPage({ params }: PriorityDetailPageP
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-4">
           <Link href="/priorities">
             <Button variant="ghost" size="icon">

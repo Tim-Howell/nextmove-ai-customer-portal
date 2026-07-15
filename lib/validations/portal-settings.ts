@@ -8,11 +8,19 @@ const hexColor = z
   .optional()
   .or(z.literal(""));
 
+/** Fallback when portal_settings has no support email configured. */
+export const DEFAULT_SUPPORT_EMAIL = "info@nextmoveaiservices.com";
+
 export const portalSettingsSchema = z.object({
   organization_name: z.string().min(1, "Organization name is required"),
   website_url: z.string().url("Invalid URL").optional().or(z.literal("")),
   logo_url: z.string().url("Invalid URL").optional().or(z.literal("")),
   description: z.string().optional(),
+  support_email: z
+    .string()
+    .email("Invalid email address")
+    .optional()
+    .or(z.literal("")),
   // Required core color (kept required to avoid breaking existing rows).
   primary_color: z
     .string()
@@ -32,6 +40,7 @@ export interface PortalSettings {
   website_url: string | null;
   logo_url: string | null;
   description: string | null;
+  support_email: string | null;
   primary_color: string;
   accent_color: string | null;
   background_base: string | null;

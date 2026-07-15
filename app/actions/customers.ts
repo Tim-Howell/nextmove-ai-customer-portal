@@ -175,6 +175,8 @@ export async function createCustomerContact(
       email_confirm: true,
       user_metadata: {
         full_name: validated.data.full_name,
+        role: "customer_user",
+        customer_id: customerId,
       },
     });
 
@@ -193,9 +195,10 @@ export async function createCustomerContact(
     } else if (authUser?.user) {
       userId = authUser.user.id;
       
-      // Update the profile to set customer_user role and customer_id
-      // The trigger creates with default 'staff' role, so we need to fix it
-      await supabase
+      // Ensure the profile carries the customer_user role and customer link.
+      // Uses the admin client: role changes are admin-gated at the database
+      // layer, and the acting user may be staff.
+      await adminClient
         .from("profiles")
         .update({ 
           role: "customer_user", 
@@ -285,6 +288,8 @@ export async function updateCustomerContact(
       email_confirm: true,
       user_metadata: {
         full_name: validated.data.full_name,
+        role: "customer_user",
+        customer_id: customerId,
       },
     });
 
@@ -303,9 +308,10 @@ export async function updateCustomerContact(
     } else if (authUser?.user) {
       userId = authUser.user.id;
       
-      // Update the profile to set customer_user role and customer_id
-      // The trigger creates with default 'staff' role, so we need to fix it
-      await supabase
+      // Ensure the profile carries the customer_user role and customer link.
+      // Uses the admin client: role changes are admin-gated at the database
+      // layer, and the acting user may be staff.
+      await adminClient
         .from("profiles")
         .update({ 
           role: "customer_user", 

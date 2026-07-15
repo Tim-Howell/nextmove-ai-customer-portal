@@ -37,6 +37,7 @@ export function PortalBrandingForm({ settings }: PortalBrandingFormProps) {
       website_url: settings?.website_url || "",
       logo_url: settings?.logo_url || "",
       description: settings?.description || "",
+      support_email: settings?.support_email || "",
       primary_color: settings?.primary_color || "#2C3E50",
       accent_color: settings?.accent_color || "#6FCF97",
       background_base: settings?.background_base || "#F5F5F7",
@@ -132,6 +133,23 @@ export function PortalBrandingForm({ settings }: PortalBrandingFormProps) {
             />
             {errors.website_url && (
               <p className="text-sm text-destructive">{errors.website_url.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="support_email">Support Email</Label>
+            <Input
+              id="support_email"
+              type="email"
+              {...register("support_email")}
+              disabled={isLoading}
+              placeholder="info@nextmoveaiservices.com"
+            />
+            <p className="text-xs text-muted-foreground">
+              Shown to portal users anywhere they are told to contact support.
+            </p>
+            {errors.support_email && (
+              <p className="text-sm text-destructive">{errors.support_email.message}</p>
             )}
           </div>
 

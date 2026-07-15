@@ -120,7 +120,7 @@ export default async function ChangeLogPage({ searchParams }: ChangeLogPageProps
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <CardTitle>Recent Changes</CardTitle>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Filter:</span>

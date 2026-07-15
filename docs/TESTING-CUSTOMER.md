@@ -273,6 +273,8 @@ Manual testing checklist for customer portal users. Complete each section and ma
 - [ ] Can only see own customer's requests
 - [ ] Can only see own customer's time entries
 - [ ] Cannot access other customer IDs via URL manipulation
+- [ ] Can download own contract documents; other customers' documents are inaccessible
+- [ ] Support email on dashboard shows the configured address as a mailto link
 
 ### 8.2 URL Manipulation Tests
 - [ ] Try accessing `/customers` - should be blocked
@@ -324,6 +326,8 @@ Manual testing checklist for customer portal users. Complete each section and ma
 - [ ] Buttons are tap-friendly
 - [ ] Request form is usable
 - [ ] Reports are viewable
+- [ ] Wide tables scroll horizontally within the page (page itself does not scroll sideways)
+- [ ] Page headers/action buttons wrap instead of overflowing
 
 ---
 

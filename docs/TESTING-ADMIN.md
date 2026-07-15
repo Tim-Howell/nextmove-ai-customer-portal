@@ -198,6 +198,7 @@ Manual testing checklist for admin users. Complete each section and mark items a
 ### 6.2 Create Time Entry
 - [ ] Click "New Time Entry"
 - [ ] Select customer
+- [ ] Customer dropdown shows active customers only (no inactive/archived)
 - [ ] Select contract
 - [ ] Select priority (optional)
 - [ ] Enter hours and description
@@ -329,8 +330,10 @@ Manual testing checklist for admin users. Complete each section and mark items a
 - [ ] View current branding settings
 - [ ] Update organization name
 - [ ] Upload logo
+- [ ] Update support email
 - [ ] Save changes
 - [ ] Verify branding appears in portal
+- [ ] Verify support email shows as mailto link on customer dashboard (test as customer user)
 
 ### 10.6 Audit Log
 - [ ] Navigate to Settings > Audit Log
@@ -385,6 +388,9 @@ Manual testing checklist for admin users. Complete each section and mark items a
 - [ ] Content stacks vertically
 - [ ] Buttons are tap-friendly
 - [ ] Forms are usable
+- [ ] Wide tables scroll horizontally within the page (page itself does not scroll sideways)
+- [ ] Page headers/action buttons wrap instead of overflowing
+- [ ] Settings section nav stacks above content
 
 ---
 

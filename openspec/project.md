@@ -237,7 +237,7 @@ Admin-only screens manage:
 - contract types
 - reference values (statuses, levels, categories)
 - internal users and roles
-- portal branding (org name, logo, theme tokens)
+- portal branding (org name, logo, theme tokens, support email)
 - feature flags / future global configuration
 
 ### 7.13 Impersonation ("View as Customer")
@@ -270,9 +270,11 @@ Two Supabase Storage buckets, both provisioned by migration:
 - `portal-documents` (private): contract PDFs, request attachments, future
   private uploads
 
-Customer-scoped read isolation for contract files is enforced at the app
-layer via the RLS-scoped `contract_documents` table; the bucket policy is
-intentionally broader so signed-URL access keeps working.
+Customer-scoped read isolation for contract files is enforced at both
+layers: the RLS-scoped `contract_documents` table at the app layer, and a
+path-scoped bucket policy (`contracts/{contractId}/…`) at the storage
+layer. Bucket writes are internal (admin/staff) only; `portal-assets`
+stays publicly readable so logos render on the login page.
 
 ## 9. Data Model
 
@@ -397,7 +399,11 @@ pnpm lint:colors
 Not on the immediate roadmap. Listed roughly in order of expected value.
 
 - complete a fresh end-to-end security and RLS review prior to onboarding new
-  customers
+  customers (last hardening pass: July 2026 —
+  `20260715090000_tighten_rls_and_storage.sql`; remaining accepted risks:
+  priority images / customer logos live in the public `portal-assets` bucket
+  behind unguessable URLs, and `time_entries.internal_notes` is row-readable
+  by that customer's users via the REST API)
 - approval workflow for customer-submitted priorities, including a SOW field
   on priorities
 - richer request conversations / threaded comments — scoped & deferred, see

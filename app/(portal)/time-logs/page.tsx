@@ -33,9 +33,12 @@ interface TimeLogsPageProps {
 
 async function getCustomers(): Promise<Customer[]> {
   const supabase = await createClient();
+  // Active customers only — keeps the filter dropdown consistent with the
+  // entry forms (inactive/archived customers are not selectable).
   const { data } = await supabase
     .from("customers")
     .select("id, name")
+    .eq("status", "active")
     .order("name");
   return (data || []) as Customer[];
 }
@@ -205,7 +208,7 @@ export default async function TimeLogsPage({ searchParams }: TimeLogsPageProps) 
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold text-primary">Time Logs</h1>
           <p className="text-muted-foreground">

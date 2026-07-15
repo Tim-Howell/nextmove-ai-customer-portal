@@ -164,7 +164,7 @@ export default async function CustomerDetailPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold text-primary">{customer.name}</h1>
           <div className="flex items-center gap-3 mt-2">
@@ -190,7 +190,7 @@ export default async function CustomerDetailPage({
             )}
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {isAdmin && customer.status !== "archived" && (
             <ViewAsCustomerButton customerId={id} />
           )}

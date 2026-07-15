@@ -173,24 +173,26 @@ be readable without an active session):
 - Priority images
 - Future public images
 
-Policies installed by the migration:
+Policies installed by the migrations (tightened by
+`20260715090000_tighten_rls_and_storage.sql`):
 - `portal-assets: public read` — anonymous SELECT for any object in the bucket
-- `portal-assets: authenticated upload` / `update` / `delete` — restricted to authenticated users
+- `portal-assets: internal upload` / `update` / `delete` — restricted to `admin` / `staff` profiles
 
 ### `portal-documents` (Private)
-Private files only accessible to authenticated users:
-- Contract PDFs (current usage)
+Private files:
+- Contract PDFs (current usage), uploaded to `contracts/{contractId}/{file}`
 - Request attachments and any future private uploads
 
-Policies installed by the migration:
-- `portal-documents: authenticated read` / `upload` / `update` — any authenticated user
-- `portal-documents: internal delete` — restricted to `admin` / `staff` profiles
+Policies installed by the migrations (tightened by
+`20260715090000_tighten_rls_and_storage.sql`):
+- `portal-documents: scoped read` — `admin` / `staff` read everything;
+  `customer_user` can only read files under `contracts/{contractId}/…` for
+  contracts belonging to their own customer
+- `portal-documents: internal upload` / `update` / `delete` — restricted to `admin` / `staff` profiles
 
-> Customer-scoped read isolation for contract files is enforced at the
-> application layer (the `contract_documents` table is RLS-scoped by
-> customer, and the app only generates signed URLs for documents the
-> caller is allowed to see). The bucket-level policy is intentionally
-> the broader "any authenticated user" so signed-URL access keeps working.
+> Signed URLs are generated with the caller's own storage rights, so
+> customer downloads of their own contract documents keep working while
+> other customers' files are invisible at the bucket level.
 
 ### Manual setup (only if you skip migrations)
 

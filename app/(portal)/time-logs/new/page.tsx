@@ -17,10 +17,12 @@ async function getCustomers(): Promise<Customer[]> {
   const supabase = await createClient();
   const showDemoData = await getShowDemoData();
   
+  // Active customers only — inactive and archived customers must not be
+  // selectable for new time entries.
   let query = supabase
     .from("customers")
     .select("id, name, is_demo")
-    .neq("status", "archived")
+    .eq("status", "active")
     .is("archived_at", null)
     .order("name");
   

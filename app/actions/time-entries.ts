@@ -339,11 +339,11 @@ export async function getQuickEntryFormData(): Promise<QuickEntryFormData> {
     .eq("value", "archived")
     .maybeSingle();
 
-  // Customers — non-archived, demo-aware.
+  // Customers — active only (no inactive or archived), demo-aware.
   let customersQuery = supabase
     .from("customers")
     .select("id, name, is_demo")
-    .neq("status", "archived")
+    .eq("status", "active")
     .is("archived_at", null)
     .order("name");
   if (!showDemoData) customersQuery = customersQuery.eq("is_demo", false);

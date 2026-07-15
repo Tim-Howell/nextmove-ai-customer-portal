@@ -77,10 +77,12 @@ export function AppShell({ children, user, role, customerName }: AppShellProps) 
         </div>
       </aside>
 
-      {/* Main content */}
-      <div className="flex flex-1 flex-col">
+      {/* Main content. `min-w-0` lets this flex column shrink below its
+          content width on small screens so wide tables scroll inside their
+          own `overflow-x-auto` containers instead of stretching the page. */}
+      <div className="flex min-w-0 flex-1 flex-col">
         <Header user={user} customerName={customerName} onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 p-4 lg:p-6">
+        <main className="flex-1 overflow-x-hidden p-4 lg:p-6">
           <PageReveal>{children}</PageReveal>
         </main>
       </div>

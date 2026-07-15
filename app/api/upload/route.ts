@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getProfile } from "@/lib/supabase/profile";
 
 export async function POST(request: NextRequest) {
   try {
+    // Only internal users may upload to the public assets bucket. The
+    // storage RLS policy enforces this too; the check here returns a
+    // clearer error instead of a storage failure.
+    const profile = await getProfile();
+    if (!profile || !("admin" === profile.role || "staff" === profile.role)) {
+      return NextResponse.json({ error: "Not authorized" }, { status: 403 });
+    }
+
     const formData = await request.formData();
     const file = formData.get("file") as File;
 

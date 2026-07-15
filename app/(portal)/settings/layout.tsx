@@ -29,9 +29,11 @@ export default async function SettingsLayout({
         <p className="text-muted-foreground">Manage system configuration</p>
       </div>
 
-      <div className="flex gap-6">
-        <nav className="w-48 shrink-0">
-          <ul className="space-y-1">
+      {/* Stack the section nav above the content on small screens; the
+          fixed-width side nav only kicks in from md up. */}
+      <div className="flex flex-col gap-6 md:flex-row">
+        <nav className="shrink-0 md:w-48">
+          <ul className="flex flex-wrap gap-1 md:flex-col md:gap-0 md:space-y-1">
             {settingsNav.map((item) => (
               <li key={item.href}>
                 <Link

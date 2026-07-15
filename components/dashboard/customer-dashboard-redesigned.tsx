@@ -19,6 +19,8 @@ import { getOpenPrioritiesCount } from "@/app/actions/priorities";
 import { getOpenRequestsCount } from "@/app/actions/requests";
 import { getRecentPriorities } from "@/app/actions/reports";
 import { CONTRACT_STATUS_VALUES } from "@/lib/validations/contract";
+import { getPortalSettings } from "@/app/actions/portal-settings";
+import { DEFAULT_SUPPORT_EMAIL } from "@/lib/validations/portal-settings";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateOnly } from "@/lib/utils/date";
 
@@ -34,6 +36,7 @@ export async function CustomerDashboardRedesigned({ customerId }: CustomerDashbo
     openRequests,
     recentPriorities,
     customerContacts,
+    portalSettings,
   ] = await Promise.all([
     getContracts({ customerId }),
     getCustomerHoursThisMonth(customerId),
@@ -41,7 +44,10 @@ export async function CustomerDashboardRedesigned({ customerId }: CustomerDashbo
     getOpenRequestsCount(customerId),
     getRecentPriorities(customerId, 5),
     getCustomerContacts(customerId),
+    getPortalSettings(),
   ]);
+
+  const supportEmail = portalSettings?.support_email || DEFAULT_SUPPORT_EMAIL;
 
   // Get NextMove AI contacts (staff assigned to this customer)
   const staffContacts = await getStaffContacts(customerId);
@@ -171,7 +177,11 @@ export async function CustomerDashboardRedesigned({ customerId }: CustomerDashbo
           <CardContent>
             {staffContacts.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-4">
-                Your account manager will be assigned shortly. Contact support@nextmove-ai.com for assistance.
+                Your account manager will be assigned shortly. Contact{" "}
+                <a href={`mailto:${supportEmail}`} className="underline underline-offset-2">
+                  {supportEmail}
+                </a>{" "}
+                for assistance.
               </p>
             ) : (
               <div className="space-y-3">
